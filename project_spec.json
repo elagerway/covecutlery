@@ -1,7 +1,7 @@
 {
   "project": {
     "name": "Cove Cutlery",
-    "description": "A modern, SEO-optimized knife sharpening service website for Cove Cutlery — a mobile and drop-off knife sharpening business serving Vancouver and the Lower Mainland since 2020. The site replaces coveblades.com under a new brand name, retaining all existing service content, pricing, and contact information while providing a cleaner, faster, more conversion-focused experience.",
+    "description": "A modern, SEO-optimized cutlery sharpening service website for Cove Cutlery — a mobile and drop-off cutlery sharpening business serving Vancouver and the Lower Mainland since 2020. The site replaces coveblades.com under a new brand name, retaining all existing service content, pricing, and contact information while providing a cleaner, faster, more conversion-focused experience.",
     "type": "Web Application (Multi-page + PWA-ready)",
     "target_audience": "Home cooks, chefs, restaurants, and businesses in Metro Vancouver and Lower Mainland BC",
     "business_details": {
@@ -180,7 +180,7 @@
       ],
       "additional": [
         { "item": "Lawnmower Blades", "price": "$20" },
-        { "item": "Serrated Knife Regrind (by request)", "price": "$20" },
+        { "item": "Serrated Cutlery Regrind (by request)", "price": "$20" },
         { "item": "Ceramic Knives", "price": "$12" },
         { "item": "Mandoline Blade", "price": "$20" },
         { "item": "Machete", "price": "$30" },

@@ -59,7 +59,7 @@ export default function HeroSection() {
         >
           Vancouver&apos;s Premier
           <br />
-          <span style={{ color: "#D4A017" }}>Knife Sharpening</span> Service
+          <span style={{ color: "#D4A017" }}>Cutlery Sharpening</span> Service
         </h1>
 
         {/* Subheadline */}

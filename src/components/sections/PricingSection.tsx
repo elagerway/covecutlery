@@ -58,7 +58,7 @@ const tiers: PricingTier[] = [
 
 const additionalServices = [
   { name: "Lawnmower Blades", price: "$20" },
-  { name: "Serrated Knife Regrind", price: "$20" },
+  { name: "Serrated Cutlery Regrind", price: "$20" },
   { name: "Ceramic Knives", price: "$12" },
   { name: "Mandoline Blade", price: "$20" },
   { name: "Machete", price: "$30" },
@@ -144,7 +144,7 @@ export default function PricingSection() {
                   className="text-sm ml-1"
                   style={{ color: "#6B7280" }}
                 >
-                  /knife
+                  /cutlery
                 </span>
               </div>
 

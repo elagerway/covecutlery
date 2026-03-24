@@ -5,9 +5,9 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
 export const metadata: Metadata = {
-  title: "About Cove Cutlery | Vancouver Knife Sharpening",
+  title: "About Cove Cutlery | Vancouver Cutlery Sharpening",
   description:
-    "Learn the story behind Cove Cutlery — Vancouver's mobile knife sharpening service. Professional wet-wheel sharpening since 2020, serving home cooks and restaurants alike.",
+    "Learn the story behind Cove Cutlery — Vancouver's mobile cutlery sharpening service. Professional wet-wheel sharpening since 2020, serving home cooks and restaurants alike.",
 };
 
 const values = [
@@ -66,7 +66,7 @@ export default function AboutPage() {
               About <span style={{ color: "#D4A017" }}>Cove Cutlery</span>
             </h1>
             <p className="text-lg leading-relaxed" style={{ color: "#6B7280" }}>
-              Vancouver-based knife sharpening with a mobile-first approach. We come to you so you never have to go out of your way for a sharp knife again.
+              Vancouver-based cutlery sharpening with a mobile-first approach. We come to you so you never have to go out of your way for a sharp knife again.
             </p>
           </div>
         </section>
@@ -79,7 +79,7 @@ export default function AboutPage() {
             </h2>
             <div className="flex flex-col gap-5 text-sm leading-relaxed" style={{ color: "#6B7280" }}>
               <p>
-                Cove Cutlery started in 2020 with a single wet-wheel sharpening setup and a belief that great knife sharpening should be easy to access — not something you have to plan your week around. What began as a weekend passion project grew quickly into a full mobile service covering the entire Metro Vancouver area and the Fraser Valley.
+                Cove Cutlery started in 2020 with a single wet-wheel sharpening setup and a belief that great cutlery sharpening should be easy to access — not something you have to plan your week around. What began as a weekend passion project grew quickly into a full mobile service covering the entire Metro Vancouver area and the Fraser Valley.
               </p>
               <p>
                 We built our business around one core idea: come to the customer. No storefront, no waiting in line, no guessing when your knives will be ready. Whether you're a home cook who wants their chef's knife feeling like new, a restaurant that needs a full knife roll done before service, or a market vendor who wants us set up on-site — we bring the full professional setup directly to you.

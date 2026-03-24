@@ -1,5 +1,15 @@
 # Changelog
 
+## [1.2.2] — 2026-03-24
+
+### Added
+- **SVG favicon** (`src/app/icon.svg`) — gold blade icon on `#0D1117` background, matching the navbar; Next.js App Router serves it automatically
+
+### Changed
+- **Brand copy: "Knife" → "Cutlery"** across all page titles, meta descriptions, OG tags, keywords, hero headline, section copy, footer, and JSON-LD structured data
+- **Reviews updated** — replaced 8 stale reviews with the 6 most recent Google reviews (sourced from coveblades.com); grid now shows a clean 3×2 layout; "Cove Blades" references updated to "Cove Cutlery"
+- **"— see more —" link** added below reviews grid, pointing to the Google Places reviews page
+
 ## [1.2.1] — 2026-03-24
 
 ### Added

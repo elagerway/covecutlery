@@ -126,7 +126,7 @@ export default function Footer() {
               </span>
             </Link>
             <p className="text-[#6B7280] text-sm leading-relaxed mt-3 max-w-xs">
-              Professional knife sharpening services in Vancouver. Mobile service,
+              Professional cutlery sharpening services in Vancouver. Mobile service,
               drop-off &amp; mail-in options available.
             </p>
 

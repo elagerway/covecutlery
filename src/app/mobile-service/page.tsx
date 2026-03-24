@@ -5,9 +5,9 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
 export const metadata: Metadata = {
-  title: "Mobile Knife Sharpening Vancouver | Cove Cutlery",
+  title: "Mobile Cutlery Sharpening Vancouver | Cove Cutlery",
   description:
-    "We come to you. Professional mobile knife sharpening service across Vancouver, North Shore, Burnaby, and up to Chilliwack. Minimum 5 pieces. Book online.",
+    "We come to you. Professional mobile cutlery sharpening service across Vancouver, North Shore, Burnaby, and up to Chilliwack. Minimum 5 pieces. Book online.",
 };
 
 const requirements = [
@@ -114,7 +114,7 @@ export default function MobileServicePage() {
               className="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight tracking-tight mb-6"
               style={{ color: "#FFFFFF" }}
             >
-              Mobile Knife Sharpening
+              Mobile Cutlery Sharpening
               <br />
               <span style={{ color: "#D4A017" }}>in Vancouver</span>
             </h1>
@@ -253,7 +253,7 @@ export default function MobileServicePage() {
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
               {[
-                { type: "Standard Kitchen Knife", price: "$12", note: "Per knife — any steel" },
+                { type: "Standard Kitchen Cutlery", price: "$12", note: "Per cutlery — any steel" },
                 { type: "Scissors / Shears", price: "$12", note: "Per pair" },
                 { type: "Ceramic Knife", price: "$18", note: "Diamond wheel process" },
               ].map(({ type, price, note }) => (

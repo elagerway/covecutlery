@@ -2,7 +2,7 @@
 
 ## Overview
 
-Multi-page marketing website for Cove Cutlery knife sharpening service. Built with Next.js 16 App Router, deployed on Vercel. Supabase handles contact form submissions; Cal.com handles mobile appointment scheduling via server-side proxy API routes.
+Multi-page marketing website for Cove Cutlery cutlery sharpening service. Built with Next.js 16 App Router, deployed on Vercel. Supabase handles contact form submissions; Cal.com handles mobile appointment scheduling via server-side proxy API routes.
 
 ## Tech Stack
 
@@ -61,6 +61,9 @@ src/
 
 public/
 └── promaster.png              # Background-removed Ram ProMaster side-profile photo
+
+src/app/
+└── icon.svg                   # SVG favicon — gold BladeIcon on #0D1117 background (matches navbar)
 ```
 
 ## Data Flow

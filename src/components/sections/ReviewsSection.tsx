@@ -10,43 +10,33 @@ interface Review {
 
 const reviews: Review[] = [
   {
-    author: "Erin S.",
-    text: "Friendly and efficient. My knives were picked up, sharpened and returned within 22 hours. I highly recommend Cove Blades.",
+    author: "Steve C.",
+    text: "I have a variety of Shun knives, some Wusthof and some smaller name paring knives. All my knives have been used (and some abused) professionally, but needed some desperate rejuvenation. Erik brought all my knives back to their genuine edge... I even shaved a bit of hair on my arm with one of the blades! 8 blades sharpened and honed in 20 min. Even sharpened an old pair of sewing scissors. He knows his blades and the angle of their edges — highly recommend.",
     rating: 5,
   },
   {
-    author: "Brad W.",
-    text: "Dropped off a custom fillet knife and an old Bruks axe — both in dire need of blade repair and sharpening. They did an amazing job. Couldn't be more satisfied with the price and quality of the workmanship.",
+    author: "Misha M.",
+    text: "Great experience! Knives are super sharp. I dropped my knives off at Cove Cutlery in the secure lock-box and they were finished same-day. Erik was helpful and communicative.",
     rating: 5,
   },
   {
-    author: "David C.",
-    text: "They dropped by our place, picked up the knives and returned them sharp as promised, within a couple of days. Highly recommended. Will use again for sure.",
+    author: "Hideki Yamamoto",
+    text: "As a Japanese sushi chef with 44 years of experience, I take my knives very seriously. I met Erik in person and explained exactly what I wanted. He listened carefully and suggested sharpening my knife with a chisel grind to zero. The result was incredible — I used the freshly sharpened knife during the hectic New Year's Eve service, and it felt like the blade had come alive. Highly recommended, especially for chefs who use traditional Japanese knives.",
     rating: 5,
   },
   {
-    author: "Steve M.",
-    text: "Excellent experience, beautifully sharpened and ready before promised! Will use and refer always!",
+    author: "Hiroko Yamamoto",
+    text: "I was able to get all of our 15 knives done within the same day (dropped off and picked up). They all came back very sharp and passed the finely chopped onion test with very little tears on my side! Sharp knives make life so much easier and cooking fun! I would definitely recommend Cove Cutlery to anybody who owns a knife.",
     rating: 5,
   },
   {
-    author: "Lana Joyce",
-    text: "It was so convenient that Cove Blades came to me, and returned all knives sharp enough to slice hair!",
+    author: "Nico Vera",
+    text: "As a former chef with a small collection of German and Japanese knives, I was thrilled to find Cove Cutlery. Erik was very professional, friendly, and punctual, and sharpened about 10 knives in half an hour. The affordable price, convenience of a mobile service, and top-notch quality of work guarantees my knives are ready for any home-cooking project. I will definitely call on Cove Cutlery again soon!",
     rating: 5,
   },
   {
-    author: "Keith Labrecque",
-    text: "Erik was able to bring my kitchen knives back like new sharpness, or maybe even better than brand new.",
-    rating: 5,
-  },
-  {
-    author: "Malae Blakeley",
-    text: "Excellent service, quick turnaround; don't have to go into Vancouver. A north shore gem!",
-    rating: 5,
-  },
-  {
-    author: "Peter Teevan",
-    text: "Very happy with my first visit to Cove Blades! I felt nervous about the lock-box drop off but it worked perfectly.",
+    author: "Meyrick Jones",
+    text: "His effective website had me booking a mobile service for the SAME DAY! When Erik showed up he was cheerful and happy to tell me all about his process. All 12 knives came out unbelievably sharp, and one that had an ugly broken tip looks as good as new. Price was low too. Will definitely use Cove Cutlery mobile service again. Highly recommended!",
     rating: 5,
   },
 ];
@@ -116,7 +106,7 @@ export default function ReviewsSection() {
 
         {/* Reviews Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-12">
-          {reviews.map((review) => (
+          {reviews.slice(0, 6).map((review) => (
             <div
               key={review.author}
               className="rounded-xl p-6 border flex flex-col gap-4"
@@ -150,6 +140,19 @@ export default function ReviewsSection() {
               </div>
             </div>
           ))}
+        </div>
+
+        {/* See more */}
+        <div className="text-center mb-6">
+          <a
+            href="https://search.google.com/local/reviews?placeid=ChIJPWcc0j97hlQRtBZQ4pi4pPQ"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-sm font-medium transition-colors hover:opacity-80"
+            style={{ color: "#D4A017" }}
+          >
+            — see more —
+          </a>
         </div>
 
         {/* CTA */}

@@ -53,7 +53,7 @@ export default function AboutSection() {
               style={{ color: "#6B7280" }}
             >
               Based on the North Shore of Vancouver, Cove Cutlery has been
-              delivering professional knife sharpening since 2020. We use
+              delivering professional cutlery sharpening since 2020. We use
               professional Tormek and Wicked Edge systems to restore factory
               edges on all blade types — kitchen knives, axes, garden tools,
               and more.

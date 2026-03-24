@@ -5,9 +5,9 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
 export const metadata: Metadata = {
-  title: "Knife Sharpening Prices Vancouver | Cove Cutlery",
+  title: "Cutlery Sharpening Prices Vancouver | Cove Cutlery",
   description:
-    "Transparent knife sharpening pricing in Vancouver. $12/knife for standard blades. Mobile, drop-off, and mail-in options. 30-day edge guarantee included.",
+    "Transparent cutlery sharpening pricing in Vancouver. $12/knife for standard blades. Mobile, drop-off, and mail-in options. 30-day edge guarantee included.",
 };
 
 const mainPricing = [

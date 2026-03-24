@@ -267,7 +267,7 @@ export default function ContactPage() {
                       </div>
                       <div>
                         <label htmlFor="item_count" className={labelClass} style={labelStyle}>
-                          Number of Knives
+                          Number of Items
                         </label>
                         <input
                           id="item_count"

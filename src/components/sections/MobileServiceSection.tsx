@@ -49,7 +49,7 @@ export default function MobileServiceSection() {
             className="text-base sm:text-lg max-w-2xl mx-auto leading-relaxed"
             style={{ color: "#6B7280" }}
           >
-            Professional knife sharpening at your door. No need to travel —
+            Professional cutlery sharpening at your door. No need to travel —
             book an appointment and we'll come to your home, restaurant, or
             business.
           </p>

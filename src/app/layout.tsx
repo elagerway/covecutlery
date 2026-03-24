@@ -6,12 +6,12 @@ import { BookingProvider } from '@/components/BookingProvider'
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
 
 export const metadata: Metadata = {
-  title: 'Cove Cutlery | Professional Knife Sharpening in Vancouver',
-  description: "Vancouver's premier knife sharpening service. Mobile service that comes to you, or use our 24/7 secure drop box. Serving the North Shore, Vancouver, Burnaby, and the Lower Mainland since 2020.",
-  keywords: 'knife sharpening Vancouver, knife sharpening North Shore, mobile knife sharpening, knife sharpening service, Cove Cutlery',
+  title: 'Cove Cutlery | Professional Cutlery Sharpening in Vancouver',
+  description: "Vancouver's premier cutlery sharpening service. Mobile service that comes to you, or use our 24/7 secure drop box. Serving the North Shore, Vancouver, Burnaby, and the Lower Mainland since 2020.",
+  keywords: 'cutlery sharpening Vancouver, cutlery sharpening North Shore, mobile cutlery sharpening, cutlery sharpening service, Cove Cutlery',
   openGraph: {
-    title: 'Cove Cutlery | Professional Knife Sharpening in Vancouver',
-    description: 'Mobile and drop-off knife sharpening serving the Lower Mainland. 5★ rated, 30-day guarantee.',
+    title: 'Cove Cutlery | Professional Cutlery Sharpening in Vancouver',
+    description: 'Mobile and drop-off cutlery sharpening serving the Lower Mainland. 5★ rated, 30-day guarantee.',
     url: 'https://covecutlery.com',
     siteName: 'Cove Cutlery',
     locale: 'en_CA',
@@ -39,7 +39,7 @@ export default function RootLayout({
               '@context': 'https://schema.org',
               '@type': 'LocalBusiness',
               name: 'Cove Cutlery',
-              description: 'Professional knife sharpening service serving Vancouver and the Lower Mainland.',
+              description: 'Professional cutlery sharpening service serving Vancouver and the Lower Mainland.',
               url: 'https://covecutlery.com',
               telephone: '604 373 1500',
               email: 'info@covecutlery.ca',

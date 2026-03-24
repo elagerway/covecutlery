@@ -6,9 +6,9 @@ import Footer from "@/components/Footer";
 import DropBoxCodeButton from "@/components/DropBoxCodeButton";
 
 export const metadata: Metadata = {
-  title: "24/7 Drop-Off Knife Sharpening Vancouver | Cove Cutlery",
+  title: "24/7 Drop-Off Cutlery Sharpening Vancouver | Cove Cutlery",
   description:
-    "Secure 24/7 drop box knife sharpening in Vancouver. Drop your knives anytime, pick them up next day. Text us for the secure drop box code.",
+    "Secure 24/7 drop box cutlery sharpening in Vancouver. Drop your knives anytime, pick them up next day. Text us for the secure drop box code.",
 };
 
 const steps = [
