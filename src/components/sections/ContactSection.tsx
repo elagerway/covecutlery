@@ -37,8 +37,8 @@ type FormData = {
   name: string;
   phone: string;
   email: string;
-  serviceType: string;
-  numberOfItems: string;
+  service_type: string;
+  item_count: string;
   message: string;
 };
 
@@ -60,8 +60,8 @@ export default function ContactSection() {
     name: "",
     phone: "",
     email: "",
-    serviceType: "",
-    numberOfItems: "",
+    service_type: "",
+    item_count: "",
     message: "",
   });
   const [submitState, setSubmitState] = useState<SubmitState>("idle");
@@ -92,8 +92,8 @@ export default function ContactSection() {
           name: "",
           phone: "",
           email: "",
-          serviceType: "",
-          numberOfItems: "",
+          service_type: "",
+          item_count: "",
           message: "",
         });
         setCaptchaToken(null);
@@ -199,17 +199,17 @@ export default function ContactSection() {
               {/* Service Type */}
               <div>
                 <label
-                  htmlFor="serviceType"
+                  htmlFor="service_type"
                   className={labelClass}
                   style={labelStyle}
                 >
                   Service Type
                 </label>
                 <select
-                  id="serviceType"
-                  name="serviceType"
+                  id="service_type"
+                  name="service_type"
                   required
-                  value={form.serviceType}
+                  value={form.service_type}
                   onChange={handleChange}
                   className={inputClass}
                   style={inputStyle}
@@ -227,18 +227,18 @@ export default function ContactSection() {
               {/* Number of Items */}
               <div>
                 <label
-                  htmlFor="numberOfItems"
+                  htmlFor="item_count"
                   className={labelClass}
                   style={labelStyle}
                 >
                   Number of Items
                 </label>
                 <input
-                  id="numberOfItems"
-                  name="numberOfItems"
+                  id="item_count"
+                  name="item_count"
                   type="number"
                   min="1"
-                  value={form.numberOfItems}
+                  value={form.item_count}
                   onChange={handleChange}
                   placeholder="e.g. 8"
                   className={inputClass}

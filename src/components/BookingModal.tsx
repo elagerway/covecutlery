@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { X, ChevronLeft, ChevronRight, Loader2, CheckCircle, MapPin } from "lucide-react";
+import { Turnstile, type TurnstileInstance } from "@marsidev/react-turnstile";
 
 interface AddressSuggestion {
   place_id: number;
@@ -62,6 +63,8 @@ export default function BookingModal({ open, onClose, initialDate }: BookingModa
   const [form, setForm] = useState({ name: "", email: "", phone: "", address: "", notes: "" });
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+  const turnstileRef = useRef<TurnstileInstance>(null);
   const [addressSuggestions, setAddressSuggestions] = useState<AddressSuggestion[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [addressLoading, setAddressLoading] = useState(false);
@@ -100,6 +103,7 @@ export default function BookingModal({ open, onClose, initialDate }: BookingModa
         setForm({ name: "", email: "", phone: "", address: "", notes: "" });
         setError(null);
         setAddressSuggestions([]);
+        setCaptchaToken(null);
       }, 300);
     } else {
       if (resetTimer.current) clearTimeout(resetTimer.current);
@@ -131,10 +135,7 @@ export default function BookingModal({ open, onClose, initialDate }: BookingModa
     addressDebounce.current = setTimeout(async () => {
       setAddressLoading(true);
       try {
-        const res = await fetch(
-          `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(value)}&format=json&addressdetails=1&limit=5&countrycodes=ca`,
-          { headers: { "Accept-Language": "en", "User-Agent": "CoveCutlery/1.0" } }
-        );
+        const res = await fetch(`/api/geocode?q=${encodeURIComponent(value)}`);
         const data = await res.json();
         setAddressSuggestions(data);
       } catch {
@@ -149,7 +150,7 @@ export default function BookingModal({ open, onClose, initialDate }: BookingModa
   const today = formatDate(new Date());
 
   async function handleBook() {
-    if (!selectedSlot || !form.name || !form.email || !form.address) return;
+    if (!selectedSlot || !form.name || !form.email || !form.phone || !form.address || !captchaToken) return;
     setSubmitting(true);
     setError(null);
     const notes = [
@@ -166,16 +167,21 @@ export default function BookingModal({ open, onClose, initialDate }: BookingModa
           email: form.email,
           phone: form.phone,
           notes,
+          captchaToken,
         }),
       });
       const data = await res.json();
       if (!res.ok) {
-        setError(data?.error?.message || "Booking failed. Please try again.");
+        setError(typeof data?.error === "string" ? data.error : "Booking failed. Please try again.");
+        setCaptchaToken(null);
+        turnstileRef.current?.reset();
       } else {
         setStep("done");
       }
     } catch {
       setError("Network error. Please try again.");
+      setCaptchaToken(null);
+      turnstileRef.current?.reset();
     } finally {
       setSubmitting(false);
     }
@@ -313,26 +319,32 @@ export default function BookingModal({ open, onClose, initialDate }: BookingModa
 
               <p className="text-sm font-semibold text-white mb-3">Available times</p>
 
-              <div className="grid grid-cols-3 gap-2 max-h-52 overflow-y-auto pr-1">
-                {(slots[selectedDate] || []).map((slot) => (
-                  <button
-                    key={slot.start}
-                    onClick={() => {
-                      setSelectedSlot(slot.start);
-                      setStep("details");
-                    }}
-                    className="py-2.5 px-3 rounded-lg text-sm font-medium transition-all duration-150 hover:brightness-110 active:scale-95"
-                    style={{ backgroundColor: "#161B22", border: "1px solid #30363D", color: "#FFFFFF" }}
-                  >
-                    {formatSlotTime(slot.start)}
-                  </button>
-                ))}
-                {(slots[selectedDate]?.length ?? 0) === 0 && (
-                  <p className="col-span-3 text-center py-6 text-sm" style={{ color: "#6B7280" }}>
-                    No slots available for this day.
-                  </p>
-                )}
-              </div>
+              {loadingSlots ? (
+                <div className="flex justify-center py-10">
+                  <Loader2 className="w-6 h-6 animate-spin" style={{ color: "#D4A017" }} />
+                </div>
+              ) : (
+                <div className="grid grid-cols-3 gap-2 max-h-52 overflow-y-auto pr-1">
+                  {(slots[selectedDate] || []).map((slot) => (
+                    <button
+                      key={slot.start}
+                      onClick={() => {
+                        setSelectedSlot(slot.start);
+                        setStep("details");
+                      }}
+                      className="py-2.5 px-3 rounded-lg text-sm font-medium transition-all duration-150 hover:brightness-110 active:scale-95"
+                      style={{ backgroundColor: "#161B22", border: "1px solid #30363D", color: "#FFFFFF" }}
+                    >
+                      {formatSlotTime(slot.start)}
+                    </button>
+                  ))}
+                  {(slots[selectedDate]?.length ?? 0) === 0 && (
+                    <p className="col-span-3 text-center py-6 text-sm" style={{ color: "#6B7280" }}>
+                      No slots available for this day.
+                    </p>
+                  )}
+                </div>
+              )}
             </div>
           )}
 
@@ -379,7 +391,7 @@ export default function BookingModal({ open, onClose, initialDate }: BookingModa
                 </div>
                 <div>
                   <label className="block text-xs font-medium mb-1.5" style={{ color: "#6B7280" }}>
-                    Phone
+                    Phone <span style={{ color: "#D4A017" }}>*</span>
                   </label>
                   <input
                     type="tel"
@@ -458,9 +470,17 @@ export default function BookingModal({ open, onClose, initialDate }: BookingModa
                   </p>
                 )}
 
+                <Turnstile
+                  ref={turnstileRef}
+                  siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY!}
+                  onSuccess={setCaptchaToken}
+                  onExpire={() => setCaptchaToken(null)}
+                  options={{ theme: "dark", size: "flexible" }}
+                />
+
                 <button
                   onClick={handleBook}
-                  disabled={submitting || !form.name || !form.email || !form.address}
+                  disabled={submitting || !form.name || !form.email || !form.phone || !form.address || !captchaToken}
                   className="w-full py-3 rounded-lg font-semibold text-sm transition-all duration-200 hover:brightness-110 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                   style={{ backgroundColor: "#D4A017", color: "#0D1117" }}
                 >

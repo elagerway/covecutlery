@@ -25,10 +25,11 @@ src/
 │   ├── page.tsx                # Homepage — assembles all sections; export const revalidate = 300 (ISR)
 │   ├── globals.css             # CSS custom properties, dark theme base
 │   ├── api/
-│   │   ├── contact/route.ts    # POST endpoint — Turnstile CAPTCHA verify, saves to Supabase
+│   │   ├── contact/route.ts    # POST endpoint — validates input, Turnstile verify, saves to Supabase
+│   │   ├── geocode/route.ts    # GET proxy → Nominatim (sets required User-Agent header server-side)
 │   │   └── cal/
 │   │       ├── slots/route.ts  # GET proxy → Cal.com v2 /slots (keeps API key server-side)
-│   │       ├── book/route.ts   # POST proxy → Cal.com v2 /bookings
+│   │       ├── book/route.ts   # POST proxy → Cal.com v2 /bookings; Turnstile verify + input validation
 │   │       └── schedule/route.ts  # GET — returns 7-day DaySchedule[] from Cal.com bookings
 │   ├── about/page.tsx
 │   ├── contact/page.tsx        # Standalone contact page with Turnstile CAPTCHA
@@ -39,7 +40,7 @@ src/
 │   ├── Navbar.tsx              # Sticky nav, mobile hamburger; Book Now opens BookingModal
 │   ├── Footer.tsx              # 4-col grid, social SVGs, hours, contact
 │   ├── BookingProvider.tsx     # React context — exposes open() and openWithDate(date) globally
-│   ├── BookingModal.tsx        # 3-step modal: date picker → time slots → details form; initialDate prop
+│   ├── BookingModal.tsx        # 3-step modal: date picker → time slots → details form; Turnstile CAPTCHA; phone required
 │   ├── DropBoxCodeButton.tsx   # Popover CTA offering Call or Text options for drop box code
 │   ├── ScheduleDayCard.tsx     # Client component — clickable day tile that opens BookingModal for that date
 │   └── sections/
@@ -110,8 +111,8 @@ WhereWeAreSection (async Server Component, ISR revalidate 300s)
 | `NEXT_PUBLIC_SUPABASE_URL` | `lib/supabase.ts` |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | `lib/supabase.ts` |
 | `SUPABASE_SERVICE_ROLE_KEY` | `/api/contact` |
-| `NEXT_PUBLIC_TURNSTILE_SITE_KEY` | `ContactSection.tsx`, `contact/page.tsx` |
-| `TURNSTILE_SECRET_KEY` | `/api/contact` |
+| `NEXT_PUBLIC_TURNSTILE_SITE_KEY` | `ContactSection.tsx`, `contact/page.tsx`, `BookingModal.tsx` |
+| `TURNSTILE_SECRET_KEY` | `/api/contact`, `/api/cal/book` |
 
 ## Database
 
@@ -161,4 +162,6 @@ RLS is enabled. Inserts go through the service role key (server-side only).
 - `BookingProvider` must wrap `{children}` in `layout.tsx` — it renders `BookingModal` globally so the modal persists across page navigations
 - `WhereWeAreSection` is an **async Server Component** — the first in this codebase. It cannot use hooks; interactive behavior is delegated to child `ScheduleDayCard` (client component)
 - City extraction in `calSchedule.ts` parses the Nominatim `display_name` stored in `booking.metadata.notes` — format: `"Address: Street, City, Province Postal, Country"`. Index 1 of comma-split is the city; if index 1 starts with a digit it uses index 2 (unit number edge case)
-- Cloudflare Turnstile CAPTCHA: site key is public (`NEXT_PUBLIC_`), secret key is server-only. Both the homepage ContactSection and the standalone `/contact` page have the widget. The API route verifies the token before any Supabase insert
+- Cloudflare Turnstile CAPTCHA: site key is public (`NEXT_PUBLIC_`), secret key is server-only. ContactSection, `/contact` page, and `BookingModal` all have the widget. Both `/api/contact` and `/api/cal/book` verify the token server-side before any external call
+- Nominatim geocoding (`/api/geocode`) must stay server-side — browsers cannot set the `User-Agent` header (forbidden), so direct client-side fetch to Nominatim would return 403
+- `lib/calSchedule.ts` uses `vancouverMidnightISO()` — a DST-aware helper that probes noon UTC via `Intl.DateTimeFormat` to determine Vancouver's UTC offset before constructing the midnight timestamp. Raw `new Date("YYYY-MM-DDT00:00:00")` would parse in server-local time (UTC on Vercel), yielding the wrong window

@@ -32,6 +32,19 @@ function addDays(dateStr: string, n: number): string {
   return date.toLocaleDateString("en-CA", { timeZone: "America/Vancouver" });
 }
 
+/** Returns the UTC ISO string for midnight Vancouver time on a given YYYY-MM-DD date */
+function vancouverMidnightISO(dateStr: string): string {
+  const [y, m, d] = dateStr.split("-").map(Number);
+  // Probe noon UTC to determine Vancouver's UTC offset on this date (handles DST)
+  const probeUTC = new Date(Date.UTC(y, m - 1, d, 12, 0, 0));
+  const vanHour = parseInt(
+    new Intl.DateTimeFormat("en", { timeZone: "America/Vancouver", hour: "numeric", hour12: false }).format(probeUTC)
+  );
+  let offsetHours = 12 - vanHour; // e.g. UTC-7 → vanHour=5 → offset=7
+  if (isNaN(offsetHours) || offsetHours < 7 || offsetHours > 8) offsetHours = 8; // fallback PST (UTC-8)
+  return new Date(Date.UTC(y, m - 1, d, offsetHours, 0, 0)).toISOString();
+}
+
 /** Formats "2026-03-24" → "Mon" */
 function toDayLabel(dateStr: string): string {
   const [y, m, d] = dateStr.split("-").map(Number);
@@ -80,8 +93,8 @@ export async function getWeekSchedule(): Promise<DaySchedule[]> {
   });
 
   try {
-    const start = new Date(`${today}T00:00:00`).toISOString();
-    const end = new Date(`${addDays(today, 7)}T00:00:00`).toISOString();
+    const start = vancouverMidnightISO(today);
+    const end = vancouverMidnightISO(addDays(today, 7));
 
     const res = await fetch(
       `${CAL_API}/bookings?afterStart=${encodeURIComponent(start)}&beforeEnd=${encodeURIComponent(end)}&status=upcoming`,
