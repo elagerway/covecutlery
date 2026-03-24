@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
+import { Turnstile, type TurnstileInstance } from "@marsidev/react-turnstile";
 import {
   Phone,
   Mail,
@@ -64,6 +65,8 @@ export default function ContactSection() {
     message: "",
   });
   const [submitState, setSubmitState] = useState<SubmitState>("idle");
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+  const turnstileRef = useRef<TurnstileInstance>(null);
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -75,12 +78,13 @@ export default function ContactSection() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!captchaToken) return;
     setSubmitState("loading");
     try {
       const res = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
+        body: JSON.stringify({ ...form, captchaToken }),
       });
       if (res.ok) {
         setSubmitState("success");
@@ -92,11 +96,15 @@ export default function ContactSection() {
           numberOfItems: "",
           message: "",
         });
+        setCaptchaToken(null);
+        turnstileRef.current?.reset();
       } else {
         setSubmitState("error");
+        turnstileRef.current?.reset();
       }
     } catch {
       setSubmitState("error");
+      turnstileRef.current?.reset();
     }
   };
 
@@ -259,10 +267,19 @@ export default function ContactSection() {
                 />
               </div>
 
+              {/* CAPTCHA */}
+              <Turnstile
+                ref={turnstileRef}
+                siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY!}
+                onSuccess={setCaptchaToken}
+                onExpire={() => setCaptchaToken(null)}
+                options={{ theme: "dark" }}
+              />
+
               {/* Submit */}
               <button
                 type="submit"
-                disabled={submitState === "loading"}
+                disabled={submitState === "loading" || !captchaToken}
                 className="w-full py-4 rounded-lg font-semibold text-base transition-all duration-200 hover:brightness-110 active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed"
                 style={{ backgroundColor: "#D4A017", color: "#0D1117" }}
               >
@@ -303,7 +320,7 @@ export default function ContactSection() {
           <div className="space-y-4">
             {/* Phone */}
             <a
-              href="tel:6042108180"
+              href="tel:6043731500"
               className="flex items-start gap-4 rounded-xl border p-5 transition-colors duration-200 hover:border-[#D4A017]/50 group"
               style={{ backgroundColor: "#161B22", borderColor: "#30363D" }}
             >
@@ -319,7 +336,7 @@ export default function ContactSection() {
                   Phone
                 </p>
                 <p className="font-semibold text-sm" style={{ color: "#FFFFFF" }}>
-                  604-210-8180
+                  604 373 1500
                 </p>
               </div>
             </a>
@@ -422,7 +439,7 @@ export default function ContactSection() {
                   Payment
                 </p>
                 <p className="text-sm" style={{ color: "#FFFFFF" }}>
-                  Cash, Interac e-Transfer, Credit Card
+                  Cash, Interac e-Transfer
                 </p>
               </div>
             </div>

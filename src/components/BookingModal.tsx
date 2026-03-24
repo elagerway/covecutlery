@@ -15,6 +15,7 @@ interface Slot {
 interface BookingModalProps {
   open: boolean;
   onClose: () => void;
+  initialDate?: string | null;
 }
 
 const TIMEZONE = "America/Vancouver";
@@ -47,7 +48,7 @@ function addDays(date: Date, n: number) {
   return d;
 }
 
-export default function BookingModal({ open, onClose }: BookingModalProps) {
+export default function BookingModal({ open, onClose, initialDate }: BookingModalProps) {
   const [step, setStep] = useState<"date" | "time" | "details" | "done">("date");
   const [weekStart, setWeekStart] = useState<Date>(() => {
     const d = new Date();
@@ -66,6 +67,14 @@ export default function BookingModal({ open, onClose }: BookingModalProps) {
   const [addressLoading, setAddressLoading] = useState(false);
   const addressDebounce = useRef<ReturnType<typeof setTimeout> | null>(null);
   const addressRef = useRef<HTMLDivElement>(null);
+
+  // Jump to time step when opened from a schedule tile
+  useEffect(() => {
+    if (open && initialDate) {
+      setSelectedDate(initialDate);
+      setStep("time");
+    }
+  }, [open, initialDate]);
 
   // Fetch slots for the visible week
   useEffect(() => {

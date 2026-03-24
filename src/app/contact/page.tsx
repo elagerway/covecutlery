@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import Link from "next/link";
 import { Phone, Mail, MapPin, Clock, Send, CheckCircle, AlertCircle } from "lucide-react";
+import { Turnstile, type TurnstileInstance } from "@marsidev/react-turnstile";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
@@ -19,8 +20,8 @@ const contactDetails = [
   {
     icon: Phone,
     label: "Phone",
-    value: "604-210-8180",
-    href: "tel:6042108180",
+    value: "604 373 1500",
+    href: "tel:6043731500",
   },
   {
     icon: Mail,
@@ -65,6 +66,8 @@ export default function ContactPage() {
   const [form, setForm] = useState<FormState>(emptyForm);
   const [status, setStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
   const [errorMessage, setErrorMessage] = useState("");
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
+  const turnstileRef = useRef<TurnstileInstance>(null);
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
@@ -74,6 +77,7 @@ export default function ContactPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!captchaToken) return;
     setStatus("loading");
     setErrorMessage("");
 
@@ -84,6 +88,7 @@ export default function ContactPage() {
         body: JSON.stringify({
           ...form,
           item_count: form.item_count ? parseInt(form.item_count, 10) : null,
+          captchaToken,
         }),
       });
 
@@ -92,14 +97,20 @@ export default function ContactPage() {
       if (!res.ok || data.error) {
         setErrorMessage(data.error ?? "Something went wrong. Please try again.");
         setStatus("error");
+        turnstileRef.current?.reset();
+        setCaptchaToken(null);
         return;
       }
 
       setStatus("success");
       setForm(emptyForm);
+      setCaptchaToken(null);
+      turnstileRef.current?.reset();
     } catch {
       setErrorMessage("Network error. Please check your connection and try again.");
       setStatus("error");
+      turnstileRef.current?.reset();
+      setCaptchaToken(null);
     }
   };
 
@@ -300,10 +311,18 @@ export default function ContactPage() {
                       </div>
                     )}
 
+                    {/* CAPTCHA */}
+                    <Turnstile
+                      ref={turnstileRef}
+                      siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY!}
+                      onSuccess={setCaptchaToken}
+                      onExpire={() => setCaptchaToken(null)}
+                    />
+
                     {/* Submit */}
                     <button
                       type="submit"
-                      disabled={status === "loading"}
+                      disabled={status === "loading" || !captchaToken}
                       className="flex items-center justify-center gap-2 w-full py-4 rounded-lg font-semibold text-base transition-all duration-200 hover:brightness-110 active:scale-95 disabled:opacity-60 disabled:cursor-not-allowed"
                       style={{ backgroundColor: "#D4A017", color: "#0D1117" }}
                     >
@@ -416,12 +435,12 @@ export default function ContactPage() {
 
               {/* Quick Call CTA */}
               <a
-                href="tel:6042108180"
+                href="tel:6043731500"
                 className="flex items-center justify-center gap-2 py-4 rounded-xl font-semibold text-base border-2 transition-all duration-200 hover:bg-yellow-900/20 active:scale-95"
                 style={{ borderColor: "#D4A017", color: "#D4A017" }}
               >
                 <Phone size={18} />
-                Call 604-210-8180
+                Call 604 373 1500
               </a>
             </div>
 

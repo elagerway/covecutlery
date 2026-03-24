@@ -15,7 +15,7 @@ const steps = [
   {
     step: "01",
     title: "Call or Text for the Code",
-    desc: 'Text or call 604-210-8180 to request the secure drop box combination code. We\'ll send it to you right away — it takes less than a minute.',
+    desc: 'Text or call 604 373 1500 to request the secure drop box combination code. We\'ll send it to you right away — it takes less than a minute.',
     icon: Phone,
   },
   {

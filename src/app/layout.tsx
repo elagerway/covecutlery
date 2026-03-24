@@ -41,7 +41,7 @@ export default function RootLayout({
               name: 'Cove Cutlery',
               description: 'Professional knife sharpening service serving Vancouver and the Lower Mainland.',
               url: 'https://covecutlery.com',
-              telephone: '604-210-8180',
+              telephone: '604 373 1500',
               email: 'info@covecutlery.ca',
               address: {
                 '@type': 'PostalAddress',

@@ -22,35 +22,39 @@ Multi-page marketing website for Cove Cutlery knife sharpening service. Built wi
 src/
 ├── app/
 │   ├── layout.tsx              # Root layout, metadata, Inter font, JSON-LD, BookingProvider
-│   ├── page.tsx                # Homepage — assembles all sections
+│   ├── page.tsx                # Homepage — assembles all sections; export const revalidate = 300 (ISR)
 │   ├── globals.css             # CSS custom properties, dark theme base
 │   ├── api/
-│   │   ├── contact/route.ts    # POST endpoint — saves to Supabase
+│   │   ├── contact/route.ts    # POST endpoint — Turnstile CAPTCHA verify, saves to Supabase
 │   │   └── cal/
 │   │       ├── slots/route.ts  # GET proxy → Cal.com v2 /slots (keeps API key server-side)
-│   │       └── book/route.ts   # POST proxy → Cal.com v2 /bookings
+│   │       ├── book/route.ts   # POST proxy → Cal.com v2 /bookings
+│   │       └── schedule/route.ts  # GET — returns 7-day DaySchedule[] from Cal.com bookings
 │   ├── about/page.tsx
-│   ├── contact/page.tsx
+│   ├── contact/page.tsx        # Standalone contact page with Turnstile CAPTCHA
 │   ├── drop-off/page.tsx
 │   ├── mobile-service/page.tsx
 │   └── pricing/page.tsx
 ├── components/
-│   ├── Navbar.tsx              # Sticky nav, mobile hamburger, smooth scroll
+│   ├── Navbar.tsx              # Sticky nav, mobile hamburger; Book Now opens BookingModal
 │   ├── Footer.tsx              # 4-col grid, social SVGs, hours, contact
-│   ├── BookingProvider.tsx     # React context — exposes useBooking().open globally
-│   ├── BookingModal.tsx        # 3-step modal: date picker → time slots → details form
+│   ├── BookingProvider.tsx     # React context — exposes open() and openWithDate(date) globally
+│   ├── BookingModal.tsx        # 3-step modal: date picker → time slots → details form; initialDate prop
 │   ├── DropBoxCodeButton.tsx   # Popover CTA offering Call or Text options for drop box code
+│   ├── ScheduleDayCard.tsx     # Client component — clickable day tile that opens BookingModal for that date
 │   └── sections/
-│       ├── HeroSection.tsx     # Full-screen hero, van photo divider, booking CTA
+│       ├── HeroSection.tsx     # Full-screen hero, van photo, Book/Schedule/DropBox CTAs
 │       ├── TrustBar.tsx        # 4-item trust bar below hero
 │       ├── ServicesSection.tsx # 6-card services grid
 │       ├── MobileServiceSection.tsx  # Service area minimums, booking CTA
 │       ├── DropOffSection.tsx  # Step-by-step drop-off, DropBoxCodeButton
 │       ├── PricingSection.tsx  # 4 tiers + additional services table
 │       ├── ReviewsSection.tsx  # 8 Google review cards
+│       ├── WhereWeAreSection.tsx  # Async Server Component — 7-day location strip from Cal.com bookings
 │       ├── AboutSection.tsx    # Story, YouTube placeholder, values
-│       └── ContactSection.tsx  # Form (POSTs to /api/contact), contact info
+│       └── ContactSection.tsx  # Form with Turnstile CAPTCHA (POSTs to /api/contact)
 └── lib/
+    ├── calSchedule.ts          # getWeekSchedule() — fetches Cal.com bookings, extracts city per day
     ├── supabase.ts             # Supabase client (anon key, client-side)
     └── cn.ts                   # className utility
 
@@ -82,19 +86,32 @@ User clicks "Book Mobile Service" → BookingProvider.open()
         → Booking confirmed, modal shows success
 ```
 
+### Schedule (ISR)
+```
+WhereWeAreSection (async Server Component, ISR revalidate 300s)
+  → getWeekSchedule() in lib/calSchedule.ts
+    → Cal.com v2 GET /bookings (afterStart, beforeEnd, status=upcoming)
+      → extractCity() parses booking metadata.notes for "Address:" line → city name
+        → Returns DaySchedule[7] — cities[] or [] (Home Shop fallback)
+  → Renders ScheduleDayCard (client component) per day
+    → onClick: BookingProvider.openWithDate(date) → BookingModal jumps to time step
+```
+
 ### Pages
-- All pages are statically pre-rendered at build time
-- No dynamic data fetching on pages — content is hardcoded from `project_spec.json`
-- `/api/contact`, `/api/cal/slots`, `/api/cal/book` are dynamic server routes (serverless functions on Vercel)
+- `page.tsx` uses `export const revalidate = 300` — ISR, rebuilds every 5 minutes for fresh schedule data
+- All other pages are statically pre-rendered at build time
+- `/api/contact`, `/api/cal/slots`, `/api/cal/book`, `/api/cal/schedule` are dynamic server routes (serverless functions on Vercel)
 
 ### Environment Variables
 | Variable | Used In |
 |----------|---------|
-| `CAL_API_KEY` | `/api/cal/slots`, `/api/cal/book` |
+| `CAL_API_KEY` | `/api/cal/slots`, `/api/cal/book`, `lib/calSchedule.ts` |
 | `CAL_EVENT_TYPE_ID` | `/api/cal/slots`, `/api/cal/book` |
 | `NEXT_PUBLIC_SUPABASE_URL` | `lib/supabase.ts` |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | `lib/supabase.ts` |
 | `SUPABASE_SERVICE_ROLE_KEY` | `/api/contact` |
+| `NEXT_PUBLIC_TURNSTILE_SITE_KEY` | `ContactSection.tsx`, `contact/page.tsx` |
+| `TURNSTILE_SECRET_KEY` | `/api/contact` |
 
 ## Database
 
@@ -139,6 +156,9 @@ RLS is enabled. Inserts go through the service role key (server-side only).
 ## Known Gotchas
 
 - `lucide-react` v1 removed `Knife`, `Instagram`, `Facebook`, `Youtube` icons — replaced with custom inline SVGs in Navbar, Footer, MobileServiceSection, ContactSection, AboutSection
-- `"use client"` required on components that use hooks or browser APIs (BookingModal, BookingProvider, DropBoxCodeButton, HeroSection, MobileServiceSection, Navbar)
+- `"use client"` required on components that use hooks or browser APIs (BookingModal, BookingProvider, DropBoxCodeButton, HeroSection, MobileServiceSection, Navbar, ScheduleDayCard, ContactSection)
 - Cal.com v2 slots endpoint uses `start`/`end` params (not `startTime`/`endTime`) with `cal-api-version: 2024-09-04`; bookings endpoint uses `cal-api-version: 2024-08-13`
 - `BookingProvider` must wrap `{children}` in `layout.tsx` — it renders `BookingModal` globally so the modal persists across page navigations
+- `WhereWeAreSection` is an **async Server Component** — the first in this codebase. It cannot use hooks; interactive behavior is delegated to child `ScheduleDayCard` (client component)
+- City extraction in `calSchedule.ts` parses the Nominatim `display_name` stored in `booking.metadata.notes` — format: `"Address: Street, City, Province Postal, Country"`. Index 1 of comma-split is the city; if index 1 starts with a digit it uses index 2 (unit number edge case)
+- Cloudflare Turnstile CAPTCHA: site key is public (`NEXT_PUBLIC_`), secret key is server-only. Both the homepage ContactSection and the standalone `/contact` page have the widget. The API route verifies the token before any Supabase insert

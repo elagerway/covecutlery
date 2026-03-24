@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
+import { useBooking } from "@/components/BookingProvider";
 
 const BladeIcon = ({ size = 22 }: { size?: number }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -57,15 +58,11 @@ export default function Navbar() {
     }
   };
 
+  const { open: openBooking } = useBooking();
+
   const handleBookNow = () => {
     setMobileOpen(false);
-    if (isHome) {
-      const el = document.getElementById("contact");
-      if (el) {
-        el.scrollIntoView({ behavior: "smooth" });
-        return;
-      }
-    }
+    openBooking();
   };
 
   return (
@@ -111,13 +108,12 @@ export default function Navbar() {
 
           {/* Desktop CTA */}
           <div className="hidden md:block">
-            <Link
-              href={isHome ? "#contact" : "/contact"}
+            <button
               onClick={handleBookNow}
               className="inline-flex items-center gap-2 px-5 py-2 rounded-md bg-[#D4A017] hover:bg-[#e8b82a] text-[#0D1117] font-semibold text-sm tracking-wide transition-all duration-200 hover:shadow-[0_0_16px_rgba(212,160,23,0.4)] active:scale-95"
             >
               Book Now
-            </Link>
+            </button>
           </div>
 
           {/* Mobile Hamburger */}
@@ -150,13 +146,12 @@ export default function Navbar() {
             </Link>
           ))}
           <div className="pt-3 pb-1">
-            <Link
-              href={isHome ? "#contact" : "/contact"}
+            <button
               onClick={handleBookNow}
               className="flex items-center justify-center w-full py-3 rounded-md bg-[#D4A017] hover:bg-[#e8b82a] text-[#0D1117] font-semibold text-sm tracking-wide transition-all duration-200 active:scale-95"
             >
               Book Now
-            </Link>
+            </button>
           </div>
         </div>
       </div>

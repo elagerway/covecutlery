@@ -1,5 +1,26 @@
 # Changelog
 
+## [1.2.0] — 2026-03-24
+
+### Added
+- **"Where We'll Be This Week" section** — 7-day rolling location strip on homepage; reads confirmed Cal.com bookings, extracts city from attendee address, shows "Home Shop" fallback when no bookings. First async Server Component in the codebase (ISR revalidate 300s)
+- **`lib/calSchedule.ts`** — `getWeekSchedule()` utility; fetches Cal.com v2 bookings, parses `metadata.notes` for city, returns `DaySchedule[7]`
+- **`src/app/api/cal/schedule/route.ts`** — GET endpoint wrapping `getWeekSchedule()`
+- **`ScheduleDayCard`** — client component; clicking a day tile opens `BookingModal` pre-navigated to that date's time slots
+- **`BookingProvider.openWithDate(date)`** — new context method to open the booking modal for a specific date
+- **Cloudflare Turnstile CAPTCHA** on both the homepage ContactSection and the standalone `/contact` page; server-side token verification in `/api/contact` before Supabase insert
+- **"Current Schedule" button** in hero CTA row — gold outline style, links to `#schedule` anchor, positioned between "Book Mobile Service" and "Get Drop Box Code"
+
+### Changed
+- **Navbar "Book Now"** now calls `openBooking()` directly (was a `<Link>`)
+- **`BookingModal`** accepts `initialDate` prop; when set, jumps directly to the time-slot step
+- All phone numbers site-wide changed to **604 373 1500**
+- Removed **Credit Card** from accepted payment methods in ContactSection
+- `page.tsx` exports `revalidate = 300` to activate ISR for the schedule section
+
+### Fixed
+- `/contact` page now includes Turnstile widget — previously CAPTCHA was added to API but not this page, breaking all standalone contact form submissions
+
 ## [1.1.0] — 2026-03-24
 
 ### Added

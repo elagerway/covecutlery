@@ -4,7 +4,24 @@ import { createClient } from "@supabase/supabase-js";
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { name, phone, email, service_type, item_count, message } = body;
+    const { name, phone, email, service_type, item_count, message, captchaToken } = body;
+
+    // Verify Turnstile CAPTCHA
+    const turnstileRes = await fetch(
+      "https://challenges.cloudflare.com/turnstile/v0/siteverify",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          secret: process.env.TURNSTILE_SECRET_KEY,
+          response: captchaToken,
+        }),
+      }
+    );
+    const turnstileData = await turnstileRes.json();
+    if (!turnstileData.success) {
+      return NextResponse.json({ error: "CAPTCHA verification failed." }, { status: 400 });
+    }
 
     // Basic validation
     if (!name || typeof name !== "string" || name.trim().length === 0) {

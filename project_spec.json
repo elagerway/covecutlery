@@ -6,7 +6,7 @@
     "target_audience": "Home cooks, chefs, restaurants, and businesses in Metro Vancouver and Lower Mainland BC",
     "business_details": {
       "brand": "Cove Cutlery",
-      "phone": "604-210-8180",
+      "phone": "604 373 1500",
       "email": "info@covecutlery.ca",
       "address": "4086 Brockton Crescent, North Vancouver, BC V7G 1E6",
       "hours": {
@@ -95,7 +95,7 @@
         },
         {
           "name": "Dropbox Code Request",
-          "description": "Simple CTA that tel: links to 604-210-8180 with pre-filled message, or shows a modal with instructions"
+          "description": "Simple CTA that tel: links to 604 373 1500 with pre-filled message, or shows a modal with instructions"
         },
         {
           "name": "Mobile-Responsive Design",

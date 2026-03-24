@@ -25,9 +25,11 @@ All pages and components built, deployed to Vercel.
 
 ---
 
-## Milestone 2 — Booking + Payments 🔜 Planned
+## Milestone 2 — Booking + Live Schedule ✅ Complete
 
-- [ ] Calendly or custom booking flow
+- [x] Cal.com v2 booking integration (date → time → details modal)
+- [x] "Where We'll Be This Week" live schedule section (ISR, Cal.com bookings → city per day)
+- [x] Cloudflare Turnstile CAPTCHA on contact forms
 - [ ] Stripe deposits for mobile bookings
 - [ ] Booking confirmation emails
 

@@ -131,12 +131,12 @@ export default function MobileServicePage() {
                 <ChevronRight size={18} />
               </Link>
               <a
-                href="tel:6042108180"
+                href="tel:6043731500"
                 className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-lg font-semibold text-base border-2 transition-all duration-200 hover:bg-yellow-900/20 active:scale-95"
                 style={{ borderColor: "#D4A017", color: "#D4A017" }}
               >
                 <Phone size={16} />
-                604-210-8180
+                604 373 1500
               </a>
             </div>
           </div>
@@ -237,8 +237,8 @@ export default function MobileServicePage() {
             </div>
             <p className="text-sm mt-4" style={{ color: "#6B7280" }}>
               Not sure if we cover your area? Call us at{" "}
-              <a href="tel:6042108180" className="hover:text-white transition-colors" style={{ color: "#D4A017" }}>
-                604-210-8180
+              <a href="tel:6043731500" className="hover:text-white transition-colors" style={{ color: "#D4A017" }}>
+                604 373 1500
               </a>{" "}
               and we'll let you know.
             </p>
@@ -326,12 +326,12 @@ export default function MobileServicePage() {
                 <ChevronRight size={18} />
               </Link>
               <a
-                href="tel:6042108180"
+                href="tel:6043731500"
                 className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-lg font-semibold text-base border-2 transition-all duration-200 hover:bg-yellow-900/20 active:scale-95"
                 style={{ borderColor: "#D4A017", color: "#D4A017" }}
               >
                 <Phone size={16} />
-                Call 604-210-8180
+                Call 604 373 1500
               </a>
             </div>
           </div>
