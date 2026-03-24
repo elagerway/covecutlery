@@ -25,8 +25,8 @@ const contactDetails = [
   {
     icon: Mail,
     label: "Email",
-    value: "info@coveblades.com",
-    href: "mailto:info@coveblades.com",
+    value: "info@covecutlery.ca",
+    href: "mailto:info@covecutlery.ca",
   },
   {
     icon: MapPin,

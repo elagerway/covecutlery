@@ -23,7 +23,7 @@ export default function TrustBar() {
     },
     {
       icon: <Award className="w-5 h-5 flex-shrink-0" style={{ color: "#D4A017" }} />,
-      label: "4+ Years in Business",
+      label: "6+ Years in Business",
     },
     {
       icon: <MapPin className="w-5 h-5 flex-shrink-0" style={{ color: "#D4A017" }} />,

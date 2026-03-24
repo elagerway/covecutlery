@@ -85,7 +85,7 @@ export default function AboutPage() {
                 We built our business around one core idea: come to the customer. No storefront, no waiting in line, no guessing when your knives will be ready. Whether you're a home cook who wants their chef's knife feeling like new, a restaurant that needs a full knife roll done before service, or a market vendor who wants us set up on-site — we bring the full professional setup directly to you.
               </p>
               <p>
-                Since 2020 we've sharpened thousands of blades across Vancouver, North Shore, Burnaby, Surrey, Langley, and the Fraser Valley. We also run a YouTube channel — <strong className="text-white">@coveblades</strong> — where we share sharpening techniques, knife care tips, and behind-the-scenes content. Check it out if you want to geek out on edges as much as we do.
+                Since 2020 we've sharpened thousands of blades across Vancouver, North Shore, Burnaby, Surrey, Langley, and the Fraser Valley. We also run a YouTube channel — <strong className="text-white">@covecutlery</strong> — where we share sharpening techniques, knife care tips, and behind-the-scenes content. Check it out if you want to geek out on edges as much as we do.
               </p>
               <p>
                 We're 5-star rated on Google and proud of every review. Our 30-day edge guarantee isn't just a marketing line — it's a commitment we take seriously. If a blade we've sharpened doesn't hold its edge under normal use within 30 days, we'll re-sharpen it free of charge.
@@ -131,10 +131,10 @@ export default function AboutPage() {
                     Watch Us on YouTube
                   </h3>
                   <p className="text-sm mb-4" style={{ color: "#6B7280" }}>
-                    We share sharpening tutorials, knife reviews, and behind-the-scenes looks at how we work. Follow <strong className="text-white">@coveblades</strong> for regular uploads.
+                    We share sharpening tutorials, knife reviews, and behind-the-scenes looks at how we work. Follow <strong className="text-white">@covecutlery</strong> for regular uploads.
                   </p>
                   <a
-                    href="https://www.youtube.com/@coveblades"
+                    href="https://www.youtube.com/@covecutlery"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg font-semibold text-sm transition-all duration-200 hover:brightness-110 active:scale-95"

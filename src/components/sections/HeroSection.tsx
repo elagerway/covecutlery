@@ -1,12 +1,11 @@
 "use client";
 
-import { Phone, ChevronDown } from "lucide-react";
+import { ChevronDown } from "lucide-react";
+import { useBooking } from "@/components/BookingProvider";
+import DropBoxCodeButton from "@/components/DropBoxCodeButton";
 
 export default function HeroSection() {
-  const scrollToContact = () => {
-    const el = document.getElementById("contact");
-    if (el) el.scrollIntoView({ behavior: "smooth" });
-  };
+  const { open: openBooking } = useBooking();
 
   return (
     <section
@@ -37,21 +36,15 @@ export default function HeroSection() {
         {/* Blade / gold line decoration — top */}
         <div className="flex items-center gap-3 mb-8 w-full max-w-xs mx-auto">
           <div className="flex-1 h-px" style={{ background: "linear-gradient(to right, transparent, #D4A017)" }} />
-          <svg
-            width="28"
-            height="14"
-            viewBox="0 0 28 14"
-            fill="none"
-            className="flex-shrink-0"
+          {/* Ram ProMaster 1500 */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/promaster.png"
+            alt=""
             aria-hidden="true"
-          >
-            {/* Simplified blade silhouette */}
-            <path
-              d="M0 7 C6 7 8 2 16 1 L28 7 L16 13 C8 12 6 7 0 7Z"
-              fill="#D4A017"
-              opacity="0.85"
-            />
-          </svg>
+            className="flex-shrink-0 object-contain"
+            style={{ height: 48, width: "auto" }}
+          />
           <div className="flex-1 h-px" style={{ background: "linear-gradient(to left, transparent, #D4A017)" }} />
         </div>
 
@@ -77,21 +70,14 @@ export default function HeroSection() {
         {/* CTA Buttons */}
         <div className="flex flex-col sm:flex-row gap-4 mb-12 w-full sm:w-auto">
           <button
-            onClick={scrollToContact}
+            onClick={openBooking}
             className="flex items-center justify-center gap-2 px-8 py-4 rounded-lg font-semibold text-base transition-all duration-200 hover:brightness-110 active:scale-95"
             style={{ backgroundColor: "#D4A017", color: "#0D1117" }}
           >
             Book Mobile Service
           </button>
 
-          <a
-            href="tel:6042108180"
-            className="flex items-center justify-center gap-2 px-8 py-4 rounded-lg font-semibold text-base border-2 transition-all duration-200 hover:bg-yellow-900/20 active:scale-95"
-            style={{ borderColor: "#D4A017", color: "#D4A017" }}
-          >
-            <Phone className="w-4 h-4" />
-            Get Drop Box Code
-          </a>
+          <DropBoxCodeButton />
         </div>
 
         {/* Trust Stats Row */}

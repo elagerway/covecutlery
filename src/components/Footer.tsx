@@ -83,17 +83,17 @@ const YouTubeIcon = () => (
 const socialLinks = [
   {
     label: "Instagram",
-    href: "https://www.instagram.com/coveblades/",
+    href: "https://www.instagram.com/covecutlery/",
     Icon: InstagramIcon,
   },
   {
     label: "Facebook",
-    href: "https://www.facebook.com/coveblades",
+    href: "https://www.facebook.com/covecutlery",
     Icon: FacebookIcon,
   },
   {
     label: "YouTube",
-    href: "https://www.youtube.com/@coveblades",
+    href: "https://www.youtube.com/@covecutlery",
     Icon: YouTubeIcon,
   },
 ];
@@ -204,19 +204,19 @@ export default function Footer() {
               </li>
               <li>
                 <a
-                  href="mailto:info@coveblades.com"
+                  href="mailto:info@covecutlery.ca"
                   className="inline-flex items-center gap-2 text-[#6B7280] hover:text-[#D4A017] text-sm transition-colors duration-200 group"
                 >
                   <Mail
                     size={14}
                     className="text-[#D4A017] shrink-0 group-hover:scale-110 transition-transform duration-200"
                   />
-                  info@coveblades.com
+                  info@covecutlery.ca
                 </a>
               </li>
               <li className="pt-1">
                 <a
-                  href="https://www.instagram.com/coveblades/"
+                  href="https://www.instagram.com/covecutlery/"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-1.5 text-[#6B7280] hover:text-[#D4A017] text-sm transition-colors duration-200"

@@ -73,7 +73,7 @@ export default function AboutSection() {
 
           {/* YouTube placeholder */}
           <a
-            href="https://www.youtube.com/@coveblades"
+            href="https://www.youtube.com/@covecutlery"
             target="_blank"
             rel="noopener noreferrer"
             className="group relative flex flex-col items-center justify-center rounded-xl border overflow-hidden transition-opacity duration-200 hover:opacity-90 active:scale-[0.99]"
@@ -113,7 +113,7 @@ export default function AboutSection() {
               className="relative z-10 text-sm"
               style={{ color: "#6B7280" }}
             >
-              @coveblades
+              @covecutlery
             </p>
           </a>
         </div>

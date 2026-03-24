@@ -1,4 +1,5 @@
-import { MapPin, Clock, Phone, ExternalLink } from "lucide-react";
+import { MapPin, Clock, ExternalLink } from "lucide-react";
+import DropBoxCodeButton from "@/components/DropBoxCodeButton";
 
 const steps = [
   "Text 604-210-8180 to receive your unique drop box code",
@@ -83,14 +84,7 @@ export default function DropOffSection() {
             </div>
 
             {/* CTA */}
-            <a
-              href="tel:6042108180"
-              className="inline-flex items-center gap-2 px-8 py-4 rounded-lg font-semibold text-base transition-all duration-200 hover:brightness-110 active:scale-95"
-              style={{ backgroundColor: "#D4A017", color: "#0D1117" }}
-            >
-              <Phone className="w-5 h-5" />
-              Get Drop Box Code
-            </a>
+            <DropBoxCodeButton />
           </div>
 
           {/* Right: Map placeholder card */}

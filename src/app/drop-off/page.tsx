@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Lock, Clock, MapPin, Phone, CheckCircle, ChevronRight } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import DropBoxCodeButton from "@/components/DropBoxCodeButton";
 
 export const metadata: Metadata = {
   title: "24/7 Drop-Off Knife Sharpening Vancouver | Cove Cutlery",
@@ -81,14 +82,7 @@ export default function DropOffPage() {
               Our secure drop box is accessible around the clock. Drop your knives off at midnight, pick them up sharp by the next business day.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <a
-                href="tel:6042108180"
-                className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-lg font-semibold text-base transition-all duration-200 hover:brightness-110 active:scale-95"
-                style={{ backgroundColor: "#D4A017", color: "#0D1117" }}
-              >
-                <Phone size={16} />
-                Get Drop Box Code
-              </a>
+              <DropBoxCodeButton />
               <Link
                 href="/contact"
                 className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-lg font-semibold text-base border-2 transition-all duration-200 hover:bg-yellow-900/20 active:scale-95"
@@ -231,14 +225,7 @@ export default function DropOffPage() {
             <p className="text-base mb-8" style={{ color: "#6B7280" }}>
               Text or call us and we'll send the code immediately. Drop your knives off any time — day or night.
             </p>
-            <a
-              href="tel:6042108180"
-              className="inline-flex items-center justify-center gap-2 px-10 py-4 rounded-lg font-semibold text-lg transition-all duration-200 hover:brightness-110 active:scale-95 hover:shadow-[0_0_20px_rgba(212,160,23,0.4)]"
-              style={{ backgroundColor: "#D4A017", color: "#0D1117" }}
-            >
-              <Phone size={20} />
-              Call 604-210-8180
-            </a>
+            <DropBoxCodeButton />
           </div>
         </section>
       </main>

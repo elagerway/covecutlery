@@ -1,6 +1,7 @@
 "use client";
 
 import { MapPin } from "lucide-react";
+import { useBooking } from "@/components/BookingProvider";
 
 const InstagramIcon = () => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -26,10 +27,7 @@ const serviceAreas = [
 ];
 
 export default function MobileServiceSection() {
-  const scrollToContact = () => {
-    const el = document.getElementById("contact");
-    if (el) el.scrollIntoView({ behavior: "smooth" });
-  };
+  const { open: openBooking } = useBooking();
 
   return (
     <section
@@ -97,7 +95,7 @@ export default function MobileServiceSection() {
         {/* CTAs */}
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8">
           <button
-            onClick={scrollToContact}
+            onClick={openBooking}
             className="px-8 py-4 rounded-lg font-semibold text-base transition-all duration-200 hover:brightness-110 active:scale-95"
             style={{ backgroundColor: "#D4A017", color: "#0D1117" }}
           >
@@ -105,14 +103,14 @@ export default function MobileServiceSection() {
           </button>
 
           <a
-            href="https://www.instagram.com/coveblades/"
+            href="https://www.instagram.com/covecutlery/"
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-2 px-8 py-4 rounded-lg font-semibold text-base border-2 transition-all duration-200 hover:bg-white/5 active:scale-95"
             style={{ borderColor: "#30363D", color: "#FFFFFF" }}
           >
             <span style={{ color: "#D4A017" }}><InstagramIcon /></span>
-            Follow us @coveblades
+            Follow us @covecutlery
           </a>
         </div>
 

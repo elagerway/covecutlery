@@ -1,5 +1,25 @@
 # Changelog
 
+## [1.1.0] — 2026-03-24
+
+### Added
+- **Cal.com booking integration** — `BookingModal` (3-step: date → time → details) powered by Cal.com v2 REST API; proxy routes `/api/cal/slots` and `/api/cal/book` keep API key server-side
+- **`BookingProvider`** — React context wraps the app so any component can open the booking modal via `useBooking().open`
+- **`DropBoxCodeButton`** — reusable popover component offering both Call and Text options for the drop box code; replaces all previous `tel:` CTA links
+- **Address autocomplete** — Nominatim (OpenStreetMap) Canadian address search with debounce in booking form; address is a required field
+- **Ram ProMaster van image** — background-removed side-profile photo used as hero decoration between gold divider lines
+- **`public/promaster.png`** — rembg-processed transparent PNG of the service van
+
+### Changed
+- All social/email links updated from `coveblades` → `covecutlery` across Footer, ContactSection, AboutSection, MobileServiceSection, about page, contact page, layout JSON-LD, and project_spec.json
+- "Book Mobile Service" and "Book Mobile" CTAs now open `BookingModal` instead of scrolling to contact form
+- TrustBar "4+ Years in Business" → "6+ Years in Business" (operating since 2020)
+- Hero blade/diamond SVG divider replaced with real van photo
+
+### Fixed
+- API routes now catch network errors and check `res.ok` before parsing JSON — prevents silent 500s on Cal.com outage
+- `BookingModal` reset `setTimeout` now tracked in a ref and cleared on re-open, preventing stale state wipe if modal is closed and reopened within 300 ms
+
 ## [1.0.0] — 2026-03-24
 
 ### Added — Milestone 1: MVP Website

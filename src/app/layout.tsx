@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
+import { BookingProvider } from '@/components/BookingProvider'
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
 
@@ -41,7 +42,7 @@ export default function RootLayout({
               description: 'Professional knife sharpening service serving Vancouver and the Lower Mainland.',
               url: 'https://covecutlery.com',
               telephone: '604-210-8180',
-              email: 'info@coveblades.com',
+              email: 'info@covecutlery.ca',
               address: {
                 '@type': 'PostalAddress',
                 streetAddress: '4086 Brockton Crescent',
@@ -74,7 +75,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className={inter.className}>{children}</body>
+      <body className={inter.className}><BookingProvider>{children}</BookingProvider></body>
     </html>
   )
 }

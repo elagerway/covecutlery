@@ -2,7 +2,7 @@
 
 ## Overview
 
-Static multi-page marketing website for Cove Cutlery knife sharpening service. Built with Next.js 14 App Router, deployed on Vercel, with Supabase handling contact form submissions.
+Multi-page marketing website for Cove Cutlery knife sharpening service. Built with Next.js 16 App Router, deployed on Vercel. Supabase handles contact form submissions; Cal.com handles mobile appointment scheduling via server-side proxy API routes.
 
 ## Tech Stack
 
@@ -21,11 +21,14 @@ Static multi-page marketing website for Cove Cutlery knife sharpening service. B
 ```
 src/
 ├── app/
-│   ├── layout.tsx              # Root layout, metadata, Inter font, JSON-LD
+│   ├── layout.tsx              # Root layout, metadata, Inter font, JSON-LD, BookingProvider
 │   ├── page.tsx                # Homepage — assembles all sections
 │   ├── globals.css             # CSS custom properties, dark theme base
 │   ├── api/
-│   │   └── contact/route.ts    # POST endpoint — saves to Supabase
+│   │   ├── contact/route.ts    # POST endpoint — saves to Supabase
+│   │   └── cal/
+│   │       ├── slots/route.ts  # GET proxy → Cal.com v2 /slots (keeps API key server-side)
+│   │       └── book/route.ts   # POST proxy → Cal.com v2 /bookings
 │   ├── about/page.tsx
 │   ├── contact/page.tsx
 │   ├── drop-off/page.tsx
@@ -34,12 +37,15 @@ src/
 ├── components/
 │   ├── Navbar.tsx              # Sticky nav, mobile hamburger, smooth scroll
 │   ├── Footer.tsx              # 4-col grid, social SVGs, hours, contact
+│   ├── BookingProvider.tsx     # React context — exposes useBooking().open globally
+│   ├── BookingModal.tsx        # 3-step modal: date picker → time slots → details form
+│   ├── DropBoxCodeButton.tsx   # Popover CTA offering Call or Text options for drop box code
 │   └── sections/
-│       ├── HeroSection.tsx     # Full-screen hero, 2 CTAs, trust stats
+│       ├── HeroSection.tsx     # Full-screen hero, van photo divider, booking CTA
 │       ├── TrustBar.tsx        # 4-item trust bar below hero
 │       ├── ServicesSection.tsx # 6-card services grid
-│       ├── MobileServiceSection.tsx  # Service area minimums, Instagram CTA
-│       ├── DropOffSection.tsx  # Step-by-step drop-off, map link
+│       ├── MobileServiceSection.tsx  # Service area minimums, booking CTA
+│       ├── DropOffSection.tsx  # Step-by-step drop-off, DropBoxCodeButton
 │       ├── PricingSection.tsx  # 4 tiers + additional services table
 │       ├── ReviewsSection.tsx  # 8 Google review cards
 │       ├── AboutSection.tsx    # Story, YouTube placeholder, values
@@ -47,6 +53,9 @@ src/
 └── lib/
     ├── supabase.ts             # Supabase client (anon key, client-side)
     └── cn.ts                   # className utility
+
+public/
+└── promaster.png              # Background-removed Ram ProMaster side-profile photo
 ```
 
 ## Data Flow
@@ -60,10 +69,32 @@ User fills form → ContactSection (client)
         → { success: true } or { error: '...' }
 ```
 
+### Mobile Booking
+```
+User clicks "Book Mobile Service" → BookingProvider.open()
+  → BookingModal opens (step: date)
+    → GET /api/cal/slots?start=&end= (Next.js proxy)
+      → Cal.com v2 GET /slots?eventTypeId=5142178
+        → Returns available time slots grouped by date
+  → User picks date → time → fills details form
+    → POST /api/cal/book (Next.js proxy)
+      → Cal.com v2 POST /bookings
+        → Booking confirmed, modal shows success
+```
+
 ### Pages
-- All pages except `/api/contact` are statically pre-rendered at build time
-- No dynamic data fetching — content is hardcoded from `project_spec.json`
-- `/api/contact` is a dynamic server route (serverless function on Vercel)
+- All pages are statically pre-rendered at build time
+- No dynamic data fetching on pages — content is hardcoded from `project_spec.json`
+- `/api/contact`, `/api/cal/slots`, `/api/cal/book` are dynamic server routes (serverless functions on Vercel)
+
+### Environment Variables
+| Variable | Used In |
+|----------|---------|
+| `CAL_API_KEY` | `/api/cal/slots`, `/api/cal/book` |
+| `CAL_EVENT_TYPE_ID` | `/api/cal/slots`, `/api/cal/book` |
+| `NEXT_PUBLIC_SUPABASE_URL` | `lib/supabase.ts` |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | `lib/supabase.ts` |
+| `SUPABASE_SERVICE_ROLE_KEY` | `/api/contact` |
 
 ## Database
 
@@ -108,4 +139,6 @@ RLS is enabled. Inserts go through the service role key (server-side only).
 ## Known Gotchas
 
 - `lucide-react` v1 removed `Knife`, `Instagram`, `Facebook`, `Youtube` icons — replaced with custom inline SVGs in Navbar, Footer, MobileServiceSection, ContactSection, AboutSection
-- `"use client"` required on components that use `document.getElementById` for smooth scroll (MobileServiceSection, ContactSection, HeroSection, Navbar)
+- `"use client"` required on components that use hooks or browser APIs (BookingModal, BookingProvider, DropBoxCodeButton, HeroSection, MobileServiceSection, Navbar)
+- Cal.com v2 slots endpoint uses `start`/`end` params (not `startTime`/`endTime`) with `cal-api-version: 2024-09-04`; bookings endpoint uses `cal-api-version: 2024-08-13`
+- `BookingProvider` must wrap `{children}` in `layout.tsx` — it renders `BookingModal` globally so the modal persists across page navigations
