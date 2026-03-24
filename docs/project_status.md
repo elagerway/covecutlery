@@ -19,7 +19,6 @@ All pages and components built, deployed to Vercel.
 - [x] GitHub repo: https://github.com/elagerway/covecutlery
 
 **Pending:**
-- [ ] Point covecutlery.com custom domain in Vercel dashboard
 - [ ] Visual QA on mobile + desktop (Playwright)
 - [ ] Real photos / hero image
 
@@ -33,7 +32,22 @@ All pages and components built, deployed to Vercel.
 - [ ] Stripe deposits for mobile bookings
 - [ ] Booking confirmation emails
 
-## Milestone 3 — Customer Portal 🔜 Planned
+## Milestone 3 — Blog + Admin ✅ Complete
+
+- [x] Public blog at `/blog` and `/blog/[slug]` (ISR, Supabase-backed)
+- [x] `blog_posts` table with RLS (public read, admin write)
+- [x] Supabase magic-link auth restricted to `elagerway@gmail.com`
+- [x] Edge middleware protecting all `/admin/**` routes
+- [x] Admin post list (with publish/unpublish/delete actions)
+- [x] Admin create + edit post forms (auto-slug, draft/publish)
+- [x] Blog link in Navbar
+
+**Pending manual step:**
+- [ ] Add Supabase Auth redirect URLs in dashboard (localhost + covecutlery.ca)
+
+---
+
+## Milestone 4 — Customer Portal 🔜 Planned
 
 - [ ] Customer accounts (Supabase Auth)
 - [ ] Order history

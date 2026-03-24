@@ -20,6 +20,7 @@ const navLinks = [
   { label: "Mobile Service", href: "/#mobile-service" },
   { label: "Drop Off", href: "/#drop-off" },
   { label: "About", href: "/#about" },
+  { label: "Blog", href: "/blog" },
   { label: "Contact", href: "/#contact" },
 ];
 

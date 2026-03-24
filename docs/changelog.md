@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.3.0] — 2026-03-24
+
+### Added
+- **Public blog** — `/blog` (ISR card grid, revalidate 300s) and `/blog/[slug]` (full post, generateStaticParams, generateMetadata, OG tags); posts sourced from Supabase `blog_posts` table
+- **Admin section** — `/admin/blog` (post list with publish/unpublish/delete), `/admin/blog/new` (create), `/admin/blog/[id]/edit` (edit); fully protected behind Supabase Auth
+- **Supabase magic-link authentication** — `/admin/login` sends OTP email; `/auth/callback` exchanges PKCE code for session; admin access restricted to `elagerway@gmail.com`
+- **Edge middleware** (`src/middleware.ts`) — refreshes Supabase session on every request using the double-cookie pattern; redirects unauthenticated users from `/admin/**` to `/admin/login`
+- **`@supabase/ssr`** — added to project; `src/utils/supabase/server.ts` (async cookies, Next.js 16 compatible) and `src/utils/supabase/client.ts` for client components
+- **Admin UI components** — `AdminNav` (sidebar with logout), `PostForm` (auto-slug, Save Draft / Publish), `PostTable` (inline actions, optimistic refresh)
+- **`/api/admin/posts` routes** — GET list, POST create, PUT update, DELETE; `requireAdmin()` helper re-validates session email on every call; `published_at` preserved on re-publish
+- **`blog_posts` Supabase table** — with RLS: public SELECT on published posts, full admin access gated on `auth.jwt() ->> 'email' = 'elagerway@gmail.com'`; `updated_at` trigger
+- **Blog link in Navbar** — added to both desktop and mobile nav
+
 ## [1.2.2] — 2026-03-24
 
 ### Added
