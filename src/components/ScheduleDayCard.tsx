@@ -12,9 +12,20 @@ export default function ScheduleDayCard({ day }: { day: DaySchedule }) {
   const isHome = !hasBookings;
 
   return (
+    <div className="flex-shrink-0 flex flex-col min-w-[110px] w-full">
+      {/* Book Mobile tab */}
+      <div className="flex justify-center mb-1">
+        <span
+          className="text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-sm"
+          style={{ backgroundColor: "#D4A017", color: "#0D1117" }}
+        >
+          Book Mobile
+        </span>
+      </div>
+
     <button
       onClick={() => openWithDate(day.date)}
-      className="flex-shrink-0 flex flex-col items-center gap-2 rounded-xl px-4 py-5 border min-w-[110px] w-full text-left transition-all duration-200 hover:brightness-110 active:scale-95 cursor-pointer"
+      className="flex flex-col items-center gap-2 rounded-xl px-4 py-5 border w-full text-left transition-all duration-200 hover:brightness-110 active:scale-95 cursor-pointer"
       style={{
         backgroundColor: day.isToday ? "rgba(212,160,23,0.08)" : "#161B22",
         borderColor: day.isToday ? "#D4A017" : "#30363D",
@@ -65,5 +76,6 @@ export default function ScheduleDayCard({ day }: { day: DaySchedule }) {
         )}
       </div>
     </button>
+    </div>
   );
 }
