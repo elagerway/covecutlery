@@ -1,0 +1,226 @@
+{
+  "project": {
+    "name": "Cove Cutlery",
+    "description": "A modern, SEO-optimized knife sharpening service website for Cove Cutlery — a mobile and drop-off knife sharpening business serving Vancouver and the Lower Mainland since 2020. The site replaces coveblades.com under a new brand name, retaining all existing service content, pricing, and contact information while providing a cleaner, faster, more conversion-focused experience.",
+    "type": "Web Application (Multi-page + PWA-ready)",
+    "target_audience": "Home cooks, chefs, restaurants, and businesses in Metro Vancouver and Lower Mainland BC",
+    "business_details": {
+      "brand": "Cove Cutlery",
+      "phone": "604-210-8180",
+      "email": "info@coveblades.com",
+      "address": "4086 Brockton Crescent, North Vancouver, BC V7G 1E6",
+      "hours": {
+        "monday_friday": "10:00am – 7:00pm",
+        "saturday": "Noon – 4:00pm",
+        "dropbox": "24/7"
+      },
+      "social": {
+        "instagram": "https://www.instagram.com/coveblades/",
+        "facebook": "https://www.facebook.com/coveblades",
+        "youtube": "https://www.youtube.com/@coveblades"
+      },
+      "google_review_url": "https://g.page/r/CbQWUOKYuKT0EBM/review",
+      "google_maps_url": "https://goo.gl/maps/C5GSo2wYLX36tTnv7"
+    }
+  },
+  "milestones": {
+    "milestone_1": {
+      "name": "MVP – Core Website",
+      "description": "Full single-page marketing site with all service, pricing, and contact information. Closely emulates coveblades.com structure and content. Deployed on Vercel.",
+      "tech_stack": {
+        "framework": "Next.js 14 (App Router)",
+        "language": "TypeScript",
+        "styling": "Tailwind CSS + shadcn/ui",
+        "backend": "Supabase (contact/booking form submissions)",
+        "deployment": "Vercel",
+        "domains": {
+          "production": "covecutlery.com (or TBD)",
+          "preview": "Vercel preview URLs"
+        },
+        "external_apis": [
+          "Supabase (Postgres for form submissions)",
+          "Google Maps Embed API (location display)"
+        ]
+      },
+      "pages": [
+        {
+          "route": "/",
+          "name": "Home",
+          "description": "Long-scroll landing page with all key sections: Hero, Services, How It Works, Pricing, Reviews, Mobile Service Info, Drop Off Info, About, Contact"
+        },
+        {
+          "route": "/mobile-service",
+          "name": "Mobile Service",
+          "description": "Dedicated page for mobile sharpening — requirements, service areas, booking CTA"
+        },
+        {
+          "route": "/pricing",
+          "name": "Pricing",
+          "description": "Full pricing table: Residential, Home Pro, Commercial, Mobile, Additional items"
+        },
+        {
+          "route": "/drop-off",
+          "name": "Drop Off",
+          "description": "Drop-off instructions, location, map embed, hours, dropbox code request"
+        },
+        {
+          "route": "/about",
+          "name": "About Us",
+          "description": "Team bio, professional development, ethics, YouTube embed"
+        },
+        {
+          "route": "/contact",
+          "name": "Contact",
+          "description": "Contact form (Supabase), phone, email, hours, map, payment methods"
+        }
+      ],
+      "homepage_sections": [
+        "Navbar (sticky, mobile-responsive)",
+        "Hero — headline, subheadline, 2 CTAs (Book Mobile, Get Dropbox Code)",
+        "Trust Bar — 5-star Google rating, years in business, service area",
+        "Services Grid — 6 cards (Mobile Service, Drop Box, 1-Hour Turnaround, Ceramic & Serrated, Special Events, 30-Day Guarantee)",
+        "Mobile Service Section — requirements by area, Instagram CTA",
+        "Drop Off Section — address, photo, instructions",
+        "Pricing Tables — Residential / Home Pro / Commercial / Mobile",
+        "Additional Pricing — full item list",
+        "Google Reviews Carousel — 5-star reviews from PDF",
+        "About Us — team paragraph, YouTube embed",
+        "Contact & Location — hours, map, payment methods",
+        "Footer — nav links, social icons, copyright"
+      ],
+      "features": [
+        {
+          "name": "Booking / Contact Form",
+          "description": "Form with name, phone, email, service type, number of items, message. Submissions saved to Supabase table."
+        },
+        {
+          "name": "Dropbox Code Request",
+          "description": "Simple CTA that tel: links to 604-210-8180 with pre-filled message, or shows a modal with instructions"
+        },
+        {
+          "name": "Mobile-Responsive Design",
+          "description": "Fully responsive, looks excellent on iPhone and Android. Sticky call button on mobile."
+        },
+        {
+          "name": "SEO Optimization",
+          "description": "Next.js metadata API for titles, descriptions, OG tags. Structured data (LocalBusiness JSON-LD). Sitemap."
+        },
+        {
+          "name": "Google Reviews Display",
+          "description": "Static display of existing reviews from PDF. Grid layout with star ratings."
+        },
+        {
+          "name": "Instagram Feed Link",
+          "description": "Instagram grid teaser or link to @coveblades account"
+        }
+      ],
+      "subagent_jobs": [
+        {
+          "agent": "setup-agent",
+          "job": "Initialize Next.js 14 project with TypeScript, Tailwind CSS, shadcn/ui, ESLint. Set up Supabase client. Create .env.local template. Create /docs folder structure."
+        },
+        {
+          "agent": "components-agent",
+          "job": "Build reusable components: Navbar, Footer, HeroSection, ServiceCard, PricingTable, ReviewCard, ContactForm, TrustBar, SectionHeading"
+        },
+        {
+          "agent": "homepage-agent",
+          "job": "Build the full homepage (/) assembling all sections with real content from the business data"
+        },
+        {
+          "agent": "pages-agent",
+          "job": "Build /mobile-service, /pricing, /drop-off, /about, /contact pages"
+        },
+        {
+          "agent": "backend-agent",
+          "job": "Set up Supabase table for contact submissions, Next.js API route for form POST, server action, and .env vars"
+        }
+      ]
+    },
+    "milestone_2": {
+      "name": "Booking System + Online Payments",
+      "description": "Online appointment booking with Calendly or custom booking flow, Stripe payment integration for upfront deposits.",
+      "status": "planned"
+    },
+    "milestone_3": {
+      "name": "Customer Portal + Loyalty",
+      "description": "Customer accounts, order history, loyalty program, SMS/email reminders.",
+      "status": "planned"
+    }
+  },
+  "design": {
+    "aesthetic": "Premium, dark, high-contrast. Similar to coveblades.com — clean whitespace, professional typography, strong CTAs.",
+    "colors": {
+      "primary": "#0D1117 (near-black background)",
+      "accent": "#D4A017 (gold/amber — matching Cove Blades logo)",
+      "secondary": "#1E90FF (teal/blue — matching pricing underlines on coveblades.com)",
+      "text": "#FFFFFF and #6B7280",
+      "card_bg": "#161B22"
+    },
+    "fonts": {
+      "heading": "Inter or similar clean sans-serif",
+      "body": "Inter"
+    }
+  },
+  "content": {
+    "services": [
+      { "title": "1 Hour Turnaround", "icon": "clock", "desc": "Quick drop-off turnaround service. Back in action within an hour by appointment." },
+      { "title": "Ceramic & Serrated", "icon": "utensils", "desc": "3-step diamond grinding for ceramics. Diamond-infused wheel for serrated blades." },
+      { "title": "Special Events", "icon": "store", "desc": "We bring sharpening to your market, block party, or business event." },
+      { "title": "Mobile Service", "icon": "truck", "desc": "We come to you. Minimum 5 pieces. Servicing North Shore to Chilliwack." },
+      { "title": "30 Day Guarantee", "icon": "thumbs-up", "desc": "Blades retain edge for 30 days or we fix them at no charge." },
+      { "title": "Secure Drop Box", "icon": "lock", "desc": "24/7 secure drop box. Next-day pickup. Text for the code." }
+    ],
+    "pricing": {
+      "tiers": [
+        { "name": "Residential", "quantity": "1–5 pieces", "price": 12, "features": ["Sharpen", "Hone", "Sanitize", "Sharpness Test", "30 Day Guarantee"] },
+        { "name": "Home Pro", "quantity": "6–20 pieces", "price": 10, "features": ["Sharpen", "Hone", "Sanitize", "Sharpness Test", "30 Day Guarantee"], "featured": true },
+        { "name": "Commercial", "quantity": "21+ pieces", "price": 8, "features": ["Sharpen", "Hone", "Sanitize", "Sharpness Test"] },
+        { "name": "Mobile Service", "quantity": "5+ pieces", "price": 12, "features": ["Sharpen", "Hone", "Sanitize", "Sharpness Test", "30 Day Guarantee"] }
+      ],
+      "additional": [
+        { "item": "Lawnmower Blades", "price": "$20" },
+        { "item": "Serrated Knife Regrind (by request)", "price": "$20" },
+        { "item": "Ceramic Knives", "price": "$12" },
+        { "item": "Mandoline Blade", "price": "$20" },
+        { "item": "Machete", "price": "$30" },
+        { "item": "Small Garden Shears", "price": "$12" },
+        { "item": "Large Garden Shears", "price": "$20" },
+        { "item": "Bone Cleaver or Hatchet", "price": "$20" },
+        { "item": "Axe", "price": "$30" },
+        { "item": "Buffing – rust & tarnish removal (satin finish)", "price": "$20" },
+        { "item": "Paper Trimmer/Guillotine", "price": "$40" },
+        { "item": "Disassembly of any kind", "price": "$20" },
+        { "item": "Shawarma/Rotary Blades", "price": "$20" }
+      ]
+    },
+    "mobile_requirements": [
+      { "area": "North Shore", "minimum": 6 },
+      { "area": "Burnaby, Vancouver, Port Moody", "minimum": 8 },
+      { "area": "Whistler, Squamish, Chilliwack & Rest of Lower Mainland", "minimum": 14 }
+    ],
+    "reviews": [
+      { "author": "Erin S.", "text": "Friendly and efficient. My knives were picked up, sharpened and returned within 22 hours. I highly recommend Cove Blades.", "rating": 5 },
+      { "author": "Brad W.", "text": "Dropped off a custom fillet knife and an old Bruks axe — both in dire need of blade repair and sharpening. They did an amazing job. Couldn't be more satisfied with the price and quality of the workmanship.", "rating": 5 },
+      { "author": "David C.", "text": "They dropped by our place, picked up the knives and returned them sharp as promised, within a couple of days. Highly recommended. Will use again for sure.", "rating": 5 },
+      { "author": "Steve M.", "text": "Excellent experience, beautifully sharpened and ready before promised! Will use and refer always!", "rating": 5 },
+      { "author": "Lana Joyce", "text": "It was so convenient that Cove Blades came to me, and returned all knives sharp enough to slice hair!", "rating": 5 },
+      { "author": "Keith Labrecque", "text": "Erik was able to bring my kitchen knives back like new sharpness, or maybe even better than brand new.", "rating": 5 },
+      { "author": "Malae Blakeley", "text": "Excellent service, quick turnaround; don't have to go into Vancouver. A north shore gem!", "rating": 5 },
+      { "author": "Peter Teevan", "text": "Very happy with my first visit to Cove Blades! I felt nervous about the lock-box drop off but it worked perfectly.", "rating": 5 }
+    ]
+  },
+  "supabase": {
+    "tables": [
+      {
+        "name": "contact_submissions",
+        "columns": ["id", "created_at", "name", "phone", "email", "service_type", "item_count", "message", "status"]
+      }
+    ]
+  },
+  "environment_variables": [
+    "NEXT_PUBLIC_SUPABASE_URL",
+    "NEXT_PUBLIC_SUPABASE_ANON_KEY",
+    "SUPABASE_SERVICE_ROLE_KEY"
+  ]
+}
