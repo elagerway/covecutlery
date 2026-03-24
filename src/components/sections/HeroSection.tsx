@@ -1,12 +1,15 @@
 "use client";
 
 import { ChevronDown, CalendarDays } from "lucide-react";
-import Link from "next/link";
 import { useBooking } from "@/components/BookingProvider";
 import DropBoxCodeButton from "@/components/DropBoxCodeButton";
 
 export default function HeroSection() {
   const { open: openBooking } = useBooking();
+
+  const scrollToSchedule = () => {
+    document.getElementById("schedule")?.scrollIntoView({ behavior: "smooth" });
+  };
 
   return (
     <section
@@ -78,14 +81,14 @@ export default function HeroSection() {
             Book Mobile Service
           </button>
 
-          <Link
-            href="/#schedule"
+          <button
+            onClick={scrollToSchedule}
             className="flex items-center justify-center gap-2 px-8 py-4 rounded-lg font-semibold text-base border-2 transition-all duration-200 hover:bg-yellow-900/20 active:scale-95"
             style={{ borderColor: "#D4A017", color: "#D4A017" }}
           >
             <CalendarDays className="w-4 h-4" />
             Current Schedule
-          </Link>
+          </button>
           <DropBoxCodeButton />
         </div>
 
