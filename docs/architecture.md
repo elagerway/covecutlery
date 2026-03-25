@@ -20,7 +20,7 @@ Multi-page marketing website for Cove Cutlery cutlery sharpening service. Built 
 
 ```
 src/
-├── middleware.ts               # Edge middleware — refreshes Supabase session; guards /admin/** routes
+├── proxy.ts                    # Next.js 16 proxy (formerly middleware.ts) — refreshes Supabase session; guards /admin/** routes
 ├── app/
 │   ├── layout.tsx              # Root layout, metadata, Inter font, JSON-LD, BookingProvider
 │   ├── page.tsx                # Homepage — assembles all sections; export const revalidate = 300 (ISR)
@@ -30,23 +30,35 @@ src/
 │   │   ├── contact/route.ts    # POST endpoint — validates input, Turnstile verify, saves to Supabase
 │   │   ├── geocode/route.ts    # GET proxy → Nominatim (sets required User-Agent header server-side)
 │   │   ├── admin/
-│   │   │   └── posts/
-│   │   │       ├── route.ts         # GET list + POST create; requireAdmin() checks session email
-│   │   │       └── [id]/route.ts    # GET + PUT + DELETE for single post; preserves published_at on re-publish
+│   │   │   ├── posts/
+│   │   │   │   ├── route.ts         # GET list + POST create; requireAdmin() checks session email
+│   │   │   │   └── [id]/route.ts    # GET + PUT + PATCH + DELETE; PATCH for status-only toggle
+│   │   │   └── bookings/
+│   │   │       └── [id]/route.ts    # PATCH — update amount_charged, status, notes
+│   │   ├── stripe/
+│   │   │   ├── checkout/route.ts    # POST — creates Stripe Checkout session ($50 CAD), stores pending booking in Supabase
+│   │   │   └── webhook/route.ts     # POST — handles checkout.session.completed / expired; confirms or cancels booking
 │   │   └── cal/
-│   │       ├── slots/route.ts  # GET proxy → Cal.com v2 /slots (keeps API key server-side)
-│   │       ├── book/route.ts   # POST proxy → Cal.com v2 /bookings; Turnstile verify + input validation
-│   │       └── schedule/route.ts  # GET — returns 7-day DaySchedule[] from Cal.com bookings
+│   │       ├── slots/route.ts       # GET proxy → Cal.com v2 /slots
+│   │       ├── book/route.ts        # POST proxy → Cal.com v2 /bookings; Turnstile verify + input validation
+│   │       ├── cancel/route.ts      # POST — cancels a Cal.com booking by UID
+│   │       └── schedule/route.ts    # GET — returns 7-day DaySchedule[] from Cal.com bookings
 │   ├── auth/
 │   │   └── callback/route.ts   # PKCE code exchange → session; redirects to /admin/blog or /admin/login?error=auth
 │   ├── admin/
-│   │   ├── layout.tsx          # Server Component — verifies session+email; robots: noindex; renders AdminNav
-│   │   ├── page.tsx            # Redirects → /admin/blog
-│   │   ├── login/page.tsx      # Magic link login form (calls supabase.auth.signInWithOtp)
-│   │   └── blog/
-│   │       ├── page.tsx        # Server Component — lists all posts (draft+published) via PostTable
-│   │       ├── new/page.tsx    # Renders PostForm with no initial data
-│   │       └── [id]/edit/page.tsx  # Server Component — fetches post by id, passes to PostForm as initialData
+│   │   ├── layout.tsx          # Thin layout (metadata + robots: noindex only — no auth check)
+│   │   ├── login/page.tsx      # Magic link login form; useSearchParams wrapped in Suspense
+│   │   └── (protected)/
+│   │       ├── layout.tsx      # Auth check + AdminNav (only runs for protected routes)
+│   │       ├── page.tsx        # Redirects → /admin/blog
+│   │       ├── jobs/page.tsx   # Server Component — lists all bookings via JobsTable
+│   │       └── blog/
+│   │           ├── page.tsx        # Server Component — lists all posts via PostTable
+│   │           ├── new/page.tsx    # Renders PostForm with no initial data
+│   │           └── [id]/edit/page.tsx  # Server Component — fetches post, passes to PostForm
+│   ├── booking/
+│   │   ├── success/page.tsx    # Verifies Stripe session, confirms booking in Supabase, shows confirmation
+│   │   └── cancel/page.tsx     # Cancels Cal.com booking via /api/cal/cancel, shows cancellation message
 │   ├── blog/
 │   │   ├── layout.tsx          # Wraps with Navbar + Footer
 │   │   ├── page.tsx            # ISR (revalidate 300) — 2-col grid of published post cards
@@ -65,9 +77,10 @@ src/
 │   ├── DropBoxCodeButton.tsx   # Popover CTA offering Call or Text options for drop box code
 │   ├── ScheduleDayCard.tsx     # Client component — clickable day tile that opens BookingModal for that date
 │   ├── admin/
-│   │   ├── AdminNav.tsx        # Sidebar nav; logout via supabase.auth.signOut() + router.push
-│   │   ├── PostForm.tsx        # Client form; auto-generates slug; Save Draft / Publish; POST/PUT to /api/admin/posts
-│   │   └── PostTable.tsx       # Client component; Delete/Publish/Unpublish actions; router.refresh() after mutations
+│   │   ├── AdminNav.tsx        # Sidebar nav with Jobs + Blog links; logout
+│   │   ├── PostForm.tsx        # Client form; auto-generates slug; Save Draft / Publish
+│   │   ├── PostTable.tsx       # Client component; Delete/Publish/Unpublish via PATCH
+│   │   └── JobsTable.tsx       # Client component; inline amount-charged editor; status dropdown; total calculation
 │   └── sections/
 │       ├── HeroSection.tsx     # Full-screen hero, van photo, Book/Schedule/DropBox CTAs
 │       ├── TrustBar.tsx        # 4-item trust bar below hero
@@ -170,6 +183,10 @@ PostTable (client) → DELETE/PATCH /api/admin/posts/[id] → requireAdmin() →
 | `SUPABASE_SERVICE_ROLE_KEY` | `/api/contact` |
 | `NEXT_PUBLIC_TURNSTILE_SITE_KEY` | `ContactSection.tsx`, `contact/page.tsx`, `BookingModal.tsx` |
 | `TURNSTILE_SECRET_KEY` | `/api/contact`, `/api/cal/book` |
+| `STRIPE_SECRET_KEY` | `/api/stripe/checkout`, `/api/stripe/webhook` |
+| `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | (future client-side Stripe use) |
+| `STRIPE_WEBHOOK_SECRET` | `/api/stripe/webhook` — validates Stripe webhook signatures |
+| `STRIPE_DEPOSIT_AMOUNT` | `/api/stripe/checkout` — deposit in cents (5000 = $50 CAD) |
 
 ## Database
 
@@ -213,6 +230,24 @@ RLS policies:
 - **Admin SELECT**: `auth.jwt() ->> 'email' = 'elagerway@gmail.com'` (admin sees drafts too)
 - **Admin INSERT/UPDATE/DELETE**: `auth.jwt() ->> 'email' = 'elagerway@gmail.com'`
 
+**`bookings`**
+| Column | Type | Notes |
+|--------|------|-------|
+| id | uuid | Primary key |
+| cal_booking_uid | text | Cal.com booking UID for cancellation |
+| stripe_session_id | text | Stripe Checkout session ID |
+| stripe_payment_intent_id | text | Set on payment completion |
+| customer_name/email/phone | text | From booking form |
+| appointment_date | date | |
+| appointment_time | text | Formatted Vancouver time |
+| address | text | Service address |
+| deposit_amount | integer | Cents (default 5000 = $50) |
+| amount_charged | integer | Cents — entered by admin after job |
+| status | text | pending_payment / confirmed / completed / cancelled / refunded |
+| notes | text | Admin notes |
+
+RLS: admin full access only (`auth.jwt() ->> 'email' = 'elagerway@gmail.com'`)
+
 ## Design Tokens
 
 | Token | Value | Usage |
@@ -235,6 +270,8 @@ RLS policies:
 **Supabase Auth Redirect URLs** (must be set in Supabase Dashboard → Authentication → URL Configuration):
 - `http://localhost:3002/auth/callback` (dev)
 - `https://covecutlery.ca/auth/callback` (prod)
+
+Note: dev server runs on port **3002**. Never use port 3000.
 
 ## Known Gotchas
 

@@ -29,7 +29,7 @@ All pages and components built, deployed to Vercel.
 - [x] Cal.com v2 booking integration (date → time → details modal)
 - [x] "Where We'll Be This Week" live schedule section (ISR, Cal.com bookings → city per day)
 - [x] Cloudflare Turnstile CAPTCHA on contact forms
-- [ ] Stripe deposits for mobile bookings
+- [x] Stripe $50 deposits for mobile bookings (Checkout, webhook, Jobs admin tab)
 - [ ] Booking confirmation emails
 
 ## Milestone 3 — Blog + Admin ✅ Complete

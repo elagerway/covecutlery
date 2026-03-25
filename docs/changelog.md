@@ -1,5 +1,36 @@
 # Changelog
 
+## [1.4.1] — 2026-03-24
+
+### Fixed
+- **`/api/cal/cancel` — auth guard** — endpoint now looks up the booking in Supabase by `cal_booking_uid` and only proceeds if status is `pending_payment`; returns 403 otherwise, preventing anyone with a UID from cancelling confirmed or completed bookings
+- **Stripe webhook — Cal.com cancel check** — `checkout.session.expired` handler now only updates Supabase status to `cancelled` if the Cal.com cancellation API call succeeds (`cancelRes.ok`); leaves status as-is on failure so the record isn't silently marked cancelled while the slot remains live
+- **Stripe webhook — out-of-order event guard** — `checkout.session.expired` now fetches booking `status` and only cancels if still `pending_payment`, preventing a late-arriving expired event from overwriting a confirmed booking
+- **`/api/stripe/checkout` — Supabase insert failure handling** — if the Supabase `bookings` insert fails, the endpoint now cancels the orphaned Cal.com booking and expires the Stripe session before returning a 500; prevents ghost bookings with no record
+- **`/api/stripe/checkout` — service role client** — switched from SSR anon client to direct service role client; the `bookings` table is admin-only RLS so inserts with the anon key were silently failing
+- **`BookingModal` — null `calBookingUid` guard** — extracts and validates `calBookingUid` before calling `/api/stripe/checkout`; shows error message and halts if the UID cannot be resolved instead of passing `undefined` to the API
+- **`BookingModal` — orphaned Cal.com slot on Stripe failure** — if the Stripe checkout API call fails, the modal now calls `/api/cal/cancel` to free the slot before showing the error, so the customer can retry the same time
+- **`/booking/success` — session ID format validation** — rejects non-`cs_` session IDs before calling Stripe, preventing invalid requests from reaching the API
+- **`/booking/success` — payment status check** — `SuccessContent` now verifies `session.payment_status === 'paid'`; shows a "Payment Not Completed" error state instead of "Booking Confirmed!" when payment has not been received
+
+## [1.4.0] — 2026-03-24
+
+### Added
+- **Stripe $50 deposit** — booking flow now redirects to Stripe Checkout after Cal.com slot reservation; `/booking/success` confirms, `/booking/cancel` cancels the Cal.com slot
+- **Stripe webhook** (`/api/stripe/webhook`) — handles `checkout.session.completed` (confirms booking) and `checkout.session.expired` (cancels Cal.com slot); webhook endpoint registered on Stripe live account
+- **`bookings` Supabase table** — stores all mobile bookings with Stripe session ID, Cal.com UID, customer info, deposit amount, amount charged on day, and status; admin-only RLS
+- **Admin Jobs tab** (`/admin/jobs`) — lists all bookings; inline editor for "amount charged on day"; auto-calculated total; status dropdown per booking
+- **`/api/admin/bookings/[id]`** PATCH — updates amount_charged, status, notes
+- **`/api/cal/cancel`** POST — cancels a Cal.com booking by UID
+- **`stripe` npm package** added
+- **`proxy.ts`** — renamed from `middleware.ts` per Next.js 16 convention; function renamed to `proxy`
+
+### Changed
+- **BookingModal confirm button** — now reads "Pay $50 Deposit & Confirm"; after Cal.com booking, redirects to Stripe Checkout instead of showing done step
+- **Admin login page** — `useSearchParams` wrapped in `<Suspense>` to fix Next.js 16 prerender error
+- **Admin route structure** — protected pages moved under `admin/(protected)/` route group to fix infinite redirect loop on `/admin/login`
+- **Payment methods** — "Credit & Debit" added alongside Cash and Interac e-Transfer in ContactSection
+
 ## [1.3.0] — 2026-03-24
 
 ### Added

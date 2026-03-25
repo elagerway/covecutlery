@@ -439,7 +439,7 @@ export default function ContactSection() {
                   Payment
                 </p>
                 <p className="text-sm" style={{ color: "#FFFFFF" }}>
-                  Cash, Interac e-Transfer
+                  Cash, Interac e-Transfer, Credit & Debit
                 </p>
               </div>
             </div>

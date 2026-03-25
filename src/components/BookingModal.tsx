@@ -158,7 +158,8 @@ export default function BookingModal({ open, onClose, initialDate }: BookingModa
       form.notes,
     ].filter(Boolean).join("\n");
     try {
-      const res = await fetch("/api/cal/book", {
+      // Step 1: Create Cal.com booking
+      const calRes = await fetch("/api/cal/book", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -170,19 +171,62 @@ export default function BookingModal({ open, onClose, initialDate }: BookingModa
           captchaToken,
         }),
       });
-      const data = await res.json();
-      if (!res.ok) {
-        setError(typeof data?.error === "string" ? data.error : "Booking failed. Please try again.");
+      const calData = await calRes.json();
+      if (!calRes.ok) {
+        setError(typeof calData?.error === "string" ? calData.error : "Booking failed. Please try again.");
         setCaptchaToken(null);
         turnstileRef.current?.reset();
-      } else {
-        setStep("done");
+        setSubmitting(false);
+        return;
       }
+
+      // Step 2: Create Stripe Checkout session
+      const calBookingUid = calData.uid ?? calData.data?.uid ?? calData.id;
+      if (!calBookingUid) {
+        setError("Booking confirmation failed. Please contact us to complete your booking.");
+        setSubmitting(false);
+        return;
+      }
+
+      const appointmentDate = selectedSlot.split("T")[0];
+      const appointmentTime = new Date(selectedSlot).toLocaleTimeString("en-US", {
+        timeZone: "America/Vancouver",
+        hour: "numeric",
+        minute: "2-digit",
+        hour12: true,
+      });
+      const stripeRes = await fetch("/api/stripe/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          calBookingUid,
+          customerName: form.name,
+          customerEmail: form.email,
+          customerPhone: form.phone,
+          appointmentDate,
+          appointmentTime,
+          address: form.address,
+        }),
+      });
+      const stripeData = await stripeRes.json();
+      if (!stripeRes.ok || !stripeData.url) {
+        // Free the Cal.com slot so the customer can retry
+        await fetch("/api/cal/cancel", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ uid: calBookingUid }),
+        });
+        setError("Could not start payment. Please try again or contact us.");
+        setSubmitting(false);
+        return;
+      }
+
+      // Step 3: Redirect to Stripe Checkout
+      window.location.href = stripeData.url;
     } catch {
       setError("Network error. Please try again.");
       setCaptchaToken(null);
       turnstileRef.current?.reset();
-    } finally {
       setSubmitting(false);
     }
   }
@@ -485,7 +529,7 @@ export default function BookingModal({ open, onClose, initialDate }: BookingModa
                   style={{ backgroundColor: "#D4A017", color: "#0D1117" }}
                 >
                   {submitting && <Loader2 className="w-4 h-4 animate-spin" />}
-                  Confirm Booking
+                  {submitting ? "Processing…" : "Pay $50 Deposit & Confirm"}
                 </button>
               </div>
             </div>
