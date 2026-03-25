@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.5.0] — 2026-03-25
+
+### Added
+- **Admin Customers section** — `/admin/customers` lists all unique customers derived from booking history (name, email, phone, booking count, total deposits, last booking date); `/admin/customers/[email]` shows full booking history, editable name/phone, and per-booking refund button
+- **Customers nav link** added to `AdminNav`
+- **`POST /api/admin/bookings/[id]/refund`** — issues a full Stripe deposit refund via `payment_intent`, sets booking status to `refunded`; guards against already-refunded intents with try/catch
+- **`PATCH /api/admin/customers/[email]`** — updates customer name/phone across all their bookings
+
+### Fixed
+- **Cal.com booking — attendee address** — address is now passed as `location: { type: "attendeeAddress", address }` to Cal.com instead of buried in `metadata.notes`; `in_person_attendee_address` field now populates correctly in the Cal.com dashboard
+- **`calSchedule.ts` — city extraction** — reads city from `location.address` (new format) with fallback to legacy `metadata.notes` "Address: ..." format for existing bookings
+- **`BookingModal` — notes cleanup** — removed "Address: ..." prefix from notes string since address now goes in the dedicated location field
+
 ## [1.4.2] — 2026-03-25
 
 ### Fixed

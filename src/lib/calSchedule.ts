@@ -12,6 +12,7 @@ export interface DaySchedule {
 interface CalBooking {
   start: string;
   status: string;
+  location?: { type?: string; address?: string } | string;
   metadata?: Record<string, unknown>;
 }
 
@@ -57,23 +58,35 @@ function toDateLabel(dateStr: string): string {
   return new Date(y, m - 1, d).toLocaleDateString("en-US", { month: "short", day: "numeric" });
 }
 
-/** Extracts city from the booking metadata notes string.
- *  Notes format: "Address: 123 Main St, Surrey, British Columbia V3R 0A1, Canada\nOptional notes"
+/** Extracts city from a Nominatim-formatted address string.
+ *  Format: "Street, City, Province Postal, Country"
  */
-function extractCity(booking: CalBooking): string | null {
-  const notes = booking.metadata?.notes;
-  if (typeof notes !== "string") return null;
-
-  const addressLine = notes.split("\n").find((l) => l.startsWith("Address:"));
-  if (!addressLine) return null;
-
-  const address = addressLine.replace("Address:", "").trim();
+function cityFromAddress(address: string): string | null {
   const parts = address.split(",").map((p) => p.trim()).filter(Boolean);
-
-  // Nominatim format: "Street", "City", "Province Postal", "Country"
   // If parts[1] starts with a digit it's likely a unit/suite — use parts[2]
   const candidate = parts[1]?.match(/^\d/) ? parts[2] : parts[1];
   return candidate ?? null;
+}
+
+/** Extracts city from the booking. Reads location.address (new) with fallback
+ *  to legacy metadata.notes "Address: ..." format for bookings made before the fix.
+ */
+function extractCity(booking: CalBooking): string | null {
+  // New format: location object with address field
+  if (booking.location && typeof booking.location === "object" && booking.location.address) {
+    return cityFromAddress(booking.location.address);
+  }
+
+  // Legacy fallback: address was stored in metadata.notes
+  const notes = booking.metadata?.notes;
+  if (typeof notes === "string") {
+    const addressLine = notes.split("\n").find((l) => l.startsWith("Address:"));
+    if (addressLine) {
+      return cityFromAddress(addressLine.replace("Address:", "").trim());
+    }
+  }
+
+  return null;
 }
 
 /** Fetches the next 7 days of confirmed bookings from Cal.com and returns a DaySchedule array. */

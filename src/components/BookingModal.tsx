@@ -153,10 +153,7 @@ export default function BookingModal({ open, onClose, initialDate }: BookingModa
     if (!selectedSlot || !form.name || !form.email || !form.phone || !form.address || !captchaToken) return;
     setSubmitting(true);
     setError(null);
-    const notes = [
-      form.address && `Address: ${form.address}`,
-      form.notes,
-    ].filter(Boolean).join("\n");
+    const notes = form.notes || undefined;
     try {
       // Step 1: Create Cal.com booking
       const calRes = await fetch("/api/cal/book", {
@@ -167,6 +164,7 @@ export default function BookingModal({ open, onClose, initialDate }: BookingModa
           name: form.name,
           email: form.email,
           phone: form.phone,
+          address: form.address,
           notes,
           captchaToken,
         }),

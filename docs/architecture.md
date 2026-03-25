@@ -33,8 +33,12 @@ src/
 │   │   │   ├── posts/
 │   │   │   │   ├── route.ts         # GET list + POST create; requireAdmin() checks session email
 │   │   │   │   └── [id]/route.ts    # GET + PUT + PATCH + DELETE; PATCH for status-only toggle
-│   │   │   └── bookings/
-│   │   │       └── [id]/route.ts    # PATCH — update amount_charged, status, notes
+│   │   │   ├── bookings/
+│   │   │   │   └── [id]/
+│   │   │   │       ├── route.ts         # PATCH — update amount_charged, status, notes
+│   │   │   │       └── refund/route.ts  # POST — Stripe full refund; sets status to refunded
+│   │   │   └── customers/
+│   │   │       └── [email]/route.ts     # PATCH — update customer_name/phone across all bookings
 │   │   ├── stripe/
 │   │   │   ├── checkout/route.ts    # POST — creates Stripe Checkout session ($50 CAD), stores pending booking in Supabase
 │   │   │   └── webhook/route.ts     # POST — handles checkout.session.completed / expired; confirms or cancels booking
@@ -52,6 +56,9 @@ src/
 │   │       ├── layout.tsx      # Auth check + AdminNav (only runs for protected routes)
 │   │       ├── page.tsx        # Redirects → /admin/blog
 │   │       ├── jobs/page.tsx   # Server Component — lists all bookings via JobsTable
+│   │       ├── customers/
+│   │       │   ├── page.tsx          # Server Component — groups bookings by email → CustomersTable
+│   │       │   └── [email]/page.tsx  # Server Component — customer detail + CustomerDetail client component
 │   │       └── blog/
 │   │           ├── page.tsx        # Server Component — lists all posts via PostTable
 │   │           ├── new/page.tsx    # Renders PostForm with no initial data
@@ -77,10 +84,12 @@ src/
 │   ├── DropBoxCodeButton.tsx   # Popover CTA offering Call or Text options for drop box code
 │   ├── ScheduleDayCard.tsx     # Client component — clickable day tile that opens BookingModal for that date
 │   ├── admin/
-│   │   ├── AdminNav.tsx        # Sidebar nav with Jobs + Blog links; logout
+│   │   ├── AdminNav.tsx        # Sidebar nav with Jobs + Customers + Blog links; logout
 │   │   ├── PostForm.tsx        # Client form; auto-generates slug; Save Draft / Publish
 │   │   ├── PostTable.tsx       # Client component; Delete/Publish/Unpublish via PATCH
-│   │   └── JobsTable.tsx       # Client component; inline amount-charged editor; status dropdown; total calculation
+│   │   ├── JobsTable.tsx       # Client component; inline amount-charged editor; status dropdown; total calculation
+│   │   ├── CustomersTable.tsx  # Client component; lists unique customers with link to detail page
+│   │   └── CustomerDetail.tsx  # Client component; edit name/phone; booking history; refund button per booking
 │   └── sections/
 │       ├── HeroSection.tsx     # Full-screen hero, van photo, Book/Schedule/DropBox CTAs
 │       ├── TrustBar.tsx        # 4-item trust bar below hero
@@ -280,7 +289,8 @@ Note: dev server runs on port **3002**. Never use port 3000.
 - Cal.com v2 slots endpoint uses `start`/`end` params (not `startTime`/`endTime`) with `cal-api-version: 2024-09-04`; bookings endpoint uses `cal-api-version: 2024-08-13`
 - `BookingProvider` must wrap `{children}` in `layout.tsx` — it renders `BookingModal` globally so the modal persists across page navigations
 - `WhereWeAreSection` is an **async Server Component** — the first in this codebase. It cannot use hooks; interactive behavior is delegated to child `ScheduleDayCard` (client component)
-- City extraction in `calSchedule.ts` parses the Nominatim `display_name` stored in `booking.metadata.notes` — format: `"Address: Street, City, Province Postal, Country"`. Index 1 of comma-split is the city; if index 1 starts with a digit it uses index 2 (unit number edge case)
+- City extraction in `calSchedule.ts` reads `booking.location.address` (new bookings) or falls back to the legacy `booking.metadata.notes` `"Address: ..."` format. Nominatim format: `"Street, City, Province Postal, Country"` — index 1 is city; index 2 if index 1 starts with a digit (unit number edge case)
+- Cal.com booking location: address is passed as `location: { type: "attendeeAddress", address }` to populate the `in_person_attendee_address` field in the Cal.com dashboard
 - Cloudflare Turnstile CAPTCHA: site key is public (`NEXT_PUBLIC_`), secret key is server-only. ContactSection, `/contact` page, and `BookingModal` all have the widget. Both `/api/contact` and `/api/cal/book` verify the token server-side before any external call
 - Nominatim geocoding (`/api/geocode`) must stay server-side — browsers cannot set the `User-Agent` header (forbidden), so direct client-side fetch to Nominatim would return 403
 - `lib/calSchedule.ts` uses `vancouverMidnightISO()` — a DST-aware helper that probes noon UTC via `Intl.DateTimeFormat` to determine Vancouver's UTC offset before constructing the midnight timestamp. Raw `new Date("YYYY-MM-DDT00:00:00")` would parse in server-local time (UTC on Vercel), yielding the wrong window

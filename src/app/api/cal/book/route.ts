@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function POST(req: NextRequest) {
   const body = await req.json();
-  const { start, name, email, phone, notes, captchaToken } = body;
+  const { start, name, email, phone, address, notes, captchaToken } = body;
 
   if (!start || !name || !email) {
     return NextResponse.json({ error: "start, name, and email required" }, { status: 400 });
@@ -50,6 +50,7 @@ export async function POST(req: NextRequest) {
           language: "en",
           phoneNumber: phone || undefined,
         },
+        location: address ? { type: "attendeeAddress", address } : undefined,
         metadata: notes ? { notes } : {},
       }),
     });
