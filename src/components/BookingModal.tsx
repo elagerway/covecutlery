@@ -574,7 +574,12 @@ export default function BookingModal({ open, onClose, initialDate }: BookingModa
 
                 {error && (
                   <p className="text-sm rounded-lg px-3 py-2.5" style={{ backgroundColor: "#2D1B1B", color: "#F87171", border: "1px solid #7F1D1D" }}>
-                    {error}
+                    {error.includes("outside of our service area") ? (
+                      <>
+                        We&apos;re very sorry, your address falls outside of our service area.{" "}
+                        <a href="/contact" className="underline hover:opacity-80">Contact us</a> to discuss options.
+                      </>
+                    ) : error}
                   </p>
                 )}
 
