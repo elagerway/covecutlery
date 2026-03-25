@@ -18,6 +18,10 @@ export const metadata: Metadata = {
     type: 'website',
   },
   metadataBase: new URL('https://covecutlery.com'),
+  icons: {
+    icon: '/icon-512.png',
+    apple: '/icon-512.png',
+  },
   robots: {
     index: true,
     follow: true,

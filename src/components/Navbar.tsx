@@ -4,15 +4,8 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
+import Image from "next/image";
 import { useBooking } from "@/components/BookingProvider";
-
-const BladeIcon = ({ size = 22 }: { size?: number }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-    <path d="M3 21L12 3l2 2-7 14z" />
-    <path d="M14 5l6-2-2 6" />
-    <path d="M14 5l2 2" />
-  </svg>
-);
 
 const navLinks = [
   { label: "Services", href: "/#services" },
@@ -82,9 +75,7 @@ export default function Navbar() {
             className="flex items-center gap-2 group"
             aria-label="Cove Cutlery Home"
           >
-            <span className="text-[#D4A017] group-hover:text-[#e8b82a] transition-colors duration-200">
-              <BladeIcon size={22} />
-            </span>
+            <Image src="/icon-512.png" alt="" width={40} height={40} />
             <span
               className="text-[#D4A017] group-hover:text-[#e8b82a] font-bold tracking-widest text-sm sm:text-base uppercase transition-colors duration-200"
               style={{ fontFamily: "Inter, system-ui, sans-serif", letterSpacing: "0.18em" }}

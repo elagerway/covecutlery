@@ -77,12 +77,14 @@ src/
 │   ├── contact/page.tsx        # Standalone contact page with Turnstile CAPTCHA
 │   ├── drop-off/page.tsx
 │   ├── mobile-service/page.tsx
-│   └── pricing/page.tsx
+│   ├── pricing/page.tsx
+│   ├── privacy/page.tsx        # Privacy Policy — data collection, third-party services, cookies, rights
+│   └── terms/page.tsx          # Terms of Service — bookings, payment, 30-day guarantee, service area, cancellations
 ├── components/
-│   ├── Navbar.tsx              # Sticky nav, mobile hamburger; Blog link; Book Now opens BookingModal
-│   ├── Footer.tsx              # 4-col grid, social SVGs, hours, contact
+│   ├── Navbar.tsx              # Sticky nav, mobile hamburger; Blog link; Book Now opens BookingModal; logo is icon-512.png
+│   ├── Footer.tsx              # 4-col grid, social SVGs, hours, contact; Privacy Policy + Terms of Service links
 │   ├── BookingProvider.tsx     # React context — exposes open() and openWithDate(date) globally
-│   ├── BookingModal.tsx        # 3-step modal: date picker → time slots → details form; Turnstile CAPTCHA; phone required
+│   ├── BookingModal.tsx        # 3-step modal: date picker → time slots → details form; phone required (no CAPTCHA)
 │   ├── DropBoxCodeButton.tsx   # Popover CTA offering Call or Text options for drop box code
 │   ├── ScheduleDayCard.tsx     # Client component — clickable day tile that opens BookingModal for that date
 │   ├── admin/
@@ -193,8 +195,8 @@ PostTable (client) → DELETE/PATCH /api/admin/posts/[id] → requireAdmin() →
 | `NEXT_PUBLIC_SUPABASE_URL` | `lib/supabase.ts`, `utils/supabase/server.ts`, `utils/supabase/client.ts`, blog pages |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | `lib/supabase.ts`, `utils/supabase/client.ts`, blog pages |
 | `SUPABASE_SERVICE_ROLE_KEY` | `/api/contact` |
-| `NEXT_PUBLIC_TURNSTILE_SITE_KEY` | `ContactSection.tsx`, `contact/page.tsx`, `BookingModal.tsx` |
-| `TURNSTILE_SECRET_KEY` | `/api/contact`, `/api/cal/book` |
+| `NEXT_PUBLIC_TURNSTILE_SITE_KEY` | `ContactSection.tsx`, `contact/page.tsx` |
+| `TURNSTILE_SECRET_KEY` | `/api/contact` |
 | `STRIPE_SECRET_KEY` | `/api/stripe/checkout`, `/api/stripe/webhook` |
 | `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | (future client-side Stripe use) |
 | `STRIPE_WEBHOOK_SECRET` | `/api/stripe/webhook` — validates Stripe webhook signatures |
@@ -300,7 +302,7 @@ Note: dev server runs on port **3002**. Never use port 3000.
 - `WhereWeAreSection` is an **async Server Component** — the first in this codebase. It cannot use hooks; interactive behavior is delegated to child `ScheduleDayCard` (client component)
 - City extraction in `calSchedule.ts` reads `booking.location.address` (new bookings) or falls back to the legacy `booking.metadata.notes` `"Address: ..."` format. Nominatim format: `"Street, City, Province Postal, Country"` — index 1 is city; index 2 if index 1 starts with a digit (unit number edge case)
 - Cal.com booking location: address is passed as `location: { type: "attendeeAddress", address }` to populate the `in_person_attendee_address` field in the Cal.com dashboard
-- Cloudflare Turnstile CAPTCHA: site key is public (`NEXT_PUBLIC_`), secret key is server-only. ContactSection, `/contact` page, and `BookingModal` all have the widget. Both `/api/contact` and `/api/cal/book` verify the token server-side before any external call
+- Cloudflare Turnstile CAPTCHA: site key is public (`NEXT_PUBLIC_`), secret key is server-only. ContactSection and `/contact` page use Turnstile; `BookingModal` and `/api/cal/book` do **not** — CAPTCHA was removed from the booking flow to reduce friction
 - Nominatim geocoding (`/api/geocode`) must stay server-side — browsers cannot set the `User-Agent` header (forbidden), so direct client-side fetch to Nominatim would return 403
 - `lib/calSchedule.ts` uses `vancouverMidnightISO()` — a DST-aware helper that probes noon UTC via `Intl.DateTimeFormat` to determine Vancouver's UTC offset before constructing the midnight timestamp. Raw `new Date("YYYY-MM-DDT00:00:00")` would parse in server-local time (UTC on Vercel), yielding the wrong window
 - Next.js 16 App Router: `params` in page/route handler components is `Promise<{ ... }>` and must be `await`ed; `cookies()` from `next/headers` is also async

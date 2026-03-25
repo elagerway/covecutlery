@@ -237,9 +237,10 @@ export default function Footer() {
           <p className="text-[#6B7280] text-xs">
             &copy; {new Date().getFullYear()} Cove Cutlery. All rights reserved.
           </p>
-          <p className="text-[#6B7280] text-xs">
-            Vancouver, BC &mdash; Serving the Lower Mainland
-          </p>
+          <div className="flex items-center gap-4">
+            <a href="/privacy" className="text-[#6B7280] text-xs hover:text-white transition-colors">Privacy Policy</a>
+            <a href="/terms" className="text-[#6B7280] text-xs hover:text-white transition-colors">Terms of Service</a>
+          </div>
         </div>
       </div>
     </footer>

@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useRef } from "react";
 import { X, ChevronLeft, ChevronRight, Loader2, CheckCircle, MapPin } from "lucide-react";
-import { Turnstile, type TurnstileInstance } from "@marsidev/react-turnstile";
 
 interface AddressSuggestion {
   place_id: string;
@@ -99,8 +98,6 @@ export default function BookingModal({ open, onClose, initialDate }: BookingModa
   const [form, setForm] = useState({ name: "", email: "", phone: "", address: "", notes: "" });
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [captchaToken, setCaptchaToken] = useState<string | null>(null);
-  const turnstileRef = useRef<TurnstileInstance>(null);
   const [addressCoords, setAddressCoords] = useState<{ lat: number; lng: number } | null>(null);
   const [addressSuggestions, setAddressSuggestions] = useState<AddressSuggestion[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -141,7 +138,6 @@ export default function BookingModal({ open, onClose, initialDate }: BookingModa
         setAddressCoords(null);
         setError(null);
         setAddressSuggestions([]);
-        setCaptchaToken(null);
       }, 300);
     } else {
       if (resetTimer.current) clearTimeout(resetTimer.current);
@@ -189,7 +185,7 @@ export default function BookingModal({ open, onClose, initialDate }: BookingModa
   const today = formatDate(new Date());
 
   async function handleBook() {
-    if (!selectedSlot || !form.name || !form.email || !form.phone || !form.address || !captchaToken) return;
+    if (!selectedSlot || !form.name || !form.email || !form.phone || !form.address) return;
     setSubmitting(true);
     setError(null);
 
@@ -218,14 +214,11 @@ export default function BookingModal({ open, onClose, initialDate }: BookingModa
           phone: form.phone,
           address: form.address,
           notes,
-          captchaToken,
         }),
       });
       const calData = await calRes.json();
       if (!calRes.ok) {
         setError(typeof calData?.error === "string" ? calData.error : "Booking failed. Please try again.");
-        setCaptchaToken(null);
-        turnstileRef.current?.reset();
         setSubmitting(false);
         return;
       }
@@ -275,8 +268,6 @@ export default function BookingModal({ open, onClose, initialDate }: BookingModa
       window.location.href = stripeData.url;
     } catch {
       setError("Network error. Please try again.");
-      setCaptchaToken(null);
-      turnstileRef.current?.reset();
       setSubmitting(false);
     }
   }
@@ -583,17 +574,9 @@ export default function BookingModal({ open, onClose, initialDate }: BookingModa
                   </p>
                 )}
 
-                <Turnstile
-                  ref={turnstileRef}
-                  siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY!}
-                  onSuccess={setCaptchaToken}
-                  onExpire={() => setCaptchaToken(null)}
-                  options={{ theme: "dark", size: "flexible" }}
-                />
-
                 <button
                   onClick={handleBook}
-                  disabled={submitting || !form.name || !form.email || !form.phone || !form.address || !captchaToken}
+                  disabled={submitting || !form.name || !form.email || !form.phone || !form.address}
                   className="w-full py-3 rounded-lg font-semibold text-sm transition-all duration-200 hover:brightness-110 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                   style={{ backgroundColor: "#D4A017", color: "#0D1117" }}
                 >

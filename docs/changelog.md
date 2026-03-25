@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.7.2] — 2026-03-25
+
+### Added
+- **Privacy Policy page** — `/privacy` covering data collection, third-party services (Cal.com, Stripe, Postmark, Google Maps, Cloudflare), cookies, and PIPEDA rights
+- **Terms of Service page** — `/terms` covering service scope, bookings/payment, 30-day guarantee, liability, cancellations, and service area
+- **Footer legal links** — Privacy Policy and Terms of Service links added to footer
+
+### Changed
+- **Navbar logo** — replaced inline `BladeIcon` SVG with `public/icon-512.png` (512×512 Gyuto knife icon)
+- **Favicon** — `layout.tsx` metadata updated to use `icon-512.png` for browser tab and Apple touch icon
+- **Receipt sender email** — changed from `help@covecutlery.ca` to `info@covecutlery.ca`
+- **Booking CAPTCHA removed** — Cloudflare Turnstile removed from `BookingModal` and `POST /api/cal/book`; service-area validation and input checks remain; contact form Turnstile is unchanged
+
+### Fixed
+- **App icon size** — `public/icon-512.png` compressed from 445 KB → 130 KB via PNG quantization (32 colours); annotation artefact removed
+
 ## [1.7.1] — 2026-03-24
 
 ### Added

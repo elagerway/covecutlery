@@ -43,7 +43,7 @@ function toE164CA(phone: string | undefined): string | undefined {
 
 export async function POST(req: NextRequest) {
   const body = await req.json();
-  const { start, name, email, phone, address, notes, captchaToken } = body;
+  const { start, name, email, phone, address, notes } = body;
 
   if (!start || !name || !email) {
     return NextResponse.json({ error: "start, name, and email required" }, { status: 400 });
@@ -52,24 +52,6 @@ export async function POST(req: NextRequest) {
       typeof email !== "string" || !email.includes("@") || email.length > 200 ||
       typeof start !== "string" || start.length > 50) {
     return NextResponse.json({ error: "Invalid input." }, { status: 400 });
-  }
-
-  // Verify Turnstile CAPTCHA
-  if (!captchaToken || typeof captchaToken !== "string" || captchaToken.length > 2048) {
-    return NextResponse.json({ error: "CAPTCHA required." }, { status: 400 });
-  }
-  try {
-    const turnstileRes = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ secret: process.env.TURNSTILE_SECRET_KEY, response: captchaToken }),
-    });
-    const turnstileData = await turnstileRes.json();
-    if (!turnstileData.success) {
-      return NextResponse.json({ error: "CAPTCHA verification failed." }, { status: 400 });
-    }
-  } catch {
-    return NextResponse.json({ error: "CAPTCHA verification unavailable." }, { status: 503 });
   }
 
   // Service area check — geocode the address and verify it's within 90 km of North Vancouver and not ferry-only

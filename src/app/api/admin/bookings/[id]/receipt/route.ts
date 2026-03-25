@@ -5,7 +5,7 @@ import { createClient as createServiceClient } from "@supabase/supabase-js";
 import { formatPhone } from "@/lib/format";
 
 const ADMIN_EMAIL = "elagerway@gmail.com";
-const FROM_EMAIL = "help@covecutlery.ca";
+const FROM_EMAIL = "info@covecutlery.ca";
 const FROM_NAME = "Cove Cutlery";
 
 async function requireAdmin() {
