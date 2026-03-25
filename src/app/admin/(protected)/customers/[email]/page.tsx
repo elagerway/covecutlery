@@ -24,6 +24,7 @@ export default async function CustomerDetailPage({
     email,
     name: latest.customer_name,
     phone: latest.customer_phone ?? null,
+    address: latest.address ?? null,
   };
 
   return (

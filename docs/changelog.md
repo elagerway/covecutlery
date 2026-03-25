@@ -1,5 +1,29 @@
 # Changelog
 
+## [1.6.0] — 2026-03-25
+
+### Added
+- **Cash vs Card payment capture** — "Charged" column now splits into 💵 Cash / 💳 Card buttons; records `payment_method` on the booking
+- **Stripe off-session card charge** — `POST /api/admin/bookings/[id]/charge` charges the saved card via Stripe PaymentIntents; checkout now saves customer + payment method for future use (`customer_creation: always`, `setup_future_usage: off_session`)
+- **Receipt sending** — `POST /api/admin/bookings/[id]/receipt` sends a formatted receipt via Postmark (email) and/or Magpipe SMS from `+16043731500`; admin can edit destination email/phone before sending
+- **Receipt button in Jobs table** — blue "Receipt" button opens a popover with pre-filled email/phone checkboxes and editable fields
+- **Job detail drawer** — clicking any row in the Jobs table opens a side drawer showing full booking details, payment history (deposit + day-of charge with method), total, and notes
+- **Customers table — Total Paid column** — shows deposits + day-of charges combined (green)
+- **Customer detail — Total Paid stat + table columns** — stat card plus Charged/Total columns in booking history
+- **Phone normalization** — `src/lib/format.ts` exports `formatPhone()` which normalises any input to `(XXX) XXX-XXXX`; applied in JobsTable, CustomersTable, CustomerDetail; existing DB records normalised via SQL migration
+- **Clickable customer rows** — entire row navigates to customer detail; View button removed
+- **`stripe_customer_id` column** on `bookings` table; saved from webhook on checkout completion
+- **`payment_method` column** on `bookings` table (`card` / `cash`)
+
+### Changed
+- **Address autocomplete** switched from Nominatim to Google Places API (two-step autocomplete → place details); produces clean `123 Street, City, BC V0V 0V0` format with house numbers
+- **Jobs page sort** — now sorts by `created_at DESC` (most recently created booking first); Supabase client uses `cache: "no-store"` to bypass Next.js fetch cache
+- **Refund button hover** — adds red border on hover for visibility
+- **BookingModal `appointment_date`** — now derived via `formatDate(new Date(selectedSlot))` using Vancouver timezone instead of raw UTC `.split("T")[0]`
+
+### Fixed
+- **Supabase server client** — added `global.fetch` override with `cache: "no-store"` to prevent Next.js from caching Supabase query results
+
 ## [1.5.0] — 2026-03-25
 
 ### Added

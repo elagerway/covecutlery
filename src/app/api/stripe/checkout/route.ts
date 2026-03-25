@@ -38,7 +38,10 @@ export async function POST(req: NextRequest) {
         quantity: 1,
       },
     ],
-    customer_email: customerEmail,
+    customer_creation: "always",
+    payment_intent_data: {
+      setup_future_usage: "off_session",
+    },
     metadata: {
       calBookingUid,
       customerName,

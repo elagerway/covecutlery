@@ -7,6 +7,7 @@ interface Customer {
   phone: string | null;
   bookingCount: number;
   totalDeposit: number;
+  totalPaid: number;
   lastBookingDate: string;
 }
 
@@ -26,6 +27,7 @@ export default async function AdminCustomersPage() {
         phone: b.customer_phone ?? null,
         bookingCount: 0,
         totalDeposit: 0,
+        totalPaid: 0,
         lastBookingDate: b.appointment_date,
       });
     }
@@ -33,6 +35,7 @@ export default async function AdminCustomersPage() {
     c.bookingCount++;
     if (["confirmed", "completed"].includes(b.status)) {
       c.totalDeposit += b.deposit_amount ?? 0;
+      c.totalPaid += (b.deposit_amount ?? 0) + (b.amount_charged ?? 0);
     }
     if (b.appointment_date > c.lastBookingDate) {
       c.lastBookingDate = b.appointment_date;

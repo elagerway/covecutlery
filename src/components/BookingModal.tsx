@@ -5,8 +5,28 @@ import { X, ChevronLeft, ChevronRight, Loader2, CheckCircle, MapPin } from "luci
 import { Turnstile, type TurnstileInstance } from "@marsidev/react-turnstile";
 
 interface AddressSuggestion {
-  place_id: number;
-  display_name: string;
+  place_id: string;
+  description: string;
+  structured_formatting: { main_text: string; secondary_text: string };
+}
+
+interface AddressComponent {
+  long_name: string;
+  short_name: string;
+  types: string[];
+}
+
+function formatAddressComponents(components: AddressComponent[]): string {
+  const get = (type: string, short = false) =>
+    components.find((c) => c.types.includes(type))?.[short ? "short_name" : "long_name"] ?? "";
+  const streetNumber = get("street_number");
+  const route = get("route");
+  const city = get("locality") || get("sublocality") || get("administrative_area_level_2");
+  const province = get("administrative_area_level_1", true);
+  const postcode = get("postal_code");
+  const street = [streetNumber, route].filter(Boolean).join(" ");
+  const parts = [street, city, [province, postcode].filter(Boolean).join(" ")].filter(Boolean);
+  return parts.join(", ");
 }
 
 interface Slot {
@@ -186,7 +206,7 @@ export default function BookingModal({ open, onClose, initialDate }: BookingModa
         return;
       }
 
-      const appointmentDate = selectedSlot.split("T")[0];
+      const appointmentDate = formatDate(new Date(selectedSlot));
       const appointmentTime = new Date(selectedSlot).toLocaleTimeString("en-US", {
         timeZone: "America/Vancouver",
         hour: "numeric",
@@ -473,18 +493,28 @@ export default function BookingModal({ open, onClose, initialDate }: BookingModa
                         <li key={s.place_id}>
                           <button
                             type="button"
-                            onMouseDown={(e) => {
+                            onMouseDown={async (e) => {
                               e.preventDefault();
-                              setForm((f) => ({ ...f, address: s.display_name }));
                               setShowSuggestions(false);
                               setAddressSuggestions([]);
+                              // Fetch place details to get structured address components
+                              try {
+                                const res = await fetch(`/api/geocode?place_id=${encodeURIComponent(s.place_id)}`);
+                                const data = await res.json();
+                                const formatted = data.address_components
+                                  ? formatAddressComponents(data.address_components)
+                                  : s.description;
+                                setForm((f) => ({ ...f, address: formatted }));
+                              } catch {
+                                setForm((f) => ({ ...f, address: s.description }));
+                              }
                             }}
                             className="w-full text-left px-3 py-2.5 text-sm transition-colors hover:bg-white/10"
                             style={{ color: "#FFFFFF" }}
                           >
-                            <span className="font-medium">{s.display_name.split(",")[0]}</span>
+                            <span className="font-medium">{s.structured_formatting.main_text}</span>
                             <span className="block text-xs mt-0.5 truncate" style={{ color: "#6B7280" }}>
-                              {s.display_name.split(",").slice(1).join(",").trim()}
+                              {s.structured_formatting.secondary_text}
                             </span>
                           </button>
                         </li>

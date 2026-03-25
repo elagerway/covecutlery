@@ -36,6 +36,7 @@ export async function POST(req: NextRequest) {
       .update({
         status: "confirmed",
         stripe_payment_intent_id: session.payment_intent as string,
+        stripe_customer_id: session.customer as string ?? null,
       })
       .eq("stripe_session_id", session.id);
   }

@@ -28,15 +28,17 @@ src/
 │   ├── icon.svg                # SVG favicon — gold BladeIcon on #0D1117 background (matches navbar)
 │   ├── api/
 │   │   ├── contact/route.ts    # POST endpoint — validates input, Turnstile verify, saves to Supabase
-│   │   ├── geocode/route.ts    # GET proxy → Nominatim (sets required User-Agent header server-side)
+│   │   ├── geocode/route.ts    # GET proxy → Google Places Autocomplete + Place Details (server-side key protection)
 │   │   ├── admin/
 │   │   │   ├── posts/
 │   │   │   │   ├── route.ts         # GET list + POST create; requireAdmin() checks session email
 │   │   │   │   └── [id]/route.ts    # GET + PUT + PATCH + DELETE; PATCH for status-only toggle
 │   │   │   ├── bookings/
 │   │   │   │   └── [id]/
-│   │   │   │       ├── route.ts         # PATCH — update amount_charged, status, notes
-│   │   │   │       └── refund/route.ts  # POST — Stripe full refund; sets status to refunded
+│   │   │   │       ├── route.ts         # PATCH — update amount_charged, payment_method, status, notes
+│   │   │   │       ├── refund/route.ts  # POST — Stripe full refund; sets status to refunded
+│   │   │   │       ├── charge/route.ts  # POST — off-session Stripe charge using saved customer card
+│   │   │   │       └── receipt/route.ts # POST — sends receipt via Postmark email + Magpipe SMS
 │   │   │   └── customers/
 │   │   │       └── [email]/route.ts     # PATCH — update customer_name/phone across all bookings
 │   │   ├── stripe/
@@ -87,9 +89,9 @@ src/
 │   │   ├── AdminNav.tsx        # Sidebar nav with Jobs + Customers + Blog links; logout
 │   │   ├── PostForm.tsx        # Client form; auto-generates slug; Save Draft / Publish
 │   │   ├── PostTable.tsx       # Client component; Delete/Publish/Unpublish via PATCH
-│   │   ├── JobsTable.tsx       # Client component; inline amount-charged editor; status dropdown; total calculation
-│   │   ├── CustomersTable.tsx  # Client component; lists unique customers with link to detail page
-│   │   └── CustomerDetail.tsx  # Client component; edit name/phone; booking history; refund button per booking
+│   │   ├── JobsTable.tsx       # Client component; cash/card payment capture; receipt popover; row-click detail drawer; status dropdown
+│   │   ├── CustomersTable.tsx  # Client component; clickable rows navigate to detail; Total Paid column
+│   │   └── CustomerDetail.tsx  # Client component; edit name/phone/address; booking history with Charged/Total columns; Total Paid stat
 │   └── sections/
 │       ├── HeroSection.tsx     # Full-screen hero, van photo, Book/Schedule/DropBox CTAs
 │       ├── TrustBar.tsx        # 4-item trust bar below hero
@@ -107,6 +109,7 @@ src/
 │       └── client.ts           # createBrowserClient factory for "use client" components
 └── lib/
     ├── calSchedule.ts          # getWeekSchedule() — fetches Cal.com bookings, extracts city per day
+    ├── format.ts               # formatPhone() — normalises any phone input to (XXX) XXX-XXXX
     ├── supabase.ts             # Supabase anon client (public pages only)
     └── cn.ts                   # className utility
 
@@ -196,6 +199,10 @@ PostTable (client) → DELETE/PATCH /api/admin/posts/[id] → requireAdmin() →
 | `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | (future client-side Stripe use) |
 | `STRIPE_WEBHOOK_SECRET` | `/api/stripe/webhook` — validates Stripe webhook signatures |
 | `STRIPE_DEPOSIT_AMOUNT` | `/api/stripe/checkout` — deposit in cents (5000 = $50 CAD) |
+| `GOOGLE_MAPS_API_KEY` | `/api/geocode` — Google Places Autocomplete + Place Details |
+| `POSTMARK_API_KEY` | `/api/admin/bookings/[id]/receipt` — transactional email receipts |
+| `MAGPIPE_API_KEY` | `/api/admin/bookings/[id]/receipt` — SMS receipts via Magpipe |
+| `MAGPIPE_SMS_FROM` | `/api/admin/bookings/[id]/receipt` — sender number (`+16043731500`) |
 
 ## Database
 
@@ -246,12 +253,14 @@ RLS policies:
 | cal_booking_uid | text | Cal.com booking UID for cancellation |
 | stripe_session_id | text | Stripe Checkout session ID |
 | stripe_payment_intent_id | text | Set on payment completion |
+| stripe_customer_id | text | Stripe Customer ID — saved on checkout completion for future charges |
 | customer_name/email/phone | text | From booking form |
 | appointment_date | date | |
 | appointment_time | text | Formatted Vancouver time |
 | address | text | Service address |
 | deposit_amount | integer | Cents (default 5000 = $50) |
 | amount_charged | integer | Cents — entered by admin after job |
+| payment_method | text | `card` or `cash` — how day-of charge was collected |
 | status | text | pending_payment / confirmed / completed / cancelled / refunded |
 | notes | text | Admin notes |
 

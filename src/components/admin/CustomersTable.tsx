@@ -1,6 +1,7 @@
 "use client";
 
-import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { formatPhone } from "@/lib/format";
 
 interface Customer {
   email: string;
@@ -8,6 +9,7 @@ interface Customer {
   phone: string | null;
   bookingCount: number;
   totalDeposit: number;
+  totalPaid: number;
   lastBookingDate: string;
 }
 
@@ -24,6 +26,8 @@ function formatDate(dateStr: string) {
 }
 
 export default function CustomersTable({ customers }: { customers: Customer[] }) {
+  const router = useRouter();
+
   if (customers.length === 0) {
     return (
       <div
@@ -45,14 +49,16 @@ export default function CustomersTable({ customers }: { customers: Customer[] })
             <th className="text-left px-4 py-3 font-medium" style={{ color: "#6B7280" }}>Phone</th>
             <th className="text-left px-4 py-3 font-medium" style={{ color: "#6B7280" }}>Bookings</th>
             <th className="text-left px-4 py-3 font-medium" style={{ color: "#6B7280" }}>Deposits Paid</th>
+            <th className="text-left px-4 py-3 font-medium" style={{ color: "#6B7280" }}>Total Paid</th>
             <th className="text-left px-4 py-3 font-medium" style={{ color: "#6B7280" }}>Last Booking</th>
-            <th className="px-4 py-3" />
           </tr>
         </thead>
         <tbody>
           {customers.map((c, i) => (
             <tr
               key={c.email}
+              onClick={() => router.push(`/admin/customers/${encodeURIComponent(c.email)}`)}
+              className="cursor-pointer hover:brightness-125 transition-all"
               style={{
                 backgroundColor: i % 2 === 0 ? "#0D1117" : "#161B22",
                 borderBottom: "1px solid #30363D",
@@ -60,21 +66,15 @@ export default function CustomersTable({ customers }: { customers: Customer[] })
             >
               <td className="px-4 py-3 font-medium text-white">{c.name}</td>
               <td className="px-4 py-3" style={{ color: "#6B7280" }}>{c.email}</td>
-              <td className="px-4 py-3" style={{ color: "#6B7280" }}>{c.phone ?? "—"}</td>
+              <td className="px-4 py-3" style={{ color: "#6B7280" }}>{formatPhone(c.phone)}</td>
               <td className="px-4 py-3 text-center" style={{ color: "#6B7280" }}>{c.bookingCount}</td>
               <td className="px-4 py-3 font-medium" style={{ color: "#D4A017" }}>
                 {c.totalDeposit > 0 ? formatCAD(c.totalDeposit) : "—"}
               </td>
-              <td className="px-4 py-3" style={{ color: "#6B7280" }}>{formatDate(c.lastBookingDate)}</td>
-              <td className="px-4 py-3">
-                <Link
-                  href={`/admin/customers/${encodeURIComponent(c.email)}`}
-                  className="text-xs px-3 py-1.5 rounded font-medium"
-                  style={{ backgroundColor: "#D4A01722", color: "#D4A017" }}
-                >
-                  View
-                </Link>
+              <td className="px-4 py-3 font-medium" style={{ color: "#4ADE80" }}>
+                {c.totalPaid > 0 ? formatCAD(c.totalPaid) : "—"}
               </td>
+              <td className="px-4 py-3" style={{ color: "#6B7280" }}>{formatDate(c.lastBookingDate)}</td>
             </tr>
           ))}
         </tbody>

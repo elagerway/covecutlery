@@ -1,12 +1,16 @@
 import { createClient } from "@/utils/supabase/server";
 import JobsTable from "@/components/admin/JobsTable";
 
+export const dynamic = "force-dynamic";
+
 export default async function AdminJobsPage() {
   const supabase = await createClient();
-  const { data: bookings } = await supabase
+  const { data: raw } = await supabase
     .from("bookings")
     .select("*")
-    .order("appointment_date", { ascending: false });
+    .order("created_at", { ascending: false });
+
+  const bookings = raw ?? [];
 
   return (
     <div>
@@ -16,7 +20,7 @@ export default async function AdminJobsPage() {
           All mobile bookings. Enter amount charged on the day to track totals.
         </p>
       </div>
-      <JobsTable bookings={bookings ?? []} />
+      <JobsTable bookings={bookings} />
     </div>
   );
 }

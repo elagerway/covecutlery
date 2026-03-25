@@ -15,12 +15,13 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   if (!supabase) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const { id } = await params;
-  const { amount_charged, status, notes } = await req.json();
+  const { amount_charged, status, notes, payment_method } = await req.json();
 
   const updates: Record<string, unknown> = {};
   if (amount_charged !== undefined) updates.amount_charged = amount_charged;
   if (status !== undefined) updates.status = status;
   if (notes !== undefined) updates.notes = notes;
+  if (payment_method !== undefined) updates.payment_method = payment_method;
 
   const { data, error } = await supabase
     .from("bookings")

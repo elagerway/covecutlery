@@ -19,11 +19,12 @@ export async function PATCH(
 
   const { email: rawEmail } = await params;
   const email = decodeURIComponent(rawEmail);
-  const { customer_name, customer_phone } = await req.json();
+  const { customer_name, customer_phone, customer_address } = await req.json();
 
   const updates: Record<string, unknown> = {};
   if (customer_name !== undefined) updates.customer_name = customer_name;
   if (customer_phone !== undefined) updates.customer_phone = customer_phone;
+  if (customer_address !== undefined) updates.address = customer_address;
 
   const { data, error } = await supabase
     .from("bookings")

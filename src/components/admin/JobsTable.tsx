@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { formatPhone } from "@/lib/format";
 
 interface Booking {
   id: string;
@@ -13,9 +14,12 @@ interface Booking {
   address: string | null;
   deposit_amount: number;
   amount_charged: number | null;
+  payment_method: "card" | "cash" | null;
   status: string;
   notes: string | null;
   created_at: string;
+  stripe_payment_intent_id: string | null;
+  stripe_customer_id: string | null;
 }
 
 const STATUS_STYLES: Record<string, { bg: string; color: string }> = {
@@ -32,6 +36,14 @@ function formatDate(d: string) {
   });
 }
 
+function formatDateTime(iso: string) {
+  return new Date(iso).toLocaleString("en-CA", {
+    timeZone: "America/Vancouver",
+    month: "short", day: "numeric", year: "numeric",
+    hour: "numeric", minute: "2-digit", hour12: true,
+  });
+}
+
 function formatCAD(cents: number | null) {
   if (cents === null) return "—";
   return `$${(cents / 100).toFixed(2)}`;
@@ -42,20 +54,79 @@ export default function JobsTable({ bookings }: { bookings: Booking[] }) {
   const [editing, setEditing] = useState<string | null>(null);
   const [amountInput, setAmountInput] = useState("");
   const [saving, setSaving] = useState<string | null>(null);
+  const [refunding, setRefunding] = useState<string | null>(null);
+  const [refundMsg, setRefundMsg] = useState<Record<string, string>>({});
+  const [chargeMsg, setChargeMsg] = useState<Record<string, string>>({});
+  const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
+  const [receiptOpen, setReceiptOpen] = useState<string | null>(null);
+  const [receiptEmail, setReceiptEmail] = useState(true);
+  const [receiptSms, setReceiptSms] = useState(true);
+  const [receiptEmailTo, setReceiptEmailTo] = useState("");
+  const [receiptSmsTo, setReceiptSmsTo] = useState("");
+  const [sendingReceipt, setSendingReceipt] = useState<string | null>(null);
+  const [receiptMsg, setReceiptMsg] = useState<Record<string, string>>({});
 
-  async function handleSaveAmount(id: string) {
+  async function handleSaveCash(id: string) {
     const dollars = parseFloat(amountInput);
     if (isNaN(dollars) || dollars < 0) return;
     setSaving(id);
     const res = await fetch(`/api/admin/bookings/${id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ amount_charged: Math.round(dollars * 100) }),
+      body: JSON.stringify({ amount_charged: Math.round(dollars * 100), payment_method: "cash" }),
     });
     setSaving(null);
     if (!res.ok) { alert("Failed to save. Try again."); return; }
     setEditing(null);
     router.refresh();
+  }
+
+  async function handleChargeCard(id: string) {
+    const dollars = parseFloat(amountInput);
+    if (isNaN(dollars) || dollars < 0) return;
+    setSaving(id + ":card");
+    const res = await fetch(`/api/admin/bookings/${id}/charge`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ amount: Math.round(dollars * 100) }),
+    });
+    const data = await res.json();
+    setSaving(null);
+    if (!res.ok) {
+      setChargeMsg((prev) => ({ ...prev, [id]: data.error ?? "Charge failed" }));
+      return;
+    }
+    setEditing(null);
+    setChargeMsg((prev) => ({ ...prev, [id]: "Charged" }));
+    router.refresh();
+  }
+
+  async function handleRefund(id: string) {
+    if (!confirm("Issue a full refund for this booking's $50 deposit?")) return;
+    setRefunding(id);
+    const res = await fetch(`/api/admin/bookings/${id}/refund`, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({}) });
+    const data = await res.json();
+    setRefunding(null);
+    setRefundMsg((prev) => ({ ...prev, [id]: res.ok ? "Refunded" : (data.error ?? "Failed") }));
+    if (res.ok) router.refresh();
+  }
+
+  async function handleSendReceipt(id: string) {
+    setSendingReceipt(id);
+    const res = await fetch(`/api/admin/bookings/${id}/receipt`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        sendEmail: receiptEmail,
+        sendSms: receiptSms,
+        emailTo: receiptEmailTo,
+        smsTo: receiptSmsTo,
+      }),
+    });
+    const data = await res.json();
+    setSendingReceipt(null);
+    setReceiptMsg((prev) => ({ ...prev, [id]: res.ok ? "Sent!" : (data.error ?? "Failed") }));
+    if (res.ok) setReceiptOpen(null);
   }
 
   async function handleStatusChange(id: string, status: string) {
@@ -77,124 +148,335 @@ export default function JobsTable({ bookings }: { bookings: Booking[] }) {
   }
 
   return (
-    <div className="rounded-xl border overflow-hidden" style={{ borderColor: "#30363D" }}>
-      <table className="w-full text-sm">
-        <thead>
-          <tr style={{ backgroundColor: "#161B22", borderBottom: "1px solid #30363D" }}>
-            {["Customer", "Date / Time", "Status", "Deposit", "Charged", "Total", "Actions"].map(h => (
-              <th key={h} className="text-left px-4 py-3 font-medium" style={{ color: "#6B7280" }}>{h}</th>
-            ))}
-          </tr>
-        </thead>
-        <tbody>
-          {bookings.map((b, i) => {
-            const deposit = b.deposit_amount;
-            const charged = b.amount_charged;
-            const total = charged !== null ? deposit + charged : null;
-            const style = STATUS_STYLES[b.status] ?? STATUS_STYLES.confirmed;
+    <>
+      <div className="rounded-xl border overflow-hidden" style={{ borderColor: "#30363D" }}>
+        <table className="w-full text-sm">
+          <thead>
+            <tr style={{ backgroundColor: "#161B22", borderBottom: "1px solid #30363D" }}>
+              {["Date / Time", "Customer", "Status", "Deposit", "Charged", "Total", "Actions"].map(h => (
+                <th key={h} className="text-left px-4 py-3 font-medium" style={{ color: "#6B7280" }}>{h}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {bookings.map((b, i) => {
+              const deposit = b.deposit_amount;
+              const charged = b.amount_charged;
+              const total = charged !== null ? deposit + charged : null;
+              const style = STATUS_STYLES[b.status] ?? STATUS_STYLES.confirmed;
 
-            return (
-              <tr
-                key={b.id}
+              return (
+                <tr
+                  key={b.id}
+                  onClick={() => setSelectedBooking(b)}
+                  className="cursor-pointer hover:brightness-125 transition-all"
+                  style={{
+                    backgroundColor: i % 2 === 0 ? "#0D1117" : "#161B22",
+                    borderBottom: i < bookings.length - 1 ? "1px solid #30363D" : undefined,
+                  }}
+                >
+                  {/* Date / Time */}
+                  <td className="px-4 py-3">
+                    <div className="text-white">{formatDate(b.appointment_date)}</div>
+                    <div className="text-xs mt-0.5" style={{ color: "#6B7280" }}>{b.appointment_time}</div>
+                    {b.address && <div className="text-xs mt-0.5" style={{ color: "#6B7280" }}>{b.address}</div>}
+                  </td>
+
+                  {/* Customer */}
+                  <td className="px-4 py-3">
+                    <div className="font-medium text-white">{b.customer_name}</div>
+                    <div className="text-xs mt-0.5" style={{ color: "#6B7280" }}>{b.customer_email}</div>
+                    {b.customer_phone && <div className="text-xs" style={{ color: "#6B7280" }}>{formatPhone(b.customer_phone)}</div>}
+                  </td>
+
+                  {/* Status */}
+                  <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
+                    <select
+                      value={b.status}
+                      onChange={(e) => handleStatusChange(b.id, e.target.value)}
+                      className="text-xs px-2 py-1 rounded-full font-medium border-0 outline-none cursor-pointer"
+                      style={{ backgroundColor: style.bg, color: style.color }}
+                    >
+                      <option value="pending_payment">pending payment</option>
+                      <option value="confirmed">confirmed</option>
+                      <option value="completed">completed</option>
+                      <option value="cancelled">cancelled</option>
+                      <option value="refunded">refunded</option>
+                    </select>
+                  </td>
+
+                  {/* Deposit */}
+                  <td className="px-4 py-3 text-white">{formatCAD(deposit)}</td>
+
+                  {/* Charged on day */}
+                  <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
+                    {editing === b.id ? (
+                      <div className="flex flex-col gap-1">
+                        <div className="flex items-center gap-1">
+                          <span style={{ color: "#6B7280" }}>$</span>
+                          <input
+                            type="number"
+                            min="0"
+                            step="0.01"
+                            value={amountInput}
+                            onChange={(e) => setAmountInput(e.target.value)}
+                            className="w-20 px-2 py-1 rounded text-sm text-white outline-none"
+                            style={{ backgroundColor: "#0D1117", border: "1px solid #D4A017" }}
+                            autoFocus
+                          />
+                          <button
+                            onClick={() => setEditing(null)}
+                            className="px-2 py-1 rounded text-xs"
+                            style={{ color: "#6B7280" }}
+                          >
+                            ✕
+                          </button>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <button
+                            onClick={() => handleSaveCash(b.id)}
+                            disabled={saving === b.id}
+                            className="px-2 py-1 rounded text-xs font-medium disabled:opacity-50 flex-1"
+                            style={{ backgroundColor: "#16A34A22", color: "#4ADE80", border: "1px solid #16A34A44" }}
+                          >
+                            {saving === b.id ? "…" : "💵 Cash"}
+                          </button>
+                          <button
+                            onClick={() => handleChargeCard(b.id)}
+                            disabled={saving === b.id + ":card" || !b.stripe_customer_id}
+                            className="px-2 py-1 rounded text-xs font-medium disabled:opacity-40 flex-1"
+                            style={{ backgroundColor: "#1D4ED822", color: "#60A5FA", border: "1px solid #1D4ED844" }}
+                            title={!b.stripe_customer_id ? "No saved card for this booking" : ""}
+                          >
+                            {saving === b.id + ":card" ? "…" : "💳 Card"}
+                          </button>
+                        </div>
+                        {chargeMsg[b.id] && (
+                          <span className="text-xs" style={{ color: chargeMsg[b.id] === "Charged" ? "#4ADE80" : "#F87171" }}>
+                            {chargeMsg[b.id]}
+                          </span>
+                        )}
+                      </div>
+                    ) : (
+                      <div>
+                        <button
+                          onClick={() => {
+                            setEditing(b.id);
+                            setAmountInput(charged !== null ? (charged / 100).toString() : "");
+                          }}
+                          className="hover:opacity-80 transition-opacity"
+                          style={{ color: charged !== null ? "#FFFFFF" : "#D4A017" }}
+                        >
+                          {charged !== null ? formatCAD(charged) : "+ Enter"}
+                        </button>
+                        {b.payment_method && (
+                          <div className="text-xs mt-0.5" style={{ color: "#6B7280" }}>
+                            {b.payment_method === "card" ? "💳 card" : "💵 cash"}
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </td>
+
+                  {/* Total */}
+                  <td className="px-4 py-3 font-medium" style={{ color: total !== null ? "#4ADE80" : "#6B7280" }}>
+                    {formatCAD(total)}
+                  </td>
+
+                  {/* Actions */}
+                  <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
+                    <div className="flex items-center gap-2">
+                      {b.notes && (
+                        <span className="text-xs" style={{ color: "#6B7280" }} title={b.notes}>📝</span>
+                      )}
+                      {refundMsg[b.id] ? (
+                        <span className="text-xs" style={{ color: refundMsg[b.id] === "Refunded" ? "#4ADE80" : "#F87171" }}>{refundMsg[b.id]}</span>
+                      ) : ["confirmed", "completed"].includes(b.status) && b.stripe_payment_intent_id ? (
+                        <button
+                          onClick={() => handleRefund(b.id)}
+                          disabled={refunding === b.id}
+                          className="text-xs px-2 py-1 rounded font-medium disabled:opacity-50 transition-all hover:brightness-125 border border-transparent hover:border-red-400"
+                          style={{ backgroundColor: "#3A1C1C", color: "#F87171" }}
+                        >
+                          {refunding === b.id ? "…" : "Refund"}
+                        </button>
+                      ) : null}
+
+                      {/* Receipt */}
+                      <div className="relative">
+                        {receiptMsg[b.id] ? (
+                          <span className="text-xs" style={{ color: receiptMsg[b.id] === "Sent!" ? "#4ADE80" : "#F87171" }}>{receiptMsg[b.id]}</span>
+                        ) : (
+                          <button
+                            onClick={() => {
+                              setReceiptOpen(receiptOpen === b.id ? null : b.id);
+                              setReceiptEmailTo(b.customer_email);
+                              setReceiptSmsTo(b.customer_phone ?? "");
+                              setReceiptEmail(true);
+                              setReceiptSms(!!b.customer_phone);
+                            }}
+                            className="text-xs px-2 py-1 rounded font-medium transition-all hover:brightness-125 border border-transparent hover:border-blue-400"
+                            style={{ backgroundColor: "#1D4ED822", color: "#60A5FA" }}
+                          >
+                            Receipt
+                          </button>
+                        )}
+                        {receiptOpen === b.id && (
+                          <div
+                            className="absolute right-0 top-8 z-50 rounded-lg p-4 flex flex-col gap-3 w-64"
+                            style={{ backgroundColor: "#1C2230", border: "1px solid #30363D", boxShadow: "0 8px 24px rgba(0,0,0,.4)" }}
+                            onClick={(e) => e.stopPropagation()}
+                          >
+                            <p className="text-xs font-semibold text-white">Send Receipt</p>
+                            <label className="flex items-center gap-2 text-xs cursor-pointer" style={{ color: "#9CA3AF" }}>
+                              <input type="checkbox" checked={receiptEmail} onChange={(e) => setReceiptEmail(e.target.checked)} className="accent-blue-400" />
+                              Email
+                            </label>
+                            {receiptEmail && (
+                              <input
+                                type="email"
+                                value={receiptEmailTo}
+                                onChange={(e) => setReceiptEmailTo(e.target.value)}
+                                className="w-full px-2 py-1 rounded text-xs text-white outline-none"
+                                style={{ backgroundColor: "#0D1117", border: "1px solid #30363D" }}
+                                placeholder="email@example.com"
+                              />
+                            )}
+                            <label className="flex items-center gap-2 text-xs cursor-pointer" style={{ color: "#9CA3AF" }}>
+                              <input type="checkbox" checked={receiptSms} onChange={(e) => setReceiptSms(e.target.checked)} className="accent-blue-400" />
+                              SMS
+                            </label>
+                            {receiptSms && (
+                              <input
+                                type="tel"
+                                value={receiptSmsTo}
+                                onChange={(e) => setReceiptSmsTo(e.target.value)}
+                                className="w-full px-2 py-1 rounded text-xs text-white outline-none"
+                                style={{ backgroundColor: "#0D1117", border: "1px solid #30363D" }}
+                                placeholder="(604) 555-1234"
+                              />
+                            )}
+                            <div className="flex gap-2 mt-1">
+                              <button
+                                onClick={() => handleSendReceipt(b.id)}
+                                disabled={sendingReceipt === b.id || (!receiptEmail && !receiptSms)}
+                                className="flex-1 px-2 py-1.5 rounded text-xs font-medium disabled:opacity-50"
+                                style={{ backgroundColor: "#1D4ED8", color: "#fff" }}
+                              >
+                                {sendingReceipt === b.id ? "Sending…" : "Send"}
+                              </button>
+                              <button
+                                onClick={() => setReceiptOpen(null)}
+                                className="px-2 py-1.5 rounded text-xs"
+                                style={{ color: "#6B7280" }}
+                              >
+                                ✕
+                              </button>
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Job Detail Drawer */}
+      {selectedBooking && (
+        <div className="fixed inset-0 z-50 flex justify-end" onClick={() => setSelectedBooking(null)}>
+          <div
+            className="w-full max-w-md h-full overflow-y-auto p-6 flex flex-col gap-5"
+            style={{ backgroundColor: "#161B22", borderLeft: "1px solid #30363D" }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header */}
+            <div className="flex items-start justify-between">
+              <div>
+                <h2 className="text-lg font-semibold text-white">{selectedBooking.customer_name}</h2>
+                <p className="text-sm mt-0.5" style={{ color: "#6B7280" }}>{selectedBooking.customer_email}</p>
+                {selectedBooking.customer_phone && (
+                  <p className="text-sm" style={{ color: "#6B7280" }}>{formatPhone(selectedBooking.customer_phone)}</p>
+                )}
+              </div>
+              <button onClick={() => setSelectedBooking(null)} className="text-lg" style={{ color: "#6B7280" }}>✕</button>
+            </div>
+
+            <hr style={{ borderColor: "#30363D" }} />
+
+            {/* Appointment */}
+            <div>
+              <p className="text-xs font-medium uppercase tracking-wider mb-2" style={{ color: "#6B7280" }}>Appointment</p>
+              <p className="text-white">{formatDate(selectedBooking.appointment_date)} at {selectedBooking.appointment_time}</p>
+              {selectedBooking.address && <p className="text-sm mt-1" style={{ color: "#6B7280" }}>{selectedBooking.address}</p>}
+            </div>
+
+            {/* Booking info */}
+            <div>
+              <p className="text-xs font-medium uppercase tracking-wider mb-2" style={{ color: "#6B7280" }}>Booked</p>
+              <p className="text-sm text-white">{formatDateTime(selectedBooking.created_at)}</p>
+            </div>
+
+            {/* Payments */}
+            <div>
+              <p className="text-xs font-medium uppercase tracking-wider mb-3" style={{ color: "#6B7280" }}>Payments</p>
+              <div className="flex flex-col gap-2">
+                <div className="flex justify-between items-center px-3 py-2 rounded-lg" style={{ backgroundColor: "#0D1117" }}>
+                  <div>
+                    <p className="text-sm text-white">Deposit</p>
+                    <p className="text-xs mt-0.5" style={{ color: "#6B7280" }}>💳 card · paid at booking</p>
+                  </div>
+                  <p className="font-medium text-white">{formatCAD(selectedBooking.deposit_amount)}</p>
+                </div>
+                {selectedBooking.amount_charged !== null && (
+                  <div className="flex justify-between items-center px-3 py-2 rounded-lg" style={{ backgroundColor: "#0D1117" }}>
+                    <div>
+                      <p className="text-sm text-white">Day of service</p>
+                      <p className="text-xs mt-0.5" style={{ color: "#6B7280" }}>
+                        {selectedBooking.payment_method === "card" ? "💳 card" : selectedBooking.payment_method === "cash" ? "💵 cash" : "—"}
+                      </p>
+                    </div>
+                    <p className="font-medium text-white">{formatCAD(selectedBooking.amount_charged)}</p>
+                  </div>
+                )}
+                {selectedBooking.amount_charged !== null && (
+                  <div className="flex justify-between items-center px-3 py-2 rounded-lg" style={{ backgroundColor: "#0D1117", border: "1px solid #30363D" }}>
+                    <p className="text-sm font-semibold text-white">Total</p>
+                    <p className="font-semibold" style={{ color: "#4ADE80" }}>
+                      {formatCAD(selectedBooking.deposit_amount + selectedBooking.amount_charged)}
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Notes */}
+            {selectedBooking.notes && (
+              <div>
+                <p className="text-xs font-medium uppercase tracking-wider mb-2" style={{ color: "#6B7280" }}>Notes</p>
+                <p className="text-sm text-white whitespace-pre-wrap">{selectedBooking.notes}</p>
+              </div>
+            )}
+
+            {/* Status badge */}
+            <div>
+              <p className="text-xs font-medium uppercase tracking-wider mb-2" style={{ color: "#6B7280" }}>Status</p>
+              <span
+                className="text-xs px-2 py-1 rounded-full font-medium"
                 style={{
-                  backgroundColor: i % 2 === 0 ? "#0D1117" : "#161B22",
-                  borderBottom: i < bookings.length - 1 ? "1px solid #30363D" : undefined,
+                  backgroundColor: (STATUS_STYLES[selectedBooking.status] ?? STATUS_STYLES.confirmed).bg,
+                  color: (STATUS_STYLES[selectedBooking.status] ?? STATUS_STYLES.confirmed).color,
                 }}
               >
-                {/* Customer */}
-                <td className="px-4 py-3">
-                  <div className="font-medium text-white">{b.customer_name}</div>
-                  <div className="text-xs mt-0.5" style={{ color: "#6B7280" }}>{b.customer_email}</div>
-                  {b.customer_phone && <div className="text-xs" style={{ color: "#6B7280" }}>{b.customer_phone}</div>}
-                </td>
-
-                {/* Date / Time */}
-                <td className="px-4 py-3">
-                  <div className="text-white">{formatDate(b.appointment_date)}</div>
-                  <div className="text-xs mt-0.5" style={{ color: "#6B7280" }}>{b.appointment_time}</div>
-                  {b.address && <div className="text-xs mt-0.5" style={{ color: "#6B7280" }}>{b.address}</div>}
-                </td>
-
-                {/* Status */}
-                <td className="px-4 py-3">
-                  <select
-                    value={b.status}
-                    onChange={(e) => handleStatusChange(b.id, e.target.value)}
-                    className="text-xs px-2 py-1 rounded-full font-medium border-0 outline-none cursor-pointer"
-                    style={{ backgroundColor: style.bg, color: style.color }}
-                  >
-                    <option value="pending_payment">pending payment</option>
-                    <option value="confirmed">confirmed</option>
-                    <option value="completed">completed</option>
-                    <option value="cancelled">cancelled</option>
-                    <option value="refunded">refunded</option>
-                  </select>
-                </td>
-
-                {/* Deposit */}
-                <td className="px-4 py-3 text-white">{formatCAD(deposit)}</td>
-
-                {/* Charged on day */}
-                <td className="px-4 py-3">
-                  {editing === b.id ? (
-                    <div className="flex items-center gap-1">
-                      <span style={{ color: "#6B7280" }}>$</span>
-                      <input
-                        type="number"
-                        min="0"
-                        step="0.01"
-                        value={amountInput}
-                        onChange={(e) => setAmountInput(e.target.value)}
-                        className="w-20 px-2 py-1 rounded text-sm text-white outline-none"
-                        style={{ backgroundColor: "#0D1117", border: "1px solid #D4A017" }}
-                        autoFocus
-                      />
-                      <button
-                        onClick={() => handleSaveAmount(b.id)}
-                        disabled={saving === b.id}
-                        className="px-2 py-1 rounded text-xs font-medium disabled:opacity-50"
-                        style={{ backgroundColor: "#D4A017", color: "#0D1117" }}
-                      >
-                        {saving === b.id ? "…" : "Save"}
-                      </button>
-                      <button
-                        onClick={() => setEditing(null)}
-                        className="px-2 py-1 rounded text-xs"
-                        style={{ color: "#6B7280" }}
-                      >
-                        ✕
-                      </button>
-                    </div>
-                  ) : (
-                    <button
-                      onClick={() => {
-                        setEditing(b.id);
-                        setAmountInput(charged !== null ? (charged / 100).toString() : "");
-                      }}
-                      className="hover:opacity-80 transition-opacity"
-                      style={{ color: charged !== null ? "#FFFFFF" : "#D4A017" }}
-                    >
-                      {charged !== null ? formatCAD(charged) : "+ Enter"}
-                    </button>
-                  )}
-                </td>
-
-                {/* Total */}
-                <td className="px-4 py-3 font-medium" style={{ color: total !== null ? "#4ADE80" : "#6B7280" }}>
-                  {formatCAD(total)}
-                </td>
-
-                {/* Actions */}
-                <td className="px-4 py-3">
-                  {b.notes && (
-                    <span className="text-xs" style={{ color: "#6B7280" }} title={b.notes}>📝</span>
-                  )}
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
-    </div>
+                {selectedBooking.status.replace("_", " ")}
+              </span>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 }

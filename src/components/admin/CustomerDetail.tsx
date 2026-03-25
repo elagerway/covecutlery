@@ -2,11 +2,13 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { formatPhone } from "@/lib/format";
 
 interface Customer {
   email: string;
   name: string;
   phone: string | null;
+  address: string | null;
 }
 
 interface Booking {
@@ -16,6 +18,7 @@ interface Booking {
   address: string | null;
   deposit_amount: number;
   amount_charged: number | null;
+  payment_method: "card" | "cash" | null;
   status: string;
   stripe_payment_intent_id: string | null;
   notes: string | null;
@@ -50,7 +53,8 @@ export default function CustomerDetail({
 }) {
   const router = useRouter();
   const [name, setName] = useState(customer.name);
-  const [phone, setPhone] = useState(customer.phone ?? "");
+  const [phone, setPhone] = useState(formatPhone(customer.phone) === "—" ? "" : formatPhone(customer.phone));
+  const [address, setAddress] = useState(customer.address ?? "");
   const [saving, setSaving] = useState(false);
   const [saveMsg, setSaveMsg] = useState("");
   const [refundingId, setRefundingId] = useState<string | null>(null);
@@ -62,7 +66,7 @@ export default function CustomerDetail({
     const res = await fetch(`/api/admin/customers/${encodeURIComponent(customer.email)}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ customer_name: name, customer_phone: phone || null }),
+      body: JSON.stringify({ customer_name: name, customer_phone: phone || null, customer_address: address || null }),
     });
     setSaving(false);
     setSaveMsg(res.ok ? "Saved" : "Failed to save");
@@ -89,6 +93,12 @@ export default function CustomerDetail({
   const totalDeposits = bookings
     .filter((b) => ["confirmed", "completed", "refunded"].includes(b.status))
     .reduce((sum, b) => sum + (b.deposit_amount ?? 0), 0);
+
+  const totalCharged = bookings
+    .filter((b) => ["confirmed", "completed"].includes(b.status))
+    .reduce((sum, b) => sum + (b.amount_charged ?? 0), 0);
+
+  const totalPaid = totalDeposits + totalCharged;
 
   return (
     <div className="flex flex-col gap-8">
@@ -117,6 +127,17 @@ export default function CustomerDetail({
             <input
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
+              className="w-full px-3 py-2 rounded text-sm text-white outline-none border"
+              style={{ backgroundColor: "#0D1117", borderColor: "#30363D" }}
+            />
+          </div>
+          <div>
+            <label className="text-xs font-medium block mb-1" style={{ color: "#6B7280" }}>
+              Address
+            </label>
+            <input
+              value={address}
+              onChange={(e) => setAddress(e.target.value)}
               className="w-full px-3 py-2 rounded text-sm text-white outline-none border"
               style={{ backgroundColor: "#0D1117", borderColor: "#30363D" }}
             />
@@ -172,6 +193,17 @@ export default function CustomerDetail({
             {formatCAD(totalDeposits)}
           </p>
         </div>
+        <div
+          className="rounded-lg border px-5 py-4"
+          style={{ backgroundColor: "#161B22", borderColor: "#30363D" }}
+        >
+          <p className="text-xs mb-1" style={{ color: "#6B7280" }}>
+            Total Paid
+          </p>
+          <p className="text-2xl font-bold" style={{ color: "#4ADE80" }}>
+            {formatCAD(totalPaid)}
+          </p>
+        </div>
       </div>
 
       {/* Booking history */}
@@ -185,6 +217,8 @@ export default function CustomerDetail({
                 <th className="text-left px-4 py-3 font-medium" style={{ color: "#6B7280" }}>Time</th>
                 <th className="text-left px-4 py-3 font-medium" style={{ color: "#6B7280" }}>Address</th>
                 <th className="text-left px-4 py-3 font-medium" style={{ color: "#6B7280" }}>Deposit</th>
+                <th className="text-left px-4 py-3 font-medium" style={{ color: "#6B7280" }}>Charged</th>
+                <th className="text-left px-4 py-3 font-medium" style={{ color: "#6B7280" }}>Total</th>
                 <th className="text-left px-4 py-3 font-medium" style={{ color: "#6B7280" }}>Status</th>
                 <th className="px-4 py-3" />
               </tr>
@@ -213,6 +247,21 @@ export default function CustomerDetail({
                       {b.address ?? "—"}
                     </td>
                     <td className="px-4 py-3 text-white">{formatCAD(b.deposit_amount)}</td>
+                    <td className="px-4 py-3">
+                      {b.amount_charged !== null ? (
+                        <div>
+                          <span className="text-white">{formatCAD(b.amount_charged)}</span>
+                          {b.payment_method && (
+                            <span className="text-xs ml-1" style={{ color: "#6B7280" }}>
+                              {b.payment_method === "card" ? "💳" : "💵"}
+                            </span>
+                          )}
+                        </div>
+                      ) : <span style={{ color: "#6B7280" }}>—</span>}
+                    </td>
+                    <td className="px-4 py-3 font-medium" style={{ color: b.amount_charged !== null ? "#4ADE80" : "#6B7280" }}>
+                      {b.amount_charged !== null ? formatCAD(b.deposit_amount + b.amount_charged) : "—"}
+                    </td>
                     <td className="px-4 py-3">
                       <span
                         className="text-xs px-2 py-0.5 rounded-full font-medium"

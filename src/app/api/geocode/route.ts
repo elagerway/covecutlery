@@ -1,23 +1,32 @@
 import { NextRequest, NextResponse } from "next/server";
 
+const KEY = process.env.GOOGLE_MAPS_API_KEY;
+
 export async function GET(req: NextRequest) {
   const q = req.nextUrl.searchParams.get("q");
-  if (!q || q.trim().length < 3) {
-    return NextResponse.json([], { status: 200 });
+  const placeId = req.nextUrl.searchParams.get("place_id");
+
+  if (placeId) {
+    // Place details — return structured address components
+    const url = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${encodeURIComponent(placeId)}&fields=address_components&key=${KEY}`;
+    try {
+      const res = await fetch(url);
+      const data = await res.json();
+      return NextResponse.json(data.result ?? {});
+    } catch {
+      return NextResponse.json({}, { status: 200 });
+    }
   }
 
+  if (!q || q.trim().length < 3) return NextResponse.json([]);
+
+  // Autocomplete — restrict to Canada
+  const url = `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${encodeURIComponent(q)}&components=country:ca&types=address&key=${KEY}`;
   try {
-    const url = `https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q)}&format=json&addressdetails=1&limit=5&countrycodes=ca`;
-    const res = await fetch(url, {
-      headers: {
-        "User-Agent": "CoveCutlery/1.0 (covecutlery.ca)",
-        "Accept-Language": "en",
-      },
-    });
-    if (!res.ok) return NextResponse.json([], { status: 200 });
+    const res = await fetch(url);
     const data = await res.json();
-    return NextResponse.json(data);
+    return NextResponse.json(data.predictions ?? []);
   } catch {
-    return NextResponse.json([], { status: 200 });
+    return NextResponse.json([]);
   }
 }
