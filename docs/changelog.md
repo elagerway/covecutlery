@@ -1,5 +1,28 @@
 # Changelog
 
+## [1.8.0] — 2026-03-25
+
+### Added
+- **SEO infrastructure** — dynamic `sitemap.xml` (ISR hourly, includes all static pages, blog posts, and city pages), `robots.txt` (blocks admin/api/auth/booking), and `public/llms.txt` for AI crawlers
+- **Schema helpers** — `src/lib/schema.ts` with `safeJsonLd()` (XSS-safe JSON-LD serialization), `breadcrumbSchema()`, `faqPageSchema()`, and shared `FAQ` interface
+- **BlogPosting schema** on all blog post pages with BreadcrumbList and canonical URLs
+- **FAQPage schema** on pricing page for existing FAQ items
+- **Service area hub** — `/service-area` with city grid, FAQ schema, breadcrumb, booking CTA
+- **5 city landing pages** — `/service-area/[city]` for North Vancouver, Vancouver, Burnaby, West Vancouver, and Coquitlam; SSG via `generateStaticParams`; each with unique content, FAQ/Breadcrumb/Service JSON-LD schema
+- **City data module** — `src/data/cities.ts` with per-city SEO content, neighbourhoods, drive times, FAQs, meta tags
+- **Restaurant page** — `/restaurants` targeting commercial kitchen managers with benefits, how-it-works, FAQ schema
+- **Default OG image** — `public/og-default.png` (1200×630, gold-lit Japanese knife on dark background)
+- **Booking noindex** — `src/app/booking/layout.tsx` adds `robots: noindex` to all booking pages
+- **Home page metadata** — explicit `Metadata` export with title, description, and canonical URL
+
+### Changed
+- **Domain fixed to `.ca`** — `metadataBase`, `openGraph.url`, and all LocalBusiness schema URLs updated from `covecutlery.com` to `covecutlery.ca`
+- **LocalBusiness schema expanded** — added `foundingDate`, `geo` coordinates, `sameAs` social links; applied `safeJsonLd()` for XSS protection
+- **Aggregate rating removed** — fabricated 50-review/5.0-star rating removed to avoid Google manual penalty
+- **Twitter card meta** — added `twitter: { card: 'summary_large_image' }` to root metadata
+- **Footer links** — added "Service Areas" and "Restaurants" to quick links
+- **Pricing page** — added `alternates.canonical` and FAQPage JSON-LD schema
+
 ## [1.7.2] — 2026-03-25
 
 ### Added

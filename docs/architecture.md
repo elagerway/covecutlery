@@ -66,6 +66,7 @@ src/
 │   │           ├── new/page.tsx    # Renders PostForm with no initial data
 │   │           └── [id]/edit/page.tsx  # Server Component — fetches post, passes to PostForm
 │   ├── booking/
+│   │   ├── layout.tsx          # Adds robots: noindex to all booking pages
 │   │   ├── success/page.tsx    # Verifies Stripe session, confirms booking in Supabase, shows confirmation
 │   │   └── cancel/page.tsx     # Cancels Cal.com booking via /api/cal/cancel, shows cancellation message
 │   ├── blog/
@@ -78,6 +79,12 @@ src/
 │   ├── drop-off/page.tsx
 │   ├── mobile-service/page.tsx
 │   ├── pricing/page.tsx
+│   ├── restaurants/page.tsx     # Restaurant knife sharpening landing page with FAQ/Breadcrumb schema
+│   ├── service-area/
+│   │   ├── page.tsx            # Service area hub — city grid, FAQ schema, breadcrumb
+│   │   └── [city]/page.tsx     # Dynamic city pages (SSG via generateStaticParams); FAQ/Breadcrumb/Service schema
+│   ├── sitemap.ts              # Dynamic sitemap (ISR revalidate 3600) — static pages + blog posts + city pages
+│   ├── robots.ts               # robots.txt — allow /, disallow admin/api/auth/booking
 │   ├── privacy/page.tsx        # Privacy Policy — data collection, third-party services, cookies, rights
 │   └── terms/page.tsx          # Terms of Service — bookings, payment, 30-day guarantee, service area, cancellations
 ├── components/
@@ -109,7 +116,10 @@ src/
 │   └── supabase/
 │       ├── server.ts           # createServerClient factory (async cookies — Next.js 16)
 │       └── client.ts           # createBrowserClient factory for "use client" components
+├── data/
+│   └── cities.ts              # CityData[] for 5 Lower Mainland cities; imported by sitemap, service-area pages
 └── lib/
+    ├── schema.ts               # safeJsonLd(), breadcrumbSchema(), faqPageSchema(), FAQ interface — shared SEO helpers
     ├── calSchedule.ts          # getWeekSchedule() — fetches Cal.com bookings, extracts city per day
     ├── format.ts               # formatPhone() — normalises any phone input to (XXX) XXX-XXXX
     ├── supabase.ts             # Supabase anon client (public pages only)
@@ -119,6 +129,8 @@ public/
 ├── promaster.png              # Background-removed Ram ProMaster side-profile photo
 ├── logo-icon-512.png          # 512×512 shield + sword logo icon (navbar, favicon)
 ├── icon-512.png               # 512×512 Gyuto knife icon (gold on dark)
+├── og-default.png             # Default OG image (1200×630) — gold-lit Japanese knife on dark background
+├── llms.txt                   # AI engine comprehension file — business info for LLM crawlers
 └── map-dropoff.png            # Dark-themed Google Maps Static API snapshot of drop-off location
 ```
 
@@ -187,6 +199,8 @@ PostTable (client) → DELETE/PATCH /api/admin/posts/[id] → requireAdmin() →
 ### Pages
 - `page.tsx` uses `export const revalidate = 300` — ISR, rebuilds every 5 minutes for fresh schedule data
 - `/blog` and `/blog/[slug]` also use `revalidate = 300`
+- `/sitemap.xml` uses `revalidate = 3600` — regenerates hourly
+- `/service-area/[city]` pages are statically generated via `generateStaticParams` (data from `src/data/cities.ts`)
 - All other marketing pages are statically pre-rendered at build time
 - `/api/contact`, `/api/cal/slots`, `/api/cal/book`, `/api/cal/schedule`, `/api/admin/posts/**` are dynamic server routes (serverless functions on Vercel)
 

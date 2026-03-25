@@ -3,11 +3,13 @@ import Link from "next/link";
 import { CheckCircle, ChevronRight, Phone } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { safeJsonLd, faqPageSchema } from "@/lib/schema";
 
 export const metadata: Metadata = {
   title: "Cutlery Sharpening Prices Vancouver | Cove Cutlery",
   description:
     "Transparent cutlery sharpening pricing in Vancouver. $12/knife for standard blades. Mobile, drop-off, and mail-in options. 30-day edge guarantee included.",
+  alternates: { canonical: '/pricing' },
 };
 
 const mainPricing = [
@@ -72,11 +74,16 @@ const faqs = [
 ];
 
 export default function PricingPage() {
+  const faqJsonLd = faqPageSchema(
+    faqs.map(f => ({ question: f.q, answer: f.a }))
+  )
+
   return (
     <div
       className="min-h-screen flex flex-col"
       style={{ backgroundColor: "#0D1117", fontFamily: "Inter, system-ui, sans-serif" }}
     >
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(faqJsonLd) }} />
       <Navbar />
 
       <main className="flex-1 pt-16">

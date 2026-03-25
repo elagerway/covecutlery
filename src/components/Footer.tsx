@@ -8,6 +8,8 @@ const quickLinks = [
   { label: "Pricing", href: "/#pricing" },
   { label: "Mobile Service", href: "/#mobile-service" },
   { label: "Drop Off", href: "/#drop-off" },
+  { label: "Service Areas", href: "/service-area" },
+  { label: "Restaurants", href: "/restaurants" },
   { label: "About", href: "/#about" },
   { label: "Contact", href: "/#contact" },
 ];

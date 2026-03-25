@@ -2,6 +2,7 @@ import { createClient } from "@supabase/supabase-js";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import { safeJsonLd, breadcrumbSchema } from "@/lib/schema";
 
 export const revalidate = 300;
 
@@ -37,6 +38,7 @@ export async function generateMetadata({
   return {
     title: `${post.title} | Cove Cutlery`,
     description: post.meta_description ?? undefined,
+    alternates: { canonical: `/blog/${slug}` },
     openGraph: {
       title: post.title,
       description: post.meta_description ?? undefined,
@@ -69,8 +71,29 @@ export default async function BlogPostPage({
 
   if (!post) notFound();
 
+  const blogPostingJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BlogPosting',
+    headline: post.title,
+    ...(post.featured_image_url ? { image: post.featured_image_url } : {}),
+    datePublished: post.published_at ?? new Date().toISOString(),
+    dateModified: post.published_at ?? new Date().toISOString(),
+    author: { '@type': 'Organization', name: 'Cove Cutlery', url: 'https://covecutlery.ca' },
+    publisher: { '@type': 'Organization', name: 'Cove Cutlery', url: 'https://covecutlery.ca' },
+    description: post.excerpt || `Read ${post.title} on Cove Cutlery`,
+    mainEntityOfPage: { '@type': 'WebPage', '@id': `https://covecutlery.ca/blog/${slug}` },
+  }
+
+  const breadcrumbJsonLd = breadcrumbSchema([
+    { name: 'Home', url: 'https://covecutlery.ca' },
+    { name: 'Blog', url: 'https://covecutlery.ca/blog' },
+    { name: post.title, url: `https://covecutlery.ca/blog/${slug}` },
+  ])
+
   return (
     <main className="min-h-screen py-20 px-6" style={{ backgroundColor: "#0D1117" }}>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(blogPostingJsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(breadcrumbJsonLd) }} />
       <div className="max-w-2xl mx-auto">
         <Link
           href="/blog"

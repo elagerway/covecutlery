@@ -1,6 +1,6 @@
 # Project Status
 
-**Last updated:** 2026-03-24
+**Last updated:** 2026-03-25
 
 ## Milestone 1 — MVP Website ✅ Complete
 
@@ -44,6 +44,30 @@ All pages and components built, deployed to Vercel.
 
 **Pending manual step:**
 - [ ] Add Supabase Auth redirect URLs in dashboard (localhost + covecutlery.ca)
+
+---
+
+## Milestone 3.5 — SEO & GEO Strategy ✅ Complete
+
+- [x] Dynamic sitemap.xml (ISR hourly) with blog posts + city pages
+- [x] robots.txt blocking admin/api/auth/booking
+- [x] Schema helpers (safeJsonLd, breadcrumb, FAQ)
+- [x] BlogPosting + BreadcrumbList schema on blog posts
+- [x] FAQPage schema on pricing page
+- [x] LocalBusiness schema expanded (sameAs, geo, foundingDate)
+- [x] Domain fixed from .com to .ca
+- [x] Aggregate rating removed (was fabricated)
+- [x] 5 city landing pages (North Vancouver, Vancouver, Burnaby, West Vancouver, Coquitlam)
+- [x] Service area hub page
+- [x] Restaurant landing page
+- [x] Default OG image + Twitter card meta
+- [x] Footer updated with new page links
+- [x] llms.txt for AI crawlers
+
+**Pending:**
+- [ ] Google Business Profile verification
+- [ ] Lighthouse SEO audit (target >= 95)
+- [ ] Search Console monitoring (4-6 weeks) before expanding to more cities
 
 ---
 
