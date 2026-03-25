@@ -71,6 +71,7 @@ export async function POST(req: NextRequest) {
   });
 
   if (insertError) {
+    console.error("Supabase insert error:", JSON.stringify(insertError));
     // Clean up orphaned Cal.com booking and Stripe session
     await fetch(`https://api.cal.com/v2/bookings/${calBookingUid}/cancel`, {
       method: "POST",

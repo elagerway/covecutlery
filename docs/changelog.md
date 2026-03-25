@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.4.2] — 2026-03-25
+
+### Fixed
+- **`/api/stripe/checkout` — restore insert error log** — re-added `console.error` for Supabase insert failures (safe: logs PostgrestError diagnostic fields only, no PII); the previous commit stripped all debug logging including this useful production diagnostic
+
 ## [1.4.1] — 2026-03-24
 
 ### Fixed
