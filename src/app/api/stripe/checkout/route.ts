@@ -2,7 +2,9 @@ import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 import { createClient } from "@supabase/supabase-js";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+function getStripe() {
+  return new Stripe(process.env.STRIPE_SECRET_KEY!);
+}
 
 export async function POST(req: NextRequest) {
   const body = await req.json();
@@ -22,7 +24,7 @@ export async function POST(req: NextRequest) {
 
   const origin = req.headers.get("origin") ?? "http://localhost:3002";
 
-  const session = await stripe.checkout.sessions.create({
+  const session = await getStripe().checkout.sessions.create({
     mode: "payment",
     payment_method_types: ["card"],
     line_items: [
@@ -85,7 +87,7 @@ export async function POST(req: NextRequest) {
       },
       body: JSON.stringify({ reason: "Booking system error" }),
     });
-    await stripe.checkout.sessions.expire(session.id);
+    await getStripe().checkout.sessions.expire(session.id);
     return NextResponse.json({ error: "Failed to save booking. Please try again." }, { status: 500 });
   }
 

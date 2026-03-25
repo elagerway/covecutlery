@@ -3,7 +3,9 @@ import Stripe from "stripe";
 import { createClient } from "@/utils/supabase/server";
 import { createClient as createServiceClient } from "@supabase/supabase-js";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+function getStripe() {
+  return new Stripe(process.env.STRIPE_SECRET_KEY!);
+}
 const ADMIN_EMAIL = "elagerway@gmail.com";
 
 async function requireAdmin() {
@@ -47,7 +49,7 @@ export async function POST(
   }
 
   // Get the customer's default saved payment method
-  const paymentMethods = await stripe.paymentMethods.list({
+  const paymentMethods = await getStripe().paymentMethods.list({
     customer: booking.stripe_customer_id,
     type: "card",
   });
@@ -58,7 +60,7 @@ export async function POST(
 
   const paymentMethod = paymentMethods.data[0];
 
-  const paymentIntent = await stripe.paymentIntents.create(
+  const paymentIntent = await getStripe().paymentIntents.create(
     {
       amount,
       currency: "cad",

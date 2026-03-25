@@ -3,7 +3,9 @@ import Link from "next/link";
 import { createClient } from "@supabase/supabase-js";
 import Stripe from "stripe";
 
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+function getStripe() {
+  return new Stripe(process.env.STRIPE_SECRET_KEY!);
+}
 
 async function SuccessContent({ sessionId }: { sessionId: string }) {
   let customerName = "";
@@ -22,7 +24,7 @@ async function SuccessContent({ sessionId }: { sessionId: string }) {
   }
 
   try {
-    const session = await stripe.checkout.sessions.retrieve(sessionId);
+    const session = await getStripe().checkout.sessions.retrieve(sessionId);
     paid = session.payment_status === "paid";
     customerName = session.metadata?.customerName ?? "";
     appointmentDate = session.metadata?.appointmentDate ?? "";

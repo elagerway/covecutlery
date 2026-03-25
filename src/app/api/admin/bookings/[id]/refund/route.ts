@@ -3,7 +3,9 @@ import { createClient } from "@/utils/supabase/server";
 import Stripe from "stripe";
 
 const ADMIN_EMAIL = "elagerway@gmail.com";
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!);
+function getStripe() {
+  return new Stripe(process.env.STRIPE_SECRET_KEY!);
+}
 
 async function requireAdmin() {
   const supabase = await createClient();
@@ -42,7 +44,7 @@ export async function POST(
 
   let refund: Stripe.Refund;
   try {
-    refund = await stripe.refunds.create({
+    refund = await getStripe().refunds.create({
       payment_intent: booking.stripe_payment_intent_id,
     });
   } catch (err) {
