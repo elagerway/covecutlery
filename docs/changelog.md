@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.6.1] — 2026-03-25
+
+### Fixed
+- **Receipt modal now visible** — popover was clipped by `overflow-hidden` on the table wrapper; moved to a `fixed` full-screen overlay rendered outside the table
+- **Receipt modal shows send result** — success ("Receipt sent successfully!") and error messages now display inline in the modal; Send button hides on success, replaced by Close
+- **Stale job drawer** — drawer now derives its data from the live `bookings` array by ID so it automatically reflects charges, refunds, and receipt sends after `router.refresh()`
+
+### Added
+- **Activity timeline in job drawer** — shows chronological events: Booking created, Deposit paid, Day-of charge (with method + amount), Receipt sent, Deposit refunded
+- **`receipt_sent_at` column** on `bookings` table — stamped by the receipt API on successful send; displayed in the activity timeline
+
 ## [1.6.0] — 2026-03-25
 
 ### Added

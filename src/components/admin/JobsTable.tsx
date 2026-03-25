@@ -20,6 +20,7 @@ interface Booking {
   created_at: string;
   stripe_payment_intent_id: string | null;
   stripe_customer_id: string | null;
+  receipt_sent_at: string | null;
 }
 
 const STATUS_STYLES: Record<string, { bg: string; color: string }> = {
@@ -57,7 +58,8 @@ export default function JobsTable({ bookings }: { bookings: Booking[] }) {
   const [refunding, setRefunding] = useState<string | null>(null);
   const [refundMsg, setRefundMsg] = useState<Record<string, string>>({});
   const [chargeMsg, setChargeMsg] = useState<Record<string, string>>({});
-  const [selectedBooking, setSelectedBooking] = useState<Booking | null>(null);
+  const [selectedBookingId, setSelectedBookingId] = useState<string | null>(null);
+  const selectedBooking = bookings.find((b) => b.id === selectedBookingId) ?? null;
   const [receiptOpen, setReceiptOpen] = useState<string | null>(null);
   const [receiptEmail, setReceiptEmail] = useState(true);
   const [receiptSms, setReceiptSms] = useState(true);
@@ -65,6 +67,7 @@ export default function JobsTable({ bookings }: { bookings: Booking[] }) {
   const [receiptSmsTo, setReceiptSmsTo] = useState("");
   const [sendingReceipt, setSendingReceipt] = useState<string | null>(null);
   const [receiptMsg, setReceiptMsg] = useState<Record<string, string>>({});
+  const [receiptResult, setReceiptResult] = useState<{ ok: boolean; msg: string } | null>(null);
 
   async function handleSaveCash(id: string) {
     const dollars = parseFloat(amountInput);
@@ -113,6 +116,7 @@ export default function JobsTable({ bookings }: { bookings: Booking[] }) {
 
   async function handleSendReceipt(id: string) {
     setSendingReceipt(id);
+    setReceiptResult(null);
     const res = await fetch(`/api/admin/bookings/${id}/receipt`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -125,8 +129,17 @@ export default function JobsTable({ bookings }: { bookings: Booking[] }) {
     });
     const data = await res.json();
     setSendingReceipt(null);
-    setReceiptMsg((prev) => ({ ...prev, [id]: res.ok ? "Sent!" : (data.error ?? "Failed") }));
-    if (res.ok) setReceiptOpen(null);
+    const ok = res.ok || data.partial;
+    const msg = res.ok
+      ? "Receipt sent successfully!"
+      : data.partial
+      ? `Partially sent — ${data.error}`
+      : (data.error ?? "Failed to send receipt.");
+    setReceiptResult({ ok, msg });
+    if (ok) {
+      setReceiptMsg((prev) => ({ ...prev, [id]: "Sent!" }));
+      router.refresh();
+    }
   }
 
   async function handleStatusChange(id: string, status: string) {
@@ -168,7 +181,7 @@ export default function JobsTable({ bookings }: { bookings: Booking[] }) {
               return (
                 <tr
                   key={b.id}
-                  onClick={() => setSelectedBooking(b)}
+                  onClick={() => setSelectedBookingId(b.id)}
                   className="cursor-pointer hover:brightness-125 transition-all"
                   style={{
                     backgroundColor: i % 2 === 0 ? "#0D1117" : "#161B22",
@@ -303,79 +316,24 @@ export default function JobsTable({ bookings }: { bookings: Booking[] }) {
                       ) : null}
 
                       {/* Receipt */}
-                      <div className="relative">
-                        {receiptMsg[b.id] ? (
-                          <span className="text-xs" style={{ color: receiptMsg[b.id] === "Sent!" ? "#4ADE80" : "#F87171" }}>{receiptMsg[b.id]}</span>
-                        ) : (
-                          <button
-                            onClick={() => {
-                              setReceiptOpen(receiptOpen === b.id ? null : b.id);
-                              setReceiptEmailTo(b.customer_email);
-                              setReceiptSmsTo(b.customer_phone ?? "");
-                              setReceiptEmail(true);
-                              setReceiptSms(!!b.customer_phone);
-                            }}
-                            className="text-xs px-2 py-1 rounded font-medium transition-all hover:brightness-125 border border-transparent hover:border-blue-400"
-                            style={{ backgroundColor: "#1D4ED822", color: "#60A5FA" }}
-                          >
-                            Receipt
-                          </button>
-                        )}
-                        {receiptOpen === b.id && (
-                          <div
-                            className="absolute right-0 top-8 z-50 rounded-lg p-4 flex flex-col gap-3 w-64"
-                            style={{ backgroundColor: "#1C2230", border: "1px solid #30363D", boxShadow: "0 8px 24px rgba(0,0,0,.4)" }}
-                            onClick={(e) => e.stopPropagation()}
-                          >
-                            <p className="text-xs font-semibold text-white">Send Receipt</p>
-                            <label className="flex items-center gap-2 text-xs cursor-pointer" style={{ color: "#9CA3AF" }}>
-                              <input type="checkbox" checked={receiptEmail} onChange={(e) => setReceiptEmail(e.target.checked)} className="accent-blue-400" />
-                              Email
-                            </label>
-                            {receiptEmail && (
-                              <input
-                                type="email"
-                                value={receiptEmailTo}
-                                onChange={(e) => setReceiptEmailTo(e.target.value)}
-                                className="w-full px-2 py-1 rounded text-xs text-white outline-none"
-                                style={{ backgroundColor: "#0D1117", border: "1px solid #30363D" }}
-                                placeholder="email@example.com"
-                              />
-                            )}
-                            <label className="flex items-center gap-2 text-xs cursor-pointer" style={{ color: "#9CA3AF" }}>
-                              <input type="checkbox" checked={receiptSms} onChange={(e) => setReceiptSms(e.target.checked)} className="accent-blue-400" />
-                              SMS
-                            </label>
-                            {receiptSms && (
-                              <input
-                                type="tel"
-                                value={receiptSmsTo}
-                                onChange={(e) => setReceiptSmsTo(e.target.value)}
-                                className="w-full px-2 py-1 rounded text-xs text-white outline-none"
-                                style={{ backgroundColor: "#0D1117", border: "1px solid #30363D" }}
-                                placeholder="(604) 555-1234"
-                              />
-                            )}
-                            <div className="flex gap-2 mt-1">
-                              <button
-                                onClick={() => handleSendReceipt(b.id)}
-                                disabled={sendingReceipt === b.id || (!receiptEmail && !receiptSms)}
-                                className="flex-1 px-2 py-1.5 rounded text-xs font-medium disabled:opacity-50"
-                                style={{ backgroundColor: "#1D4ED8", color: "#fff" }}
-                              >
-                                {sendingReceipt === b.id ? "Sending…" : "Send"}
-                              </button>
-                              <button
-                                onClick={() => setReceiptOpen(null)}
-                                className="px-2 py-1.5 rounded text-xs"
-                                style={{ color: "#6B7280" }}
-                              >
-                                ✕
-                              </button>
-                            </div>
-                          </div>
-                        )}
-                      </div>
+                      {receiptMsg[b.id] ? (
+                        <span className="text-xs" style={{ color: receiptMsg[b.id] === "Sent!" ? "#4ADE80" : "#F87171" }}>{receiptMsg[b.id]}</span>
+                      ) : (
+                        <button
+                          onClick={() => {
+                            setReceiptOpen(receiptOpen === b.id ? null : b.id);
+                            setReceiptEmailTo(b.customer_email);
+                            setReceiptSmsTo(b.customer_phone ?? "");
+                            setReceiptEmail(true);
+                            setReceiptSms(!!b.customer_phone);
+                            setReceiptResult(null);
+                          }}
+                          className="text-xs px-2 py-1 rounded font-medium transition-all hover:brightness-125 border border-transparent hover:border-blue-400"
+                          style={{ backgroundColor: "#1D4ED822", color: "#60A5FA" }}
+                        >
+                          Receipt
+                        </button>
+                      )}
                     </div>
                   </td>
                 </tr>
@@ -385,9 +343,77 @@ export default function JobsTable({ bookings }: { bookings: Booking[] }) {
         </table>
       </div>
 
+      {/* Receipt Modal */}
+      {receiptOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center" onClick={() => setReceiptOpen(null)}>
+          <div
+            className="rounded-lg p-5 flex flex-col gap-3 w-80"
+            style={{ backgroundColor: "#1C2230", border: "1px solid #30363D", boxShadow: "0 8px 32px rgba(0,0,0,.6)" }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <p className="text-sm font-semibold text-white">Send Receipt</p>
+            <label className="flex items-center gap-2 text-xs cursor-pointer" style={{ color: "#9CA3AF" }}>
+              <input type="checkbox" checked={receiptEmail} onChange={(e) => setReceiptEmail(e.target.checked)} className="accent-blue-400" />
+              Email
+            </label>
+            {receiptEmail && (
+              <input
+                type="email"
+                value={receiptEmailTo}
+                onChange={(e) => setReceiptEmailTo(e.target.value)}
+                className="w-full px-2 py-1.5 rounded text-xs text-white outline-none"
+                style={{ backgroundColor: "#0D1117", border: "1px solid #30363D" }}
+                placeholder="email@example.com"
+              />
+            )}
+            <label className="flex items-center gap-2 text-xs cursor-pointer" style={{ color: "#9CA3AF" }}>
+              <input type="checkbox" checked={receiptSms} onChange={(e) => setReceiptSms(e.target.checked)} className="accent-blue-400" />
+              SMS
+            </label>
+            {receiptSms && (
+              <input
+                type="tel"
+                value={receiptSmsTo}
+                onChange={(e) => setReceiptSmsTo(e.target.value)}
+                className="w-full px-2 py-1.5 rounded text-xs text-white outline-none"
+                style={{ backgroundColor: "#0D1117", border: "1px solid #30363D" }}
+                placeholder="(604) 555-1234"
+              />
+            )}
+            {receiptResult && (
+              <p className="text-xs rounded px-3 py-2" style={{
+                backgroundColor: receiptResult.ok ? "#16A34A22" : "#EF444422",
+                color: receiptResult.ok ? "#4ADE80" : "#F87171",
+              }}>
+                {receiptResult.msg}
+              </p>
+            )}
+            <div className="flex gap-2 mt-1">
+              {!receiptResult?.ok && (
+                <button
+                  onClick={() => handleSendReceipt(receiptOpen)}
+                  disabled={sendingReceipt === receiptOpen || (!receiptEmail && !receiptSms)}
+                  className="flex-1 px-3 py-1.5 rounded text-xs font-medium disabled:opacity-50"
+                  style={{ backgroundColor: "#1D4ED8", color: "#fff" }}
+                >
+                  {sendingReceipt === receiptOpen ? "Sending…" : "Send"}
+                </button>
+              )}
+              <button
+                onClick={() => setReceiptOpen(null)}
+                className="px-3 py-1.5 rounded text-xs"
+                style={{ color: "#6B7280" }}
+              >
+                {receiptResult?.ok ? "Close" : "✕"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Job Detail Drawer */}
       {selectedBooking && (
-        <div className="fixed inset-0 z-50 flex justify-end" onClick={() => setSelectedBooking(null)}>
+        <div className="fixed inset-0 z-50 flex justify-end" onClick={() => setSelectedBookingId(null)}>
           <div
             className="w-full max-w-md h-full overflow-y-auto p-6 flex flex-col gap-5"
             style={{ backgroundColor: "#161B22", borderLeft: "1px solid #30363D" }}
@@ -402,7 +428,7 @@ export default function JobsTable({ bookings }: { bookings: Booking[] }) {
                   <p className="text-sm" style={{ color: "#6B7280" }}>{formatPhone(selectedBooking.customer_phone)}</p>
                 )}
               </div>
-              <button onClick={() => setSelectedBooking(null)} className="text-lg" style={{ color: "#6B7280" }}>✕</button>
+              <button onClick={() => setSelectedBookingId(null)} className="text-lg" style={{ color: "#6B7280" }}>✕</button>
             </div>
 
             <hr style={{ borderColor: "#30363D" }} />
@@ -450,6 +476,52 @@ export default function JobsTable({ bookings }: { bookings: Booking[] }) {
                     </p>
                   </div>
                 )}
+              </div>
+            </div>
+
+            {/* Activity timeline */}
+            <div>
+              <p className="text-xs font-medium uppercase tracking-wider mb-3" style={{ color: "#6B7280" }}>Activity</p>
+              <div className="flex flex-col gap-0">
+                {[
+                  { ts: selectedBooking.created_at, label: "Booking created", icon: "📋" },
+                  selectedBooking.status !== "pending_payment"
+                    ? { ts: selectedBooking.created_at, label: "Deposit paid · $50 card", icon: "💳" }
+                    : null,
+                  selectedBooking.amount_charged !== null
+                    ? {
+                        ts: null,
+                        label: `Day-of charge · ${formatCAD(selectedBooking.amount_charged)} ${selectedBooking.payment_method === "card" ? "💳 card" : "💵 cash"}`,
+                        icon: "💰",
+                      }
+                    : null,
+                  selectedBooking.receipt_sent_at
+                    ? { ts: selectedBooking.receipt_sent_at, label: "Receipt sent", icon: "📧" }
+                    : null,
+                  selectedBooking.status === "refunded"
+                    ? { ts: null, label: "Deposit refunded", icon: "↩️" }
+                    : null,
+                ]
+                  .filter(Boolean)
+                  .map((event, i, arr) => (
+                    <div key={i} className="flex gap-3 relative">
+                      {i < arr.length - 1 && (
+                        <div className="absolute left-[11px] top-6 bottom-0 w-px" style={{ backgroundColor: "#30363D" }} />
+                      )}
+                      <div
+                        className="flex-shrink-0 w-6 h-6 rounded-full flex items-center justify-center text-xs mt-0.5"
+                        style={{ backgroundColor: "#0D1117", border: "1px solid #30363D" }}
+                      >
+                        {event!.icon}
+                      </div>
+                      <div className="pb-4">
+                        <p className="text-sm text-white">{event!.label}</p>
+                        {event!.ts && (
+                          <p className="text-xs mt-0.5" style={{ color: "#6B7280" }}>{formatDateTime(event!.ts)}</p>
+                        )}
+                      </div>
+                    </div>
+                  ))}
               </div>
             </div>
 

@@ -133,6 +133,7 @@ export async function POST(
   if (!b) return NextResponse.json({ error: "Booking not found" }, { status: 404 });
 
   const errors: string[] = [];
+  let sent = 0;
 
   // Email via Postmark
   if (sendEmail && emailTo) {
@@ -148,6 +149,7 @@ export async function POST(
           TextBody: buildReceiptText(b),
           HtmlBody: buildReceiptHtml(b),
         });
+        sent++;
       } catch (e: unknown) {
         errors.push(`Email failed: ${e instanceof Error ? e.message : String(e)}`);
       }
@@ -178,6 +180,8 @@ export async function POST(
         if (!res.ok) {
           const err = await res.text();
           errors.push(`SMS failed: ${err}`);
+        } else {
+          sent++;
         }
       } catch (e: unknown) {
         errors.push(`SMS failed: ${e instanceof Error ? e.message : String(e)}`);
@@ -185,8 +189,16 @@ export async function POST(
     }
   }
 
+  if (sent > 0) {
+    await supabase
+      .from("bookings")
+      .update({ receipt_sent_at: new Date().toISOString() })
+      .eq("id", id);
+  }
+
   if (errors.length) {
-    return NextResponse.json({ error: errors.join("; ") }, { status: 500 });
+    const status = sent > 0 ? 207 : 500;
+    return NextResponse.json({ error: errors.join("; "), partial: sent > 0 }, { status });
   }
 
   return NextResponse.json({ ok: true });
