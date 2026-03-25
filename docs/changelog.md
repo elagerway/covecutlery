@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.7.1] — 2026-03-24
+
+### Added
+- **App icon** — `public/icon-512.png` — 512×512 Gyuto kitchen knife icon; gold outline on dark navy background, clean flat style
+
 ## [1.7.0] — 2026-03-25
 
 ### Added
