@@ -201,10 +201,7 @@ export default function BookingModal({ open, onClose, initialDate }: BookingModa
     }
     const km = haversineKm(HOME_BASE.lat, HOME_BASE.lng, addressCoords.lat, addressCoords.lng);
     if (km > MAX_KM || addressCoords.lng < MAX_LNG) {
-      const reason = addressCoords.lng < MAX_LNG
-        ? "your address requires a ferry to reach and is outside our service area."
-        : `your address is ${Math.round(km)} km from North Vancouver — outside our ${MAX_KM} km service area.`;
-      setError(`Sorry, ${reason} Please contact us to discuss options.`);
+      setError("We're very sorry, your address falls outside of our service area. Please contact us to discuss options.");
       setSubmitting(false);
       return;
     }
