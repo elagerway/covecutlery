@@ -7,7 +7,8 @@ export default async function CustomerDetailPage({
 }: {
   params: Promise<{ email: string }>;
 }) {
-  const { email } = await params;
+  const { email: rawEmail } = await params;
+  const email = decodeURIComponent(rawEmail);
 
   const supabase = await createClient();
   const { data: bookings } = await supabase

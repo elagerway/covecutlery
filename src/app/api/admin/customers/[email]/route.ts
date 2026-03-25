@@ -17,7 +17,8 @@ export async function PATCH(
   const supabase = await requireAdmin();
   if (!supabase) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-  const { email } = await params;
+  const { email: rawEmail } = await params;
+  const email = decodeURIComponent(rawEmail);
   const { customer_name, customer_phone } = await req.json();
 
   const updates: Record<string, unknown> = {};
