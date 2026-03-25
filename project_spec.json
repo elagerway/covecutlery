@@ -1,7 +1,7 @@
 {
   "project": {
     "name": "Cove Cutlery",
-    "description": "A modern, SEO-optimized cutlery sharpening service website for Cove Cutlery — a mobile and drop-off cutlery sharpening business serving Vancouver and the Lower Mainland since 2020. The site replaces coveblades.com under a new brand name, retaining all existing service content, pricing, and contact information while providing a cleaner, faster, more conversion-focused experience.",
+    "description": "A modern, SEO-optimized cutlery sharpening service website for Cove Cutlery — a mobile and drop-off cutlery sharpening business serving Vancouver and the Lower Mainland since 2020. The site replaces covecutlery.com under a new brand name, retaining all existing service content, pricing, and contact information while providing a cleaner, faster, more conversion-focused experience.",
     "type": "Web Application (Multi-page + PWA-ready)",
     "target_audience": "Home cooks, chefs, restaurants, and businesses in Metro Vancouver and Lower Mainland BC",
     "business_details": {
@@ -15,9 +15,9 @@
         "dropbox": "24/7"
       },
       "social": {
-        "instagram": "https://www.instagram.com/coveblades/",
-        "facebook": "https://www.facebook.com/coveblades",
-        "youtube": "https://www.youtube.com/@coveblades"
+        "instagram": "https://www.instagram.com/covecutlery/",
+        "facebook": "https://www.facebook.com/covecutlery",
+        "youtube": "https://www.youtube.com/@covecutlery"
       },
       "google_review_url": "https://g.page/r/CbQWUOKYuKT0EBM/review",
       "google_maps_url": "https://goo.gl/maps/C5GSo2wYLX36tTnv7"
@@ -26,7 +26,7 @@
   "milestones": {
     "milestone_1": {
       "name": "MVP – Core Website",
-      "description": "Full single-page marketing site with all service, pricing, and contact information. Closely emulates coveblades.com structure and content. Deployed on Vercel.",
+      "description": "Full single-page marketing site with all service, pricing, and contact information. Closely emulates covecutlery.com structure and content. Deployed on Vercel.",
       "tech_stack": {
         "framework": "Next.js 14 (App Router)",
         "language": "TypeScript",
@@ -111,7 +111,7 @@
         },
         {
           "name": "Instagram Feed Link",
-          "description": "Instagram grid teaser or link to @coveblades account"
+          "description": "Instagram grid teaser or link to @covecutlery account"
         }
       ],
       "subagent_jobs": [
@@ -149,11 +149,11 @@
     }
   },
   "design": {
-    "aesthetic": "Premium, dark, high-contrast. Similar to coveblades.com — clean whitespace, professional typography, strong CTAs.",
+    "aesthetic": "Premium, dark, high-contrast. Similar to covecutlery.com — clean whitespace, professional typography, strong CTAs.",
     "colors": {
       "primary": "#0D1117 (near-black background)",
       "accent": "#D4A017 (gold/amber — matching Cove Blades logo)",
-      "secondary": "#1E90FF (teal/blue — matching pricing underlines on coveblades.com)",
+      "secondary": "#1E90FF (teal/blue — matching pricing underlines on covecutlery.com)",
       "text": "#FFFFFF and #6B7280",
       "card_bg": "#161B22"
     },
