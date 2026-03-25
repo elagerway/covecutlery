@@ -3,15 +3,21 @@
 ## [1.7.2] — 2026-03-25
 
 ### Added
-- **Privacy Policy page** — `/privacy` covering data collection, third-party services (Cal.com, Stripe, Postmark, Google Maps, Cloudflare), cookies, and PIPEDA rights
+- **Privacy Policy page** — `/privacy` covering data collection, third-party services (Cal.com, Stripe, Postmark, Google Maps), cookies, and PIPEDA rights
 - **Terms of Service page** — `/terms` covering service scope, bookings/payment, 30-day guarantee, liability, cancellations, and service area
 - **Footer legal links** — Privacy Policy and Terms of Service links added to footer
+- **Drop-off static map** — `public/map-dropoff.png` dark-themed Google Maps snapshot replaces placeholder; clickable, links to Google Maps
 
 ### Changed
-- **Navbar logo** — replaced inline `BladeIcon` SVG with `public/icon-512.png` (512×512 Gyuto knife icon)
-- **Favicon** — `layout.tsx` metadata updated to use `icon-512.png` for browser tab and Apple touch icon
+- **Navbar & favicon** — switched to `logo-icon-512.png` (shield + sword logo); footer also uses new logo
 - **Receipt sender email** — changed from `help@covecutlery.ca` to `info@covecutlery.ca`
-- **Booking CAPTCHA removed** — Cloudflare Turnstile removed from `BookingModal` and `POST /api/cal/book`; service-area validation and input checks remain; contact form Turnstile is unchanged
+- **Booking CAPTCHA removed** — Cloudflare Turnstile removed from `BookingModal` and `POST /api/cal/book`; contact form Turnstile unchanged
+- **Booking API validation tightened** — `POST /api/cal/book` now requires phone and address (matching client-side requirements)
+- **Contact form** — all fields now mandatory (phone, email, item count, message were optional)
+- **Business hours** — Mon–Fri updated from 10am to Noon across all pages, footer, and JSON-LD schema
+- **About section** — corrected equipment from "Tormek and Wicked Edge" to "custom-built and Bucktool machines with Airplaten accessories"; Airplaten links to airplaten.com
+- **Drop-off section** — "Get Drop Box Code" button moved inline with section heading; map card stretches to match left column height
+- **Background grid removed** — subtle grid texture overlays removed from HeroSection, DropOffSection, and AboutSection
 
 ### Fixed
 - **App icon size** — `public/icon-512.png` compressed from 445 KB → 130 KB via PNG quantization (32 colours); annotation artefact removed

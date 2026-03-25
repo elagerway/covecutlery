@@ -99,7 +99,7 @@ src/
 │       ├── TrustBar.tsx        # 4-item trust bar below hero
 │       ├── ServicesSection.tsx # 6-card services grid
 │       ├── MobileServiceSection.tsx  # Service area minimums, booking CTA
-│       ├── DropOffSection.tsx  # Step-by-step drop-off, DropBoxCodeButton
+│       ├── DropOffSection.tsx  # Step-by-step drop-off, static Google Maps image, DropBoxCodeButton inline with heading
 │       ├── PricingSection.tsx  # 4 tiers + additional services table
 │       ├── ReviewsSection.tsx  # 6 most-recent Google reviews + "see more" link
 │       ├── WhereWeAreSection.tsx  # Async Server Component — 7-day location strip from Cal.com bookings
@@ -116,7 +116,10 @@ src/
     └── cn.ts                   # className utility
 
 public/
-└── promaster.png              # Background-removed Ram ProMaster side-profile photo
+├── promaster.png              # Background-removed Ram ProMaster side-profile photo
+├── logo-icon-512.png          # 512×512 shield + sword logo icon (navbar, favicon)
+├── icon-512.png               # 512×512 Gyuto knife icon (gold on dark)
+└── map-dropoff.png            # Dark-themed Google Maps Static API snapshot of drop-off location
 ```
 
 ## Data Flow

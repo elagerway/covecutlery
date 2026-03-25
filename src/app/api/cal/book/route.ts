@@ -45,8 +45,8 @@ export async function POST(req: NextRequest) {
   const body = await req.json();
   const { start, name, email, phone, address, notes } = body;
 
-  if (!start || !name || !email) {
-    return NextResponse.json({ error: "start, name, and email required" }, { status: 400 });
+  if (!start || !name || !email || !phone || !address) {
+    return NextResponse.json({ error: "start, name, email, phone, and address required" }, { status: 400 });
   }
   if (typeof name !== "string" || name.length > 200 ||
       typeof email !== "string" || !email.includes("@") || email.length > 200 ||

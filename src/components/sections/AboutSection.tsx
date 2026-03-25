@@ -11,7 +11,7 @@ const values = [
   {
     icon: Wrench,
     label: "Professional Equipment",
-    description: "Tormek and Wicked Edge sharpening systems",
+    description: "Custom-built and Bucktool machines with Airplaten accessories",
   },
   {
     icon: Leaf,
@@ -54,8 +54,9 @@ export default function AboutSection() {
             >
               Based on the North Shore of Vancouver, Cove Cutlery has been
               delivering professional cutlery sharpening since 2020. We use
-              professional Tormek and Wicked Edge systems to restore factory
-              edges on all blade types — kitchen knives, axes, garden tools,
+              custom-built and Bucktool sharpening machines with{" "}
+              <a href="https://airplaten.com" target="_blank" rel="noopener noreferrer" className="underline hover:text-white transition-colors" style={{ color: "#D4A017" }}>Airplaten</a>{" "}
+              accessories to restore factory edges on all blade types — kitchen knives, axes, garden tools,
               and more.
             </p>
             <p
@@ -86,15 +87,6 @@ export default function AboutSection() {
             }}
             aria-label="Watch Cove Cutlery on YouTube"
           >
-            {/* Subtle grid */}
-            <div
-              className="absolute inset-0 pointer-events-none opacity-[0.03]"
-              style={{
-                backgroundImage:
-                  "repeating-linear-gradient(0deg, #fff 0px, #fff 1px, transparent 1px, transparent 40px), repeating-linear-gradient(90deg, #fff 0px, #fff 1px, transparent 1px, transparent 40px)",
-              }}
-            />
-
             {/* Play button circle */}
             <div
               className="relative z-10 w-16 h-16 rounded-full flex items-center justify-center mb-5 transition-transform duration-200 group-hover:scale-110"

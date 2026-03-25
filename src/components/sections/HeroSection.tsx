@@ -25,15 +25,6 @@ export default function HeroSection() {
         }}
       />
 
-      {/* Subtle grid texture */}
-      <div
-        className="absolute inset-0 pointer-events-none opacity-[0.03]"
-        style={{
-          backgroundImage:
-            "repeating-linear-gradient(0deg, #fff 0px, #fff 1px, transparent 1px, transparent 60px), repeating-linear-gradient(90deg, #fff 0px, #fff 1px, transparent 1px, transparent 60px)",
-        }}
-      />
-
       {/* Content */}
       <div className="relative z-10 flex flex-col items-center text-center px-6 max-w-4xl mx-auto w-full">
 

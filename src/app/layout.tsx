@@ -19,8 +19,8 @@ export const metadata: Metadata = {
   },
   metadataBase: new URL('https://covecutlery.com'),
   icons: {
-    icon: '/icon-512.png',
-    apple: '/icon-512.png',
+    icon: '/logo-icon-512.png',
+    apple: '/logo-icon-512.png',
   },
   robots: {
     index: true,
@@ -59,7 +59,7 @@ export default function RootLayout({
                 {
                   '@type': 'OpeningHoursSpecification',
                   dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
-                  opens: '10:00',
+                  opens: '12:00',
                   closes: '19:00',
                 },
                 {

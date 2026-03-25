@@ -1,13 +1,6 @@
 import Link from "next/link";
+import Image from "next/image";
 import { Phone, Mail, ExternalLink, Clock } from "lucide-react";
-
-const BladeIcon = ({ size = 22 }: { size?: number }) => (
-  <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-    <path d="M3 21L12 3l2 2-7 14z" />
-    <path d="M14 5l6-2-2 6" />
-    <path d="M14 5l2 2" />
-  </svg>
-);
 
 const quickLinks = [
   { label: "Home", href: "/" },
@@ -20,7 +13,7 @@ const quickLinks = [
 ];
 
 const businessHours = [
-  { days: "Monday – Friday", hours: "10:00 am – 7:00 pm" },
+  { days: "Monday – Friday", hours: "Noon – 7:00 pm" },
   { days: "Saturday", hours: "Noon – 4:00 pm" },
   { days: "Drop Box", hours: "24 / 7" },
 ];
@@ -115,9 +108,7 @@ export default function Footer() {
               className="inline-flex items-center gap-2 group mb-4"
               aria-label="Cove Cutlery Home"
             >
-              <span className="text-[#D4A017] group-hover:text-[#e8b82a] transition-colors duration-200">
-                <BladeIcon size={22} />
-              </span>
+              <Image src="/logo-icon-512.png" alt="" width={28} height={28} />
               <span
                 className="text-[#D4A017] group-hover:text-[#e8b82a] font-bold tracking-widest text-sm uppercase transition-colors duration-200"
                 style={{ letterSpacing: "0.18em" }}

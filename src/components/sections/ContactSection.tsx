@@ -167,6 +167,7 @@ export default function ContactSection() {
                   id="phone"
                   name="phone"
                   type="tel"
+                  required
                   value={form.phone}
                   onChange={handleChange}
                   placeholder="604-xxx-xxxx"
@@ -188,6 +189,7 @@ export default function ContactSection() {
                   id="email"
                   name="email"
                   type="email"
+                  required
                   value={form.email}
                   onChange={handleChange}
                   placeholder="you@email.com"
@@ -238,6 +240,7 @@ export default function ContactSection() {
                   name="item_count"
                   type="number"
                   min="1"
+                  required
                   value={form.item_count}
                   onChange={handleChange}
                   placeholder="e.g. 8"
@@ -259,6 +262,7 @@ export default function ContactSection() {
                   id="message"
                   name="message"
                   rows={4}
+                  required
                   value={form.message}
                   onChange={handleChange}
                   placeholder="Any additional details..."
@@ -407,7 +411,7 @@ export default function ContactSection() {
                 </p>
                 <ul className="space-y-1">
                   {[
-                    { d: "Mon – Fri", t: "10am – 7pm" },
+                    { d: "Mon – Fri", t: "Noon – 7pm" },
                     { d: "Saturday", t: "Noon – 4pm" },
                     { d: "Drop Box", t: "24/7" },
                   ].map((h) => (

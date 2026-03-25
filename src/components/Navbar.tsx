@@ -75,7 +75,7 @@ export default function Navbar() {
             className="flex items-center gap-2 group"
             aria-label="Cove Cutlery Home"
           >
-            <Image src="/icon-512.png" alt="" width={40} height={40} />
+            <Image src="/logo-icon-512.png" alt="" width={40} height={40} />
             <span
               className="text-[#D4A017] group-hover:text-[#e8b82a] font-bold tracking-widest text-sm sm:text-base uppercase transition-colors duration-200"
               style={{ fontFamily: "Inter, system-ui, sans-serif", letterSpacing: "0.18em" }}
