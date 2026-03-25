@@ -1,5 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
 
+/** Normalise a Canadian/US phone number to E.164 format (+1XXXXXXXXXX).
+ *  Returns the original string if it's already E.164 or can't be normalised.
+ */
+function toE164CA(phone: string | undefined): string | undefined {
+  if (!phone) return undefined;
+  if (phone.startsWith("+")) return phone; // already international
+  const digits = phone.replace(/\D/g, "");
+  if (digits.length === 10) return `+1${digits}`;
+  if (digits.length === 11 && digits.startsWith("1")) return `+${digits}`;
+  return phone; // unknown format — pass as-is
+}
+
 export async function POST(req: NextRequest) {
   const body = await req.json();
   const { start, name, email, phone, address, notes, captchaToken } = body;
@@ -48,7 +60,7 @@ export async function POST(req: NextRequest) {
           email,
           timeZone: "America/Vancouver",
           language: "en",
-          phoneNumber: phone || undefined,
+          phoneNumber: toE164CA(phone),
         },
         location: address ? { type: "attendeeAddress", address } : undefined,
         metadata: notes ? { notes } : {},
