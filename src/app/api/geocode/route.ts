@@ -8,7 +8,7 @@ export async function GET(req: NextRequest) {
 
   if (placeId) {
     // Place details — return structured address components
-    const url = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${encodeURIComponent(placeId)}&fields=address_components&key=${KEY}`;
+    const url = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${encodeURIComponent(placeId)}&fields=address_components,geometry&key=${KEY}`;
     try {
       const res = await fetch(url);
       const data = await res.json();

@@ -41,6 +41,22 @@ interface BookingModalProps {
 
 const TIMEZONE = "America/Vancouver";
 
+// Home base: 4086 Brockton Crescent, North Vancouver
+const HOME_BASE = { lat: 49.3198, lng: -123.0725 };
+const MAX_KM = 90;
+// Anything west of this longitude requires a ferry (Sunshine Coast, Vancouver Island)
+const MAX_LNG = -123.35;
+
+function haversineKm(lat1: number, lng1: number, lat2: number, lng2: number) {
+  const R = 6371;
+  const dLat = ((lat2 - lat1) * Math.PI) / 180;
+  const dLng = ((lng2 - lng1) * Math.PI) / 180;
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos((lat1 * Math.PI) / 180) * Math.cos((lat2 * Math.PI) / 180) * Math.sin(dLng / 2) ** 2;
+  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
 function formatDate(date: Date) {
   return date.toLocaleDateString("en-CA", { timeZone: TIMEZONE }); // YYYY-MM-DD
 }
@@ -85,6 +101,7 @@ export default function BookingModal({ open, onClose, initialDate }: BookingModa
   const [error, setError] = useState<string | null>(null);
   const [captchaToken, setCaptchaToken] = useState<string | null>(null);
   const turnstileRef = useRef<TurnstileInstance>(null);
+  const [addressCoords, setAddressCoords] = useState<{ lat: number; lng: number } | null>(null);
   const [addressSuggestions, setAddressSuggestions] = useState<AddressSuggestion[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [addressLoading, setAddressLoading] = useState(false);
@@ -121,6 +138,7 @@ export default function BookingModal({ open, onClose, initialDate }: BookingModa
         setSelectedDate(null);
         setSelectedSlot(null);
         setForm({ name: "", email: "", phone: "", address: "", notes: "" });
+        setAddressCoords(null);
         setError(null);
         setAddressSuggestions([]);
         setCaptchaToken(null);
@@ -146,6 +164,7 @@ export default function BookingModal({ open, onClose, initialDate }: BookingModa
 
   function handleAddressChange(value: string) {
     setForm((f) => ({ ...f, address: value }));
+    setAddressCoords(null); // coords are stale until user picks from autocomplete
     setShowSuggestions(true);
     if (addressDebounce.current) clearTimeout(addressDebounce.current);
     if (value.length < 3) {
@@ -173,6 +192,22 @@ export default function BookingModal({ open, onClose, initialDate }: BookingModa
     if (!selectedSlot || !form.name || !form.email || !form.phone || !form.address || !captchaToken) return;
     setSubmitting(true);
     setError(null);
+
+    // Distance check — require address from autocomplete so we have coords
+    if (!addressCoords) {
+      setError("Please select your address from the autocomplete suggestions so we can verify it's within our service area.");
+      setSubmitting(false);
+      return;
+    }
+    const km = haversineKm(HOME_BASE.lat, HOME_BASE.lng, addressCoords.lat, addressCoords.lng);
+    if (km > MAX_KM || addressCoords.lng < MAX_LNG) {
+      const reason = addressCoords.lng < MAX_LNG
+        ? "your address requires a ferry to reach and is outside our service area."
+        : `your address is ${Math.round(km)} km from North Vancouver — outside our ${MAX_KM} km service area.`;
+      setError(`Sorry, ${reason} Please contact us to discuss options.`);
+      setSubmitting(false);
+      return;
+    }
     const notes = form.notes || undefined;
     try {
       // Step 1: Create Cal.com booking
@@ -505,8 +540,12 @@ export default function BookingModal({ open, onClose, initialDate }: BookingModa
                                   ? formatAddressComponents(data.address_components)
                                   : s.description;
                                 setForm((f) => ({ ...f, address: formatted }));
+                                if (data.geometry?.location) {
+                                  setAddressCoords(data.geometry.location);
+                                }
                               } catch {
                                 setForm((f) => ({ ...f, address: s.description }));
+                                setError("Address lookup failed — please re-select your address from the suggestions.");
                               }
                             }}
                             className="w-full text-left px-3 py-2.5 text-sm transition-colors hover:bg-white/10"

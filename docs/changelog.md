@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.7.0] — 2026-03-25
+
+### Added
+- **Service area validation** — booking flow now checks the customer's address before taking payment; blocks addresses outside 90 km of North Vancouver OR west of -123.35° longitude (Sunshine Coast, Vancouver Island require a ferry)
+- Client-side check in `BookingModal` uses Google Places geometry coords captured at autocomplete selection; shows a clear error before the Cal.com booking is attempted
+- Server-side guard in `POST /api/cal/book` geocodes the address string via Google Geocoding API as a second line of defence
+- `GET /api/geocode?place_id=` now returns `geometry` alongside `address_components`
+
 ## [1.6.1] — 2026-03-25
 
 ### Fixed
