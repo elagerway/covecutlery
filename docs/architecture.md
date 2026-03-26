@@ -122,7 +122,7 @@ src/
     ├── schema.ts               # safeJsonLd(), breadcrumbSchema(), faqPageSchema(), FAQ interface — shared SEO helpers
     ├── calSchedule.ts          # getWeekSchedule() — fetches Cal.com bookings, extracts city per day
     ├── format.ts               # formatPhone() — normalises any phone input to (XXX) XXX-XXXX
-    ├── supabase.ts             # Supabase anon client (public pages only)
+    ├── supabase.ts             # Lazy Supabase anon client — getSupabase() defers init until first call; safe for preview builds without env vars
     └── cn.ts                   # className utility
 
 public/
@@ -323,6 +323,6 @@ Note: dev server runs on port **3002**. Never use port 3000.
 - Nominatim geocoding (`/api/geocode`) must stay server-side — browsers cannot set the `User-Agent` header (forbidden), so direct client-side fetch to Nominatim would return 403
 - `lib/calSchedule.ts` uses `vancouverMidnightISO()` — a DST-aware helper that probes noon UTC via `Intl.DateTimeFormat` to determine Vancouver's UTC offset before constructing the midnight timestamp. Raw `new Date("YYYY-MM-DDT00:00:00")` would parse in server-local time (UTC on Vercel), yielding the wrong window
 - Next.js 16 App Router: `params` in page/route handler components is `Promise<{ ... }>` and must be `await`ed; `cookies()` from `next/headers` is also async
-- `@supabase/ssr` is used for all auth-aware server contexts (middleware, server components, API routes). The older `lib/supabase.ts` anon client remains for public-facing pages
+- `@supabase/ssr` is used for all auth-aware server contexts (middleware, server components, API routes). The older `lib/supabase.ts` anon client remains for public-facing pages. Build-time pages (blog, sitemap) guard against missing Supabase env vars to prevent preview deployment failures — same pattern as the lazy Stripe init
 - Admin middleware uses `getUser()` (not `getSession()`) — Supabase recommends this for server-side auth checks as it validates the token server-side
 - The double-cookie pattern in middleware: cookies must be set on both the incoming `request` and the outgoing `supabaseResponse` to keep the session alive across edge calls

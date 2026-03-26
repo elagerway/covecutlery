@@ -1,5 +1,10 @@
 # Changelog
 
+## [1.8.1] — 2026-03-25
+
+### Fixed
+- **Lazy Supabase initialization** — blog pages, blog/[slug], sitemap, and `lib/supabase.ts` now guard against missing `NEXT_PUBLIC_SUPABASE_URL`; preview deployments without Supabase env vars no longer crash at build time (mirrors the earlier lazy Stripe init pattern)
+
 ## [1.8.0] — 2026-03-25
 
 ### Added

@@ -1,5 +1,5 @@
 import type { MetadataRoute } from 'next'
-import { createClient } from '@supabase/supabase-js'
+import { getSupabase } from '@/lib/supabase'
 import { cities } from '@/data/cities'
 
 export const revalidate = 3600
@@ -13,16 +13,18 @@ const STATIC_PAGES = [
 ]
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  )
-  const { data: posts, error } = await supabase
-    .from('blog_posts')
-    .select('slug, published_at')
-    .eq('status', 'published')
+  const supabase = getSupabase()
+  let posts: { slug: string; published_at: string | null }[] | null = null
 
-  if (error) console.error('[sitemap] Failed to fetch blog posts:', error.message)
+  if (supabase) {
+    const { data, error } = await supabase
+      .from('blog_posts')
+      .select('slug, published_at')
+      .eq('status', 'published')
+
+    if (error) console.error('[sitemap] Failed to fetch blog posts:', error.message)
+    posts = data
+  }
 
   return [
     ...STATIC_PAGES.map(path => ({

@@ -1,20 +1,15 @@
-import { createClient } from "@supabase/supabase-js";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
+import { getSupabase } from "@/lib/supabase";
 import { safeJsonLd, breadcrumbSchema } from "@/lib/schema";
 
 export const revalidate = 300;
 
-function getSupabase() {
-  return createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  );
-}
-
 export async function generateStaticParams() {
-  const { data } = await getSupabase()
+  const supabase = getSupabase();
+  if (!supabase) return [];
+  const { data } = await supabase
     .from("blog_posts")
     .select("slug")
     .eq("status", "published");
@@ -27,7 +22,9 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const { data: post } = await getSupabase()
+  const supabase = getSupabase();
+  if (!supabase) return {};
+  const { data: post } = await supabase
     .from("blog_posts")
     .select("title, meta_description, featured_image_url")
     .eq("slug", slug)
@@ -62,7 +59,9 @@ export default async function BlogPostPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const { data: post } = await getSupabase()
+  const supabase = getSupabase();
+  if (!supabase) notFound();
+  const { data: post } = await supabase
     .from("blog_posts")
     .select("title, content, excerpt, featured_image_url, published_at")
     .eq("slug", slug)

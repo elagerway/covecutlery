@@ -1,6 +1,6 @@
-import { createClient } from "@supabase/supabase-js";
 import type { Metadata } from "next";
 import Link from "next/link";
+import { getSupabase } from "@/lib/supabase";
 
 export const revalidate = 300;
 
@@ -19,16 +19,17 @@ function formatDate(iso: string) {
 }
 
 export default async function BlogPage() {
-  const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-  );
+  const supabase = getSupabase();
+  let posts: { title: string; slug: string; excerpt: string | null; featured_image_url: string | null; published_at: string | null }[] | null = null;
 
-  const { data: posts } = await supabase
-    .from("blog_posts")
-    .select("title, slug, excerpt, featured_image_url, published_at")
-    .eq("status", "published")
-    .order("published_at", { ascending: false });
+  if (supabase) {
+    const { data } = await supabase
+      .from("blog_posts")
+      .select("title, slug, excerpt, featured_image_url, published_at")
+      .eq("status", "published")
+      .order("published_at", { ascending: false });
+    posts = data;
+  }
 
   return (
     <main className="min-h-screen py-20 px-6" style={{ backgroundColor: "#0D1117" }}>
