@@ -74,7 +74,7 @@ export default function CustomerDetail({
   }
 
   async function handleRefund(bookingId: string) {
-    if (!confirm("Issue a full refund for this booking's $50 deposit?")) return;
+    if (!confirm("Issue a full refund for this booking's deposit?")) return;
     setRefundingId(bookingId);
     const res = await fetch(`/api/admin/bookings/${bookingId}/refund`, {
       method: "POST",

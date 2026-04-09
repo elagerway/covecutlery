@@ -25,7 +25,7 @@ export default function TermsPage() {
 
             <section>
               <h2 className="text-lg font-semibold text-white mb-3">2. Bookings & Payment</h2>
-              <p>A deposit is collected at the time of booking to secure your appointment. The remaining balance is due upon completion of service. Prices are per piece as listed on our website.</p>
+              <p>Payment is due upon completion of service. Prices are per piece as listed on our website.</p>
               <p className="mt-3">We accept cash, Interac e-Transfer, and credit/debit card. All payments are processed securely.</p>
             </section>
 
