@@ -203,7 +203,6 @@ export default function BookingModal({ open, onClose, initialDate }: BookingModa
     }
     const notes = form.notes || undefined;
     try {
-      // Step 1: Create Cal.com booking
       const calRes = await fetch("/api/cal/book", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -223,49 +222,7 @@ export default function BookingModal({ open, onClose, initialDate }: BookingModa
         return;
       }
 
-      // Step 2: Create Stripe Checkout session
-      const calBookingUid = calData.uid ?? calData.data?.uid ?? calData.id;
-      if (!calBookingUid) {
-        setError("Booking confirmation failed. Please contact us to complete your booking.");
-        setSubmitting(false);
-        return;
-      }
-
-      const appointmentDate = formatDate(new Date(selectedSlot));
-      const appointmentTime = new Date(selectedSlot).toLocaleTimeString("en-US", {
-        timeZone: "America/Vancouver",
-        hour: "numeric",
-        minute: "2-digit",
-        hour12: true,
-      });
-      const stripeRes = await fetch("/api/stripe/checkout", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          calBookingUid,
-          customerName: form.name,
-          customerEmail: form.email,
-          customerPhone: form.phone,
-          appointmentDate,
-          appointmentTime,
-          address: form.address,
-        }),
-      });
-      const stripeData = await stripeRes.json();
-      if (!stripeRes.ok || !stripeData.url) {
-        // Free the Cal.com slot so the customer can retry
-        await fetch("/api/cal/cancel", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ uid: calBookingUid }),
-        });
-        setError("Could not start payment. Please try again or contact us.");
-        setSubmitting(false);
-        return;
-      }
-
-      // Step 3: Redirect to Stripe Checkout
-      window.location.href = stripeData.url;
+      setStep("done");
     } catch {
       setError("Network error. Please try again.");
       setSubmitting(false);
@@ -581,7 +538,7 @@ export default function BookingModal({ open, onClose, initialDate }: BookingModa
                   style={{ backgroundColor: "#D4A017", color: "#0D1117" }}
                 >
                   {submitting && <Loader2 className="w-4 h-4 animate-spin" />}
-                  {submitting ? "Processing…" : "Pay $50 Deposit & Confirm"}
+                  {submitting ? "Processing…" : "Confirm Booking"}
                 </button>
               </div>
             </div>
@@ -593,8 +550,8 @@ export default function BookingModal({ open, onClose, initialDate }: BookingModa
               <CheckCircle className="w-14 h-14 mb-4" style={{ color: "#D4A017" }} />
               <h3 className="text-xl font-bold text-white mb-2">You&apos;re booked!</h3>
               <p className="text-sm leading-relaxed mb-6" style={{ color: "#6B7280" }}>
-                A confirmation has been sent to <span className="text-white">{form.email}</span>.
-                We&apos;ll be in touch to confirm your address and details.
+                A confirmation has been sent to <span className="text-white">{form.phone}</span>.
+                We&apos;ll see you at your scheduled time!
               </p>
               <button
                 onClick={onClose}

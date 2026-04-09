@@ -1,5 +1,16 @@
 # Changelog
 
+## [1.9.0] — 2026-04-08
+
+### Changed
+- **Booking flow — deposit removed** — mobile bookings no longer require a $50 Stripe deposit; customers confirm directly after selecting date/time/details; booking is saved as `confirmed` with `deposit_amount: 0`
+- **BookingModal** — "Pay $50 Deposit & Confirm" button replaced with "Confirm Booking"; booking completes in-modal instead of redirecting to Stripe Checkout
+- **Booking success page** — simplified to a static confirmation page; no longer verifies Stripe session
+
+### Added
+- **SMS booking notifications** — on confirmed booking, SMS sent to admin (+16043731500) with booking details and to the customer with confirmation via Magpipe API
+- **Supabase insert in `/api/cal/book`** — booking record now created directly in the book route (previously created in `/api/stripe/checkout`); status set to `confirmed` immediately
+
 ## [1.8.1] — 2026-03-25
 
 ### Fixed

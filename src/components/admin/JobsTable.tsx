@@ -485,8 +485,8 @@ export default function JobsTable({ bookings }: { bookings: Booking[] }) {
               <div className="flex flex-col gap-0">
                 {[
                   { ts: selectedBooking.created_at, label: "Booking created", icon: "📋" },
-                  selectedBooking.status !== "pending_payment"
-                    ? { ts: selectedBooking.created_at, label: "Deposit paid · $50 card", icon: "💳" }
+                  selectedBooking.status !== "pending_payment" && selectedBooking.deposit_amount > 0
+                    ? { ts: selectedBooking.created_at, label: `Deposit paid · ${formatCAD(selectedBooking.deposit_amount)} card`, icon: "💳" }
                     : null,
                   selectedBooking.amount_charged !== null
                     ? {

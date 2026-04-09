@@ -16,7 +16,7 @@ export async function POST(req: NextRequest) {
     .eq("cal_booking_uid", uid)
     .single();
 
-  if (!booking || booking.status !== "pending_payment") {
+  if (!booking || !["pending_payment", "confirmed"].includes(booking.status)) {
     return NextResponse.json({ error: "Booking not eligible for cancellation" }, { status: 403 });
   }
 
@@ -27,7 +27,7 @@ export async function POST(req: NextRequest) {
       "cal-api-version": "2024-08-13",
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ reason: "Payment not completed" }),
+    body: JSON.stringify({ reason: "Cancelled by customer" }),
   });
 
   if (!res.ok) return NextResponse.json({ error: "Failed to cancel" }, { status: 500 });

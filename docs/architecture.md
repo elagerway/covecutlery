@@ -46,7 +46,7 @@ src/
 │   │   │   └── webhook/route.ts     # POST — handles checkout.session.completed / expired; confirms or cancels booking
 │   │   └── cal/
 │   │       ├── slots/route.ts       # GET proxy → Cal.com v2 /slots
-│   │       ├── book/route.ts        # POST proxy → Cal.com v2 /bookings; Turnstile verify + input validation
+│   │       ├── book/route.ts        # POST proxy → Cal.com v2 /bookings; saves to Supabase as confirmed; sends SMS to admin + customer via Magpipe
 │   │       ├── cancel/route.ts      # POST — cancels a Cal.com booking by UID
 │   │       └── schedule/route.ts    # GET — returns 7-day DaySchedule[] from Cal.com bookings
 │   ├── auth/
@@ -67,7 +67,7 @@ src/
 │   │           └── [id]/edit/page.tsx  # Server Component — fetches post, passes to PostForm
 │   ├── booking/
 │   │   ├── layout.tsx          # Adds robots: noindex to all booking pages
-│   │   ├── success/page.tsx    # Verifies Stripe session, confirms booking in Supabase, shows confirmation
+│   │   ├── success/page.tsx    # Static booking confirmation page
 │   │   └── cancel/page.tsx     # Cancels Cal.com booking via /api/cal/cancel, shows cancellation message
 │   ├── blog/
 │   │   ├── layout.tsx          # Wraps with Navbar + Footer
@@ -155,7 +155,10 @@ User clicks "Book Mobile Service" → BookingProvider.open()
   → User picks date → time → fills details form
     → POST /api/cal/book (Next.js proxy)
       → Cal.com v2 POST /bookings
-        → Booking confirmed, modal shows success
+        → INSERT into bookings table (status: confirmed, deposit_amount: 0)
+        → SMS to admin (new booking alert) via Magpipe
+        → SMS to customer (confirmation) via Magpipe
+        → Modal shows success
 ```
 
 ### Schedule (ISR)
@@ -277,7 +280,7 @@ RLS policies:
 | appointment_date | date | |
 | appointment_time | text | Formatted Vancouver time |
 | address | text | Service address |
-| deposit_amount | integer | Cents (default 5000 = $50) |
+| deposit_amount | integer | Cents (0 for no-deposit bookings) |
 | amount_charged | integer | Cents — entered by admin after job |
 | payment_method | text | `card` or `cash` — how day-of charge was collected |
 | status | text | pending_payment / confirmed / completed / cancelled / refunded |

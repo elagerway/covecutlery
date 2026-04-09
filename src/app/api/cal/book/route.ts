@@ -1,8 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
+import { createClient } from "@supabase/supabase-js";
 
 const HOME_BASE = { lat: 49.3198, lng: -123.0725 };
 const MAX_KM = 90;
 const MAX_LNG = -123.35; // west of this requires a ferry (Sunshine Coast, Vancouver Island)
+const ADMIN_PHONE = "+16043731500";
+const TIMEZONE = "America/Vancouver";
 
 function haversineKm(lat1: number, lng1: number, lat2: number, lng2: number) {
   const R = 6371;
@@ -105,6 +108,65 @@ export async function POST(req: NextRequest) {
   if (!res.ok) {
     const message = data?.error?.message ?? data?.message ?? "Booking failed. Please try again.";
     return NextResponse.json({ error: message }, { status: res.status });
+  }
+
+  // Save booking to Supabase as confirmed (no deposit required)
+  const calBookingUid = data.uid ?? data.data?.uid ?? data.id;
+  const appointmentDate = new Date(start).toLocaleDateString("en-CA", { timeZone: TIMEZONE });
+  const appointmentTime = new Date(start).toLocaleTimeString("en-US", {
+    timeZone: TIMEZONE,
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true,
+  });
+
+  const supabase = createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  );
+
+  await supabase.from("bookings").insert({
+    cal_booking_uid: calBookingUid,
+    customer_name: name,
+    customer_email: email,
+    customer_phone: toE164CA(phone) ?? null,
+    appointment_date: appointmentDate,
+    appointment_time: appointmentTime,
+    address: address ?? null,
+    status: "confirmed",
+    deposit_amount: 0,
+  });
+
+  // Send SMS notifications (fire-and-forget)
+  const e164Phone = toE164CA(phone);
+  if (process.env.MAGPIPE_API_KEY && process.env.MAGPIPE_SMS_FROM) {
+    const sendSms = async (to: string, message: string) => {
+      try {
+        await fetch("https://api.magpipe.ai/v1/sms", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${process.env.MAGPIPE_API_KEY}`,
+          },
+          body: JSON.stringify({
+            from: process.env.MAGPIPE_SMS_FROM,
+            to,
+            message,
+          }),
+        });
+      } catch (e) {
+        console.error(`SMS to ${to} failed:`, e);
+      }
+    };
+
+    // Notify admin + confirm to customer (parallel, non-blocking but awaited before response)
+    const adminMsg = `New booking! ${name} — ${appointmentDate} at ${appointmentTime}, ${address ?? "no address"}. Phone: ${phone}`;
+    const customerMsg = `Hi ${name.split(" ")[0]}, your Cove Cutlery mobile sharpening is confirmed for ${appointmentDate} at ${appointmentTime}. We'll see you at ${address}! Questions? Call us at 604-373-1500.`;
+
+    await Promise.allSettled([
+      sendSms(ADMIN_PHONE, adminMsg),
+      e164Phone ? sendSms(e164Phone, customerMsg) : Promise.resolve(),
+    ]);
   }
 
   return NextResponse.json(data);
