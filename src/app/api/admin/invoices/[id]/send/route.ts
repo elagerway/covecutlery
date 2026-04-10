@@ -38,8 +38,15 @@ function buildInvoiceHtml(invoice: {
 <body style="margin:0;padding:0;background:#f5f5f5;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">
   <div style="max-width:520px;margin:40px auto;background:#fff;border-radius:8px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.1);">
     <div style="background:#0D1117;padding:24px 32px;">
-      <p style="margin:0;color:#D4A017;font-size:20px;font-weight:700;letter-spacing:.5px;">COVE CUTLERY</p>
-      <p style="margin:4px 0 0;color:#6B7280;font-size:13px;">Invoice #${escapeHtml(invoice.invoice_number)}</p>
+      <table cellpadding="0" cellspacing="0" border="0"><tr>
+        <td style="vertical-align:middle;padding-right:12px;">
+          <img src="https://covecutlery.ca/logo-icon-512.png" alt="Cove Cutlery" width="40" height="40" style="display:block;border-radius:6px;" />
+        </td>
+        <td style="vertical-align:middle;">
+          <p style="margin:0;color:#D4A017;font-size:20px;font-weight:700;letter-spacing:.5px;">COVE CUTLERY</p>
+          <p style="margin:2px 0 0;color:#6B7280;font-size:13px;">Invoice #${escapeHtml(invoice.invoice_number)}</p>
+        </td>
+      </tr></table>
     </div>
     <div style="padding:32px;">
       <p style="margin:0 0 24px;font-size:15px;color:#111;">Hi ${escapeHtml(firstName)},<br>Here's your invoice from Cove Cutlery.</p>
