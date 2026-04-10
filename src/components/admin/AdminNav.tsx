@@ -36,6 +36,12 @@ export default function AdminNav({ email }: AdminNavProps) {
         <line x1="10" y1="9" x2="8" y2="9" />
       </svg>
     )},
+    { label: "Campaigns", href: "/admin/campaigns", icon: (
+      <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+        <path d="m3 11 18-5v12L3 13v-2z" />
+        <path d="M11.6 16.8a3 3 0 1 1-5.8-1.6" />
+      </svg>
+    )},
     { label: "Customers", href: "/admin/customers", icon: (
       <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
         <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
