@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useParams, useSearchParams } from "next/navigation";
-import { Loader2, CheckCircle, CreditCard, ArrowRight } from "lucide-react";
+import { Loader2, CheckCircle, CreditCard, ArrowRight, Download } from "lucide-react";
 import Link from "next/link";
 import { LineItem, formatCAD } from "@/lib/format";
 
@@ -178,7 +178,7 @@ export default function PublicInvoicePage() {
 
             {/* Payment options */}
             {!isPaid && (
-              <div className="flex flex-col gap-3">
+              <div className="flex flex-col gap-3 no-print">
                 <button
                   onClick={handlePayCard}
                   disabled={paying}
@@ -233,7 +233,69 @@ export default function PublicInvoicePage() {
             Cove Cutlery · <a href="https://covecutlery.ca" style={{ color: "#D4A017" }}>covecutlery.ca</a> · 604-373-1500
           </p>
         </div>
+
+        {/* Save as PDF */}
+        <div className="text-center mt-6 no-print">
+          <button
+            onClick={() => window.print()}
+            className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium transition-colors hover:bg-white/10"
+            style={{ border: "1px solid #30363D", color: "#6B7280" }}
+          >
+            <Download className="w-4 h-4" />
+            Save as PDF
+          </button>
+        </div>
       </div>
+
+      {/* Print styles */}
+      <style jsx global>{`
+        @media print {
+          @page {
+            margin: 0.5in;
+            size: letter;
+          }
+          body, main {
+            background: white !important;
+            color: #111 !important;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+          }
+          .no-print {
+            display: none !important;
+          }
+          /* Override dark theme for print */
+          [style*="background"] {
+            background-color: white !important;
+          }
+          [style*="color: #FFFFFF"], [style*="color: rgb(255, 255, 255)"] {
+            color: #111 !important;
+          }
+          [style*="color: #6B7280"] {
+            color: #666 !important;
+          }
+          [style*="border-color: #30363D"], [style*="border: 1px solid #30363D"] {
+            border-color: #ddd !important;
+          }
+          /* Invoice card */
+          [style*="background-color: #161B22"] {
+            background-color: #f8f8f8 !important;
+          }
+          [style*="background-color: #0D1117"] {
+            background-color: white !important;
+          }
+          /* Keep gold accent and green for paid */
+          [style*="color: #D4A017"] {
+            color: #B8860B !important;
+          }
+          [style*="color: #22C55E"] {
+            color: #16a34a !important;
+          }
+          [style*="background-color: rgb(34, 197, 94)"], [style*="#22C55E11"] {
+            background-color: #f0fdf4 !important;
+            border-color: #bbf7d0 !important;
+          }
+        }
+      `}</style>
     </main>
   );
 }
