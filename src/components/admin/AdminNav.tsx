@@ -61,11 +61,7 @@ export default function AdminNav({ email }: AdminNavProps) {
       {/* Logo */}
       <div className="px-5 py-5 border-b" style={{ borderColor: "#30363D" }}>
         <div className="flex items-center gap-2">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#D4A017" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M3 21L12 3l2 2-7 14z" />
-            <path d="M14 5l6-2-2 6" />
-            <path d="M14 5l2 2" />
-          </svg>
+          <img src="/logo-icon-512.png" alt="" width={20} height={20} className="rounded" />
           <span className="font-bold text-white text-sm">Cove Cutlery</span>
         </div>
         <div className="mt-1">

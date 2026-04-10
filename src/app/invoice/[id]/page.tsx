@@ -93,7 +93,8 @@ export default function PublicInvoicePage() {
     <main className="min-h-screen py-8 px-4" style={{ backgroundColor: "#0D1117" }}>
       <div className="max-w-lg mx-auto">
         {/* Header */}
-        <div className="text-center mb-8">
+        <div className="flex flex-col items-center mb-8">
+          <img src="/logo-icon-512.png" alt="Cove Cutlery" width={48} height={48} className="rounded-lg mb-3" />
           <p className="text-xl font-bold tracking-wide" style={{ color: "#D4A017" }}>COVE CUTLERY</p>
           <p className="text-sm mt-1" style={{ color: "#6B7280" }}>Mobile Knife Sharpening</p>
         </div>

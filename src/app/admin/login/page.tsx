@@ -40,11 +40,7 @@ function LoginForm() {
     >
       {/* Logo */}
       <div className="flex items-center gap-2 mb-8">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#D4A017" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round">
-          <path d="M3 21L12 3l2 2-7 14z" />
-          <path d="M14 5l6-2-2 6" />
-          <path d="M14 5l2 2" />
-        </svg>
+        <img src="/logo-icon-512.png" alt="" width={24} height={24} className="rounded" />
         <span className="font-bold text-white text-lg">Cove Cutlery</span>
         <span className="text-xs px-2 py-0.5 rounded-full ml-1 font-medium" style={{ backgroundColor: "#D4A01722", color: "#D4A017" }}>Admin</span>
       </div>
