@@ -247,53 +247,92 @@ export default function PublicInvoicePage() {
         </div>
       </div>
 
-      {/* Print styles */}
+      {/* Print-only version — completely separate layout with light colors */}
+      <div className="print-only" style={{ display: "none" }}>
+        <div style={{ maxWidth: 560, margin: "0 auto", fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif", color: "#111" }}>
+          <div style={{ textAlign: "center", marginBottom: 24 }}>
+            <img src="/logo-icon-512.png" alt="Cove Cutlery" width={40} height={40} style={{ borderRadius: 6, marginBottom: 8 }} />
+            <p style={{ fontSize: 20, fontWeight: 700, color: "#B8860B", letterSpacing: 0.5, margin: 0 }}>COVE CUTLERY</p>
+            <p style={{ fontSize: 13, color: "#666", margin: "4px 0 0" }}>Mobile Knife Sharpening</p>
+          </div>
+
+          {isPaid && invoice!.paid_at && (
+            <div style={{ padding: "12px 16px", background: "#f0fdf4", border: "1px solid #bbf7d0", borderRadius: 6, marginBottom: 16 }}>
+              <p style={{ margin: 0, fontSize: 14, fontWeight: 600, color: "#16a34a" }}>Payment Received</p>
+              <p style={{ margin: "2px 0 0", fontSize: 12, color: "#166534" }}>
+                {new Date(invoice!.paid_at).toLocaleDateString("en-CA", {
+                  weekday: "long", month: "long", day: "numeric", year: "numeric",
+                  hour: "numeric", minute: "2-digit", timeZone: "America/Vancouver",
+                })}
+                {invoice!.payment_method && ` via ${invoice!.payment_method === "stripe" ? "Credit Card" : invoice!.payment_method === "etransfer" ? "Interac e-Transfer" : invoice!.payment_method}`}
+              </p>
+            </div>
+          )}
+
+          <div style={{ border: "1px solid #ddd", borderRadius: 8, overflow: "hidden" }}>
+            <div style={{ background: "#f8f8f8", padding: "16px 24px" }}>
+              <div style={{ display: "flex", justifyContent: "space-between" }}>
+                <div>
+                  <p style={{ margin: 0, fontWeight: 700, fontSize: 16 }}>Invoice #{invoice!.invoice_number}</p>
+                  <p style={{ margin: "4px 0 0", fontSize: 12, color: "#666" }}>Issued {new Date(invoice!.created_at).toLocaleDateString("en-CA")}</p>
+                </div>
+                {!isPaid && invoice!.due_date && (
+                  <div style={{ textAlign: "right" }}>
+                    <p style={{ margin: 0, fontSize: 12, color: "#666" }}>Due</p>
+                    <p style={{ margin: 0, fontSize: 14, fontWeight: 500 }}>{invoice!.due_date}</p>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div style={{ padding: "20px 24px" }}>
+              <p style={{ fontSize: 12, color: "#666", margin: "0 0 4px" }}>Bill To</p>
+              <p style={{ fontSize: 15, fontWeight: 500, margin: "0 0 20px" }}>{invoice!.client_name}</p>
+
+              <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 14 }}>
+                <thead>
+                  <tr style={{ borderBottom: "2px solid #eee" }}>
+                    <th style={{ textAlign: "left", padding: "8px 0", fontWeight: 500, color: "#666" }}>Item</th>
+                    <th style={{ textAlign: "center", padding: "8px 0", fontWeight: 500, color: "#666" }}>Qty</th>
+                    <th style={{ textAlign: "right", padding: "8px 0", fontWeight: 500, color: "#666" }}>Price</th>
+                    <th style={{ textAlign: "right", padding: "8px 0", fontWeight: 500, color: "#666" }}>Total</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {invoice!.line_items.map((item, idx) => (
+                    <tr key={idx} style={{ borderBottom: "1px solid #eee" }}>
+                      <td style={{ padding: "10px 0" }}>{item.description}</td>
+                      <td style={{ padding: "10px 0", textAlign: "center", color: "#555" }}>{item.quantity}</td>
+                      <td style={{ padding: "10px 0", textAlign: "right", color: "#555" }}>{formatCAD(item.unit_price)}</td>
+                      <td style={{ padding: "10px 0", textAlign: "right", fontWeight: 500 }}>{formatCAD(item.quantity * item.unit_price)}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", paddingTop: 12, borderTop: "2px solid #ddd", marginTop: 4 }}>
+                <span style={{ fontWeight: 700 }}>Total</span>
+                <span style={{ fontSize: 20, fontWeight: 700, color: "#B8860B" }}>{formatCAD(invoice!.subtotal)}</span>
+              </div>
+
+              {invoice!.notes && (
+                <p style={{ fontSize: 12, color: "#555", padding: "10px 14px", background: "#f8f8f8", borderRadius: 6, marginTop: 16 }}>Note: {invoice!.notes}</p>
+              )}
+            </div>
+          </div>
+
+          <p style={{ textAlign: "center", fontSize: 12, color: "#888", marginTop: 24 }}>
+            Cove Cutlery · covecutlery.ca · 604-373-1500
+          </p>
+        </div>
+      </div>
+
       <style jsx global>{`
         @media print {
-          @page {
-            margin: 0.5in;
-            size: letter;
-          }
-          body, main {
-            background: white !important;
-            color: #111 !important;
-            -webkit-print-color-adjust: exact;
-            print-color-adjust: exact;
-          }
-          .no-print {
-            display: none !important;
-          }
-          /* Override dark theme for print */
-          [style*="background"] {
-            background-color: white !important;
-          }
-          [style*="color: #FFFFFF"], [style*="color: rgb(255, 255, 255)"] {
-            color: #111 !important;
-          }
-          [style*="color: #6B7280"] {
-            color: #666 !important;
-          }
-          [style*="border-color: #30363D"], [style*="border: 1px solid #30363D"] {
-            border-color: #ddd !important;
-          }
-          /* Invoice card */
-          [style*="background-color: #161B22"] {
-            background-color: #f8f8f8 !important;
-          }
-          [style*="background-color: #0D1117"] {
-            background-color: white !important;
-          }
-          /* Keep gold accent and green for paid */
-          [style*="color: #D4A017"] {
-            color: #B8860B !important;
-          }
-          [style*="color: #22C55E"] {
-            color: #16a34a !important;
-          }
-          [style*="background-color: rgb(34, 197, 94)"], [style*="#22C55E11"] {
-            background-color: #f0fdf4 !important;
-            border-color: #bbf7d0 !important;
-          }
+          @page { margin: 0.6in; size: letter; }
+          .no-print { display: none !important; }
+          main > div:first-child { display: none !important; }
+          .print-only { display: block !important; }
         }
       `}</style>
     </main>
