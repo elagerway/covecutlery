@@ -21,7 +21,7 @@ export default async function ProtectedAdminLayout({
   return (
     <div className="min-h-screen flex" style={{ backgroundColor: "#0D1117" }}>
       <AdminNav email={user.email!} />
-      <main className="flex-1 p-8 overflow-auto">{children}</main>
+      <main className="flex-1 p-4 md:p-8 overflow-auto pb-20 md:pb-8">{children}</main>
     </div>
   );
 }

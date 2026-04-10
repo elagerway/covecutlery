@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
@@ -11,6 +12,7 @@ interface AdminNavProps {
 export default function AdminNav({ email }: AdminNavProps) {
   const pathname = usePathname();
   const router = useRouter();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   async function handleLogout() {
     const supabase = createClient();
@@ -53,11 +55,8 @@ export default function AdminNav({ email }: AdminNavProps) {
     )},
   ];
 
-  return (
-    <aside
-      className="w-56 flex flex-col shrink-0 border-r"
-      style={{ backgroundColor: "#161B22", borderColor: "#30363D" }}
-    >
+  const sidebarContent = (
+    <>
       {/* Logo */}
       <div className="px-5 py-5 border-b" style={{ borderColor: "#30363D" }}>
         <div className="flex items-center gap-2">
@@ -79,6 +78,7 @@ export default function AdminNav({ email }: AdminNavProps) {
             <Link
               key={href}
               href={href}
+              onClick={() => setMobileMenuOpen(false)}
               className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors"
               style={{
                 backgroundColor: active ? "#D4A01722" : "transparent",
@@ -122,6 +122,82 @@ export default function AdminNav({ email }: AdminNavProps) {
           Sign out
         </button>
       </div>
-    </aside>
+    </>
+  );
+
+  return (
+    <>
+      {/* Desktop sidebar */}
+      <aside
+        className="hidden md:flex md:flex-col w-56 shrink-0 border-r"
+        style={{ backgroundColor: "#161B22", borderColor: "#30363D" }}
+      >
+        {sidebarContent}
+      </aside>
+
+      {/* Mobile bottom bar */}
+      <div
+        className="fixed bottom-0 left-0 right-0 z-50 flex md:hidden items-center justify-around border-t"
+        style={{ backgroundColor: "#161B22", borderColor: "#30363D", height: "56px" }}
+      >
+        {links.map(({ label, href, icon }) => {
+          const active = pathname.startsWith(href);
+          return (
+            <Link
+              key={href}
+              href={href}
+              className="flex flex-col items-center gap-1 px-2 py-1"
+              style={{ color: active ? "#D4A017" : "#6B7280" }}
+            >
+              <span className="[&>svg]:w-5 [&>svg]:h-5">{icon}</span>
+              <span className="text-[10px] font-medium">{label === "Blog Posts" ? "Blog" : label}</span>
+            </Link>
+          );
+        })}
+        <button
+          onClick={() => setMobileMenuOpen(true)}
+          className="flex flex-col items-center gap-1 px-2 py-1"
+          style={{ color: "#6B7280" }}
+        >
+          <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+            <line x1="3" y1="12" x2="21" y2="12" />
+            <line x1="3" y1="6" x2="21" y2="6" />
+            <line x1="3" y1="18" x2="21" y2="18" />
+          </svg>
+          <span className="text-[10px] font-medium">More</span>
+        </button>
+      </div>
+
+      {/* Mobile slide-out menu */}
+      {mobileMenuOpen && (
+        <div className="fixed inset-0 z-50 md:hidden">
+          {/* Backdrop */}
+          <div
+            className="absolute inset-0 bg-black/60"
+            onClick={() => setMobileMenuOpen(false)}
+          />
+          {/* Drawer */}
+          <aside
+            className="absolute left-0 top-0 bottom-0 w-64 flex flex-col"
+            style={{ backgroundColor: "#161B22" }}
+          >
+            {/* Close button */}
+            <div className="flex justify-end px-3 pt-3">
+              <button
+                onClick={() => setMobileMenuOpen(false)}
+                className="p-2 rounded-lg"
+                style={{ color: "#6B7280" }}
+              >
+                <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+                  <line x1="18" y1="6" x2="6" y2="18" />
+                  <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+              </button>
+            </div>
+            {sidebarContent}
+          </aside>
+        </div>
+      )}
+    </>
   );
 }

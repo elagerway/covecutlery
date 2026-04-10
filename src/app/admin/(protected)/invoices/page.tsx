@@ -54,7 +54,7 @@ export default function InvoicesPage() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between flex-wrap gap-3 mb-6">
         <h1 className="text-xl font-bold text-white">Invoices</h1>
         <Link
           href="/admin/invoices/new"
@@ -67,7 +67,7 @@ export default function InvoicesPage() {
       </div>
 
       {/* Status filters */}
-      <div className="flex gap-1.5 mb-5">
+      <div className="flex flex-wrap gap-1.5 mb-5 overflow-x-auto">
         {filters.map((f) => (
           <button
             key={f}
@@ -85,8 +85,9 @@ export default function InvoicesPage() {
       </div>
 
       {/* Table */}
+      <div className="overflow-x-auto -mx-4 px-4 md:mx-0 md:px-0">
       <div className="rounded-xl overflow-hidden" style={{ border: "1px solid #30363D" }}>
-        <table className="w-full text-sm">
+        <table className="w-full min-w-[640px] text-sm">
           <thead>
             <tr style={{ backgroundColor: "#161B22" }}>
               <th className="text-left px-4 py-3 font-medium" style={{ color: "#6B7280" }}>Invoice #</th>
@@ -153,6 +154,7 @@ export default function InvoicesPage() {
             )}
           </tbody>
         </table>
+      </div>
       </div>
     </div>
   );

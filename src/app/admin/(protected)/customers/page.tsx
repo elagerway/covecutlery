@@ -79,7 +79,7 @@ export default function AdminCustomersPage() {
 
   return (
     <div>
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex items-center justify-between flex-wrap gap-3 mb-6">
         <div>
           <h1 className="text-2xl font-bold text-white">Customers</h1>
           <p className="text-sm mt-1" style={{ color: "#6B7280" }}>
@@ -99,7 +99,7 @@ export default function AdminCustomersPage() {
       {showAdd && (
         <div className="rounded-xl p-5 mb-5" style={{ backgroundColor: "#161B22", border: "1px solid #30363D" }}>
           <p className="text-sm font-semibold text-white mb-4">New Customer</p>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             <div>
               <label className="block text-xs font-medium mb-1.5" style={{ color: "#6B7280" }}>
                 Name <span style={{ color: "#D4A017" }}>*</span>
@@ -177,7 +177,7 @@ export default function AdminCustomersPage() {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Search customers..."
-          className="w-full max-w-sm px-3 py-2 rounded-lg text-sm text-white placeholder-[#6B7280] outline-none"
+          className="w-full md:max-w-sm px-3 py-2 rounded-lg text-sm text-white placeholder-[#6B7280] outline-none"
           style={inputStyle}
         />
       </div>
@@ -194,8 +194,9 @@ export default function AdminCustomersPage() {
           <p style={{ color: "#6B7280" }}>{search ? "No matching customers." : "No customers yet."}</p>
         </div>
       ) : (
+        <div className="overflow-x-auto -mx-4 px-4 md:mx-0 md:px-0">
         <div className="rounded-lg border overflow-hidden" style={{ borderColor: "#30363D" }}>
-          <table className="w-full text-sm">
+          <table className="w-full min-w-[640px] text-sm">
             <thead>
               <tr style={{ backgroundColor: "#161B22", borderBottom: "1px solid #30363D" }}>
                 <th className="text-left px-4 py-3 font-medium" style={{ color: "#6B7280" }}>Name</th>
@@ -234,6 +235,7 @@ export default function AdminCustomersPage() {
               ))}
             </tbody>
           </table>
+        </div>
         </div>
       )}
     </div>
