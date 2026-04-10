@@ -1,17 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
-import { createClient } from "@supabase/supabase-js";
+import { getServiceClient } from "@/lib/admin";
 
 function getStripe() {
   return new Stripe(process.env.STRIPE_SECRET_KEY!);
 }
 
-function getServiceClient() {
-  return createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-  );
-}
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 // POST /api/invoices/[id]/pay — creates Stripe Checkout for invoice payment
 export async function POST(
@@ -19,11 +14,14 @@ export async function POST(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params;
+
+  if (!UUID_RE.test(id)) return NextResponse.json({ error: "Not found" }, { status: 404 });
+
   const supabase = getServiceClient();
 
   const { data: invoice } = await supabase
     .from("invoices")
-    .select("*")
+    .select("id, invoice_number, client_name, client_email, line_items, subtotal, status")
     .eq("id", id)
     .single();
 
@@ -32,7 +30,7 @@ export async function POST(
     return NextResponse.json({ error: invoice.status === "paid" ? "Already paid" : "Invoice is not payable" }, { status: 400 });
   }
 
-  const origin = req.headers.get("origin") ?? "https://covecutlery.ca";
+  const origin = process.env.NODE_ENV === "development" ? (req.headers.get("origin") ?? "https://covecutlery.ca") : "https://covecutlery.ca";
 
   const session = await getStripe().checkout.sessions.create({
     mode: "payment",

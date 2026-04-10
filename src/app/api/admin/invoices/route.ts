@@ -1,22 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@/utils/supabase/server";
-import { createClient as createServiceClient } from "@supabase/supabase-js";
-
-const ADMIN_EMAIL = "elagerway@gmail.com";
-
-async function requireAdmin() {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user || user.email !== ADMIN_EMAIL) return null;
-  return user;
-}
-
-function getServiceClient() {
-  return createServiceClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-  );
-}
+import { requireAdmin, getServiceClient } from "@/lib/admin";
 
 /** Generate next invoice number: YYYYMMDD-NNN */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -71,6 +54,19 @@ export async function POST(req: NextRequest) {
 
   if (!client_name || !client_email || !client_phone || !line_items?.length) {
     return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
+  }
+
+  // Validate line items
+  for (const item of line_items) {
+    if (typeof item.description !== "string" || !item.description.trim()) {
+      return NextResponse.json({ error: "Each line item needs a description" }, { status: 400 });
+    }
+    if (typeof item.quantity !== "number" || item.quantity < 1 || !Number.isInteger(item.quantity)) {
+      return NextResponse.json({ error: "Quantity must be a positive whole number" }, { status: 400 });
+    }
+    if (typeof item.unit_price !== "number" || item.unit_price < 0 || !Number.isInteger(item.unit_price)) {
+      return NextResponse.json({ error: "Price must be a non-negative amount in cents" }, { status: 400 });
+    }
   }
 
   const subtotal = line_items.reduce(

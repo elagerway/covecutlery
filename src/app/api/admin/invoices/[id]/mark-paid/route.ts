@@ -1,15 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@/utils/supabase/server";
-import { createClient as createServiceClient } from "@supabase/supabase-js";
-
-const ADMIN_EMAIL = "elagerway@gmail.com";
-
-async function requireAdmin() {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user || user.email !== ADMIN_EMAIL) return null;
-  return user;
-}
+import { requireAdmin, getServiceClient } from "@/lib/admin";
 
 export async function POST(
   req: NextRequest,
@@ -21,10 +11,7 @@ export async function POST(
   const { id } = await params;
   const { payment_method } = await req.json();
 
-  const supabase = createServiceClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-  );
+  const supabase = getServiceClient();
 
   const { data, error } = await supabase
     .from("invoices")

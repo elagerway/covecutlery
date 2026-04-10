@@ -1,32 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import * as postmark from "postmark";
-import { createClient } from "@/utils/supabase/server";
-import { createClient as createServiceClient } from "@supabase/supabase-js";
+import { requireAdmin, getServiceClient } from "@/lib/admin";
+import { formatCAD, escapeHtml, LineItem } from "@/lib/format";
 
-const ADMIN_EMAIL = "elagerway@gmail.com";
 const FROM_EMAIL = "info@covecutlery.ca";
 const FROM_NAME = "Cove Cutlery";
-
-async function requireAdmin() {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user || user.email !== ADMIN_EMAIL) return null;
-  return user;
-}
-
-function formatCAD(cents: number) {
-  return `$${(cents / 100).toFixed(2)}`;
-}
-
-interface LineItem {
-  description: string;
-  quantity: number;
-  unit_price: number;
-}
-
-function escapeHtml(s: string) {
-  return s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
-}
 
 function buildInvoiceHtml(invoice: {
   invoice_number: string;
@@ -48,10 +26,10 @@ function buildInvoiceHtml(invoice: {
 
   const itemRows = invoice.line_items.map((item: LineItem) => `
     <tr>
-      <td style="padding:8px 0;color:#555;border-bottom:1px solid #eee;">${item.description}</td>
-      <td style="padding:8px 0;text-align:center;color:#555;border-bottom:1px solid #eee;">${item.quantity}</td>
-      <td style="padding:8px 0;text-align:right;color:#555;border-bottom:1px solid #eee;">${formatCAD(item.unit_price)}</td>
-      <td style="padding:8px 0;text-align:right;color:#111;border-bottom:1px solid #eee;">${formatCAD(item.quantity * item.unit_price)}</td>
+      <td style="padding:8px 0;color:#555;border-bottom:1px solid #eee;">${escapeHtml(item.description)}</td>
+      <td style="padding:8px 0;text-align:center;color:#555;border-bottom:1px solid #eee;">${escapeHtml(String(item.quantity))}</td>
+      <td style="padding:8px 0;text-align:right;color:#555;border-bottom:1px solid #eee;">${escapeHtml(formatCAD(item.unit_price))}</td>
+      <td style="padding:8px 0;text-align:right;color:#111;border-bottom:1px solid #eee;">${escapeHtml(formatCAD(item.quantity * item.unit_price))}</td>
     </tr>
   `).join("");
 
@@ -61,10 +39,10 @@ function buildInvoiceHtml(invoice: {
   <div style="max-width:520px;margin:40px auto;background:#fff;border-radius:8px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.1);">
     <div style="background:#0D1117;padding:24px 32px;">
       <p style="margin:0;color:#D4A017;font-size:20px;font-weight:700;letter-spacing:.5px;">COVE CUTLERY</p>
-      <p style="margin:4px 0 0;color:#6B7280;font-size:13px;">Invoice #${invoice.invoice_number}</p>
+      <p style="margin:4px 0 0;color:#6B7280;font-size:13px;">Invoice #${escapeHtml(invoice.invoice_number)}</p>
     </div>
     <div style="padding:32px;">
-      <p style="margin:0 0 24px;font-size:15px;color:#111;">Hi ${firstName},<br>Here's your invoice from Cove Cutlery.</p>
+      <p style="margin:0 0 24px;font-size:15px;color:#111;">Hi ${escapeHtml(firstName)},<br>Here's your invoice from Cove Cutlery.</p>
       ${dueFormatted ? `<div style="background:#f9f9f9;border-radius:6px;padding:16px 20px;margin-bottom:24px;">
         <p style="margin:0 0 4px;font-size:13px;color:#888;">Due Date</p>
         <p style="margin:0;font-size:15px;font-weight:600;color:#111;">${dueFormatted}</p>
@@ -79,7 +57,7 @@ function buildInvoiceHtml(invoice: {
         ${itemRows}
         <tr>
           <td colspan="3" style="padding:12px 0 4px;font-weight:700;color:#111;">Total</td>
-          <td style="padding:12px 0 4px;text-align:right;font-weight:700;font-size:16px;color:#111;">${formatCAD(invoice.subtotal)}</td>
+          <td style="padding:12px 0 4px;text-align:right;font-weight:700;font-size:16px;color:#111;">${escapeHtml(formatCAD(invoice.subtotal))}</td>
         </tr>
       </table>
       ${invoice.notes ? `<p style="margin:24px 0 0;font-size:13px;color:#555;padding:12px 16px;background:#f9f9f9;border-radius:6px;">${escapeHtml(invoice.notes)}</p>` : ""}
@@ -88,7 +66,7 @@ function buildInvoiceHtml(invoice: {
       </div>
       ${invoice.status !== "paid" ? `<p style="margin:24px 0 0;font-size:12px;color:#888;text-align:center;">
         Or pay via e-Transfer to <strong>pay@covecutlery.ca</strong><br>
-        Include invoice #${invoice.invoice_number} in the message.
+        Include invoice #${escapeHtml(invoice.invoice_number)} in the message.
       </p>` : `<p style="margin:24px 0 0;font-size:12px;color:#888;text-align:center;">
         This invoice has been paid. Thank you!
       </p>`}
@@ -153,10 +131,7 @@ export async function POST(
     return NextResponse.json({ error: "Select at least one channel" }, { status: 400 });
   }
 
-  const supabase = createServiceClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
-  );
+  const supabase = getServiceClient();
 
   const { data: invoice } = await supabase
     .from("invoices")
@@ -166,7 +141,7 @@ export async function POST(
 
   if (!invoice) return NextResponse.json({ error: "Invoice not found" }, { status: 404 });
 
-  const origin = req.headers.get("origin") ?? "https://covecutlery.ca";
+  const origin = process.env.NODE_ENV === "development" ? (req.headers.get("origin") ?? "https://covecutlery.ca") : "https://covecutlery.ca";
   const errors: string[] = [];
   let sent = 0;
 

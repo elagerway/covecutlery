@@ -3,12 +3,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { ArrowLeft, Send, CheckCircle, Loader2, FileText, Eye, CreditCard, Clock, Trash2, Pencil, Plus } from "lucide-react";
-
-interface LineItem {
-  description: string;
-  quantity: number;
-  unit_price: number;
-}
+import { LineItem, formatCAD, normalizePhone } from "@/lib/format";
 
 interface Invoice {
   id: string;
@@ -43,18 +38,6 @@ const STATUS_ICONS: Record<string, React.ReactNode> = {
   paid: <CreditCard className="w-3.5 h-3.5" />,
   overdue: <Clock className="w-3.5 h-3.5" />,
 };
-
-function formatCAD(cents: number) {
-  return `$${(cents / 100).toFixed(2)}`;
-}
-
-function normalizePhone(p: string): string {
-  const digits = p.replace(/\D/g, "");
-  if (digits.length === 10) return "+1" + digits;
-  if (digits.length === 11 && digits.startsWith("1")) return "+" + digits;
-  if (p.startsWith("+")) return p.replace(/[^+\d]/g, "");
-  return p;
-}
 
 export default function InvoiceDetailPage() {
   const { id } = useParams<{ id: string }>();

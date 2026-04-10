@@ -4,12 +4,7 @@ import { useState, useEffect } from "react";
 import { useParams, useSearchParams } from "next/navigation";
 import { Loader2, CheckCircle, CreditCard, ArrowRight } from "lucide-react";
 import Link from "next/link";
-
-interface LineItem {
-  description: string;
-  quantity: number;
-  unit_price: number;
-}
+import { LineItem, formatCAD } from "@/lib/format";
 
 interface Invoice {
   id: string;
@@ -22,10 +17,6 @@ interface Invoice {
   due_date: string | null;
   created_at: string;
   paid_at: string | null;
-}
-
-function formatCAD(cents: number) {
-  return `$${(cents / 100).toFixed(2)}`;
 }
 
 function formatDate(d: string) {

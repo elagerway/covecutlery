@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Plus, FileText, Send, Eye, CreditCard, Clock } from "lucide-react";
+import { formatCAD } from "@/lib/format";
 
 interface Invoice {
   id: string;
@@ -33,10 +34,6 @@ const STATUS_ICONS: Record<string, React.ReactNode> = {
   paid: <CreditCard className="w-3 h-3" />,
   overdue: <Clock className="w-3 h-3" />,
 };
-
-function formatCAD(cents: number) {
-  return `$${(cents / 100).toFixed(2)}`;
-}
 
 export default function InvoicesPage() {
   const [invoices, setInvoices] = useState<Invoice[]>([]);

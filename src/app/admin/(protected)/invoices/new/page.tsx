@@ -3,12 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Plus, Trash2, Loader2, Eye, X, CreditCard, ArrowRight } from "lucide-react";
-
-interface LineItem {
-  description: string;
-  quantity: number;
-  unit_price: number; // cents
-}
+import { LineItem, formatCAD } from "@/lib/format";
 
 const PRICE_OPTIONS = [
   { label: "Knife Sharpening", price: 1200 },
@@ -19,10 +14,6 @@ const PRICE_OPTIONS = [
   { label: "Ceramic knife", price: 1500 },
   { label: "Axe / hatchet", price: 1500 },
 ];
-
-function formatCAD(cents: number) {
-  return `$${(cents / 100).toFixed(2)}`;
-}
 
 function defaultDueDate() {
   const d = new Date();
@@ -130,6 +121,15 @@ export default function NewInvoicePage() {
 
   function removeItem(idx: number) {
     setItems(items.filter((_, i) => i !== idx));
+    setCustomMode((prev) => {
+      const next: Record<number, boolean> = {};
+      for (const [k, v] of Object.entries(prev)) {
+        const ki = Number(k);
+        if (ki < idx) next[ki] = v;
+        else if (ki > idx) next[ki - 1] = v;
+      }
+      return next;
+    });
   }
 
   function selectPreset(idx: number, presetLabel: string) {
