@@ -11,7 +11,7 @@ export async function GET(request: Request) {
     const supabase = await createClient();
     const { error } = await supabase.auth.exchangeCodeForSession(code);
     if (!error) {
-      const allowedHosts = ["covecutlery.ca", "covecutlery.vercel.app", "localhost:3002"];
+      const allowedHosts = ["covecutlery.ca", "www.covecutlery.ca", "covecutlery.vercel.app", "localhost:3002"];
       const forwardedHost = request.headers.get("x-forwarded-host");
       const base =
         forwardedHost && allowedHosts.includes(forwardedHost)

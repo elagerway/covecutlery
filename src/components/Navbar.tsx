@@ -6,6 +6,7 @@ import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
 import Image from "next/image";
 import { useBooking } from "@/components/BookingProvider";
+import { createBrowserClient } from "@/utils/supabase/client";
 
 const navLinks = [
   { label: "Services", href: "/#services" },
@@ -20,6 +21,7 @@ const navLinks = [
 export default function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
   const pathname = usePathname();
   const isHome = pathname === "/";
 
@@ -33,6 +35,14 @@ export default function Navbar() {
   useEffect(() => {
     setMobileOpen(false);
   }, [pathname]);
+
+  // Check if user is admin
+  useEffect(() => {
+    const supabase = createBrowserClient();
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      setIsAdmin(user?.email === "elagerway@gmail.com");
+    });
+  }, []);
 
   const resolveHref = (href: string) => {
     if (isHome && href.startsWith("/#")) {
@@ -96,6 +106,14 @@ export default function Navbar() {
                 {link.label}
               </Link>
             ))}
+            {isAdmin && (
+              <Link
+                href="/admin/invoices"
+                className="text-sm text-[#D4A017] hover:text-white transition-colors duration-200 tracking-wide"
+              >
+                Admin
+              </Link>
+            )}
           </div>
 
           {/* Desktop CTA */}
@@ -137,6 +155,15 @@ export default function Navbar() {
               {link.label}
             </Link>
           ))}
+          {isAdmin && (
+            <Link
+              href="/admin/invoices"
+              onClick={() => setMobileOpen(false)}
+              className="px-3 py-3 rounded-md text-[#D4A017] hover:text-white hover:bg-[#161B22] transition-colors duration-200 text-sm tracking-wide"
+            >
+              Admin
+            </Link>
+          )}
           <div className="pt-3 pb-1">
             <button
               onClick={handleBookNow}
