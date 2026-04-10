@@ -14,9 +14,18 @@ function buildInvoiceHtml(invoice: {
   due_date: string | null;
   notes: string | null;
   status: string;
+  payment_method: string | null;
+  paid_at: string | null;
   id: string;
 }, origin: string) {
   const firstName = invoice.client_name.split(" ")[0];
+  const paidFormatted = invoice.paid_at
+    ? new Date(invoice.paid_at).toLocaleDateString("en-CA", {
+        weekday: "long", month: "long", day: "numeric", year: "numeric",
+        hour: "numeric", minute: "2-digit", timeZone: "America/Vancouver",
+      })
+    : null;
+  const paymentMethodLabel = invoice.payment_method === "stripe" ? "Credit Card" : invoice.payment_method === "etransfer" ? "Interac e-Transfer" : invoice.payment_method || null;
   const dueFormatted = invoice.due_date
     ? new Date(invoice.due_date + "T12:00:00").toLocaleDateString("en-CA", {
         weekday: "long", month: "long", day: "numeric", year: "numeric",
@@ -68,6 +77,10 @@ function buildInvoiceHtml(invoice: {
         </tr>
       </table>
       ${invoice.notes ? `<p style="margin:24px 0 0;font-size:13px;color:#555;padding:12px 16px;background:#f9f9f9;border-radius:6px;">${escapeHtml(invoice.notes)}</p>` : ""}
+      ${invoice.status === "paid" && paidFormatted ? `<div style="margin:24px 0 0;padding:16px 20px;background:#f0fdf4;border-radius:6px;border:1px solid #bbf7d0;">
+        <p style="margin:0 0 4px;font-size:13px;color:#15803d;font-weight:600;">Payment Received</p>
+        <p style="margin:0;font-size:13px;color:#166534;">${paidFormatted}${paymentMethodLabel ? ` via ${paymentMethodLabel}` : ""}</p>
+      </div>` : ""}
       <div style="margin:32px 0 0;text-align:center;">
         <a href="${viewUrl}" style="display:inline-block;padding:14px 32px;background:#D4A017;color:#0D1117;font-weight:700;font-size:14px;text-decoration:none;border-radius:8px;">${invoice.status === "paid" ? "View Invoice" : "View & Pay Invoice"}</a>
       </div>
@@ -94,6 +107,8 @@ function buildInvoiceText(invoice: {
   due_date: string | null;
   notes: string | null;
   status: string;
+  payment_method: string | null;
+  paid_at: string | null;
   id: string;
 }, origin: string) {
   const firstName = invoice.client_name.split(" ")[0];
@@ -117,7 +132,10 @@ function buildInvoiceText(invoice: {
     ``,
     invoice.status !== "paid"
       ? `Or e-Transfer to pay@covecutlery.ca (include invoice #${invoice.invoice_number} in the message).`
-      : `This invoice has been paid. Thank you!`,
+      : null,
+    invoice.status === "paid" && invoice.paid_at
+      ? `Payment received: ${new Date(invoice.paid_at).toLocaleDateString("en-CA", { weekday: "long", month: "long", day: "numeric", year: "numeric", hour: "numeric", minute: "2-digit", timeZone: "America/Vancouver" })}${invoice.payment_method === "stripe" ? " via Credit Card" : invoice.payment_method === "etransfer" ? " via Interac e-Transfer" : ""}. Thank you!`
+      : null,
     ``,
     invoice.notes ? `Note: ${invoice.notes}\n` : null,
     `Cove Cutlery · covecutlery.ca · 604-373-1500`,
