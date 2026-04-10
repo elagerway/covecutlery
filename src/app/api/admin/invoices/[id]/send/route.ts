@@ -35,6 +35,7 @@ function buildInvoiceHtml(invoice: {
   subtotal: number;
   due_date: string | null;
   notes: string | null;
+  status: string;
   id: string;
 }, origin: string) {
   const firstName = invoice.client_name.split(" ")[0];
@@ -83,12 +84,14 @@ function buildInvoiceHtml(invoice: {
       </table>
       ${invoice.notes ? `<p style="margin:24px 0 0;font-size:13px;color:#555;padding:12px 16px;background:#f9f9f9;border-radius:6px;">${escapeHtml(invoice.notes)}</p>` : ""}
       <div style="margin:32px 0 0;text-align:center;">
-        <a href="${viewUrl}" style="display:inline-block;padding:14px 32px;background:#D4A017;color:#0D1117;font-weight:700;font-size:14px;text-decoration:none;border-radius:8px;">View & Pay Invoice</a>
+        <a href="${viewUrl}" style="display:inline-block;padding:14px 32px;background:#D4A017;color:#0D1117;font-weight:700;font-size:14px;text-decoration:none;border-radius:8px;">${invoice.status === "paid" ? "View Invoice" : "View & Pay Invoice"}</a>
       </div>
-      <p style="margin:24px 0 0;font-size:12px;color:#888;text-align:center;">
+      ${invoice.status !== "paid" ? `<p style="margin:24px 0 0;font-size:12px;color:#888;text-align:center;">
         Or pay via e-Transfer to <strong>pay@covecutlery.ca</strong><br>
         Include invoice #${invoice.invoice_number} in the message.
-      </p>
+      </p>` : `<p style="margin:24px 0 0;font-size:12px;color:#888;text-align:center;">
+        This invoice has been paid. Thank you!
+      </p>`}
       <p style="margin:24px 0 0;font-size:13px;color:#888;text-align:center;">
         <a href="https://covecutlery.ca" style="color:#D4A017;">covecutlery.ca</a> · 604-373-1500
       </p>
@@ -105,6 +108,7 @@ function buildInvoiceText(invoice: {
   subtotal: number;
   due_date: string | null;
   notes: string | null;
+  status: string;
   id: string;
 }, origin: string) {
   const firstName = invoice.client_name.split(" ")[0];
@@ -124,9 +128,11 @@ function buildInvoiceText(invoice: {
     `──────────────────────`,
     `Total: ${formatCAD(invoice.subtotal)}`,
     ``,
-    `View & pay online: ${origin}/invoice/${invoice.id}`,
+    `View online: ${origin}/invoice/${invoice.id}`,
     ``,
-    `Or e-Transfer to pay@covecutlery.ca (include invoice #${invoice.invoice_number} in the message).`,
+    invoice.status !== "paid"
+      ? `Or e-Transfer to pay@covecutlery.ca (include invoice #${invoice.invoice_number} in the message).`
+      : `This invoice has been paid. Thank you!`,
     ``,
     invoice.notes ? `Note: ${invoice.notes}\n` : null,
     `Cove Cutlery · covecutlery.ca · 604-373-1500`,
@@ -141,7 +147,7 @@ export async function POST(
   if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const { id } = await params;
-  const { sendEmail, sendSms } = await req.json();
+  const { sendEmail, sendSms, overrideEmail, overridePhone } = await req.json();
 
   if (!sendEmail && !sendSms) {
     return NextResponse.json({ error: "Select at least one channel" }, { status: 400 });
@@ -173,7 +179,7 @@ export async function POST(
         const client = new postmark.ServerClient(process.env.POSTMARK_API_KEY);
         await client.sendEmail({
           From: `${FROM_NAME} <${FROM_EMAIL}>`,
-          To: invoice.client_email,
+          To: overrideEmail || invoice.client_email,
           Subject: `Invoice #${invoice.invoice_number} from Cove Cutlery — ${formatCAD(invoice.subtotal)}`,
           TextBody: buildInvoiceText(invoice, origin),
           HtmlBody: buildInvoiceHtml(invoice, origin),
@@ -187,7 +193,8 @@ export async function POST(
 
   // SMS via Magpipe
   if (sendSms) {
-    const digits = invoice.client_phone.replace(/\D/g, "");
+    const phoneToUse = overridePhone || invoice.client_phone || "";
+    const digits = phoneToUse.replace(/\D/g, "");
     const e164 = digits.length === 10 ? `+1${digits}` : digits.length === 11 ? `+${digits}` : null;
     if (!e164) {
       errors.push("Invalid SMS number");
@@ -196,16 +203,18 @@ export async function POST(
     } else {
       try {
         const viewUrl = `${origin}/invoice/${invoice.id}`;
-        const msg = `Hi ${invoice.client_name.split(" ")[0]}, your Cove Cutlery invoice #${invoice.invoice_number} for ${formatCAD(invoice.subtotal)} is ready. View & pay: ${viewUrl}`;
-        const res = await fetch("https://api.magpipe.ai/v1/sms", {
+        const msg = invoice.status === "paid"
+          ? `Hi ${invoice.client_name.split(" ")[0]}, here's your Cove Cutlery receipt for invoice #${invoice.invoice_number} (${formatCAD(invoice.subtotal)}). View: ${viewUrl}`
+          : `Hi ${invoice.client_name.split(" ")[0]}, your Cove Cutlery invoice #${invoice.invoice_number} for ${formatCAD(invoice.subtotal)} is ready. View & pay: ${viewUrl}`;
+        const res = await fetch("https://api.magpipe.ai/functions/v1/send-user-sms", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${process.env.MAGPIPE_API_KEY}`,
           },
           body: JSON.stringify({
-            from: process.env.MAGPIPE_SMS_FROM,
-            to: e164,
+            serviceNumber: process.env.MAGPIPE_SMS_FROM,
+            contactPhone: e164,
             message: msg,
           }),
         });

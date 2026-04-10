@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Plus, FileText, Send, Eye, CreditCard, Clock } from "lucide-react";
 
 interface Invoice {
@@ -40,6 +41,7 @@ function formatCAD(cents: number) {
 export default function InvoicesPage() {
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [loading, setLoading] = useState(true);
+  const router = useRouter();
   const [filter, setFilter] = useState("all");
 
   useEffect(() => {
@@ -117,6 +119,7 @@ export default function InvoicesPage() {
                 return (
                   <tr
                     key={inv.id}
+                    onClick={() => router.push(`/admin/invoices/${inv.id}`)}
                     className="transition-colors hover:bg-white/5 cursor-pointer"
                     style={{ borderTop: "1px solid #30363D" }}
                   >

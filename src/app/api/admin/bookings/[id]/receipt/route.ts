@@ -165,15 +165,15 @@ export async function POST(
     } else {
       try {
         const msg = buildReceiptText(b);
-        const res = await fetch("https://api.magpipe.ai/v1/sms", {
+        const res = await fetch("https://api.magpipe.ai/functions/v1/send-user-sms", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${process.env.MAGPIPE_API_KEY}`,
           },
           body: JSON.stringify({
-            from: process.env.MAGPIPE_SMS_FROM,
-            to: e164,
+            serviceNumber: process.env.MAGPIPE_SMS_FROM,
+            contactPhone: e164,
             message: msg,
           }),
         });

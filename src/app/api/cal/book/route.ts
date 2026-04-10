@@ -142,15 +142,15 @@ export async function POST(req: NextRequest) {
   if (process.env.MAGPIPE_API_KEY && process.env.MAGPIPE_SMS_FROM) {
     const sendSms = async (to: string, message: string) => {
       try {
-        await fetch("https://api.magpipe.ai/v1/sms", {
+        await fetch("https://api.magpipe.ai/functions/v1/send-user-sms", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${process.env.MAGPIPE_API_KEY}`,
           },
           body: JSON.stringify({
-            from: process.env.MAGPIPE_SMS_FROM,
-            to,
+            serviceNumber: process.env.MAGPIPE_SMS_FROM,
+            contactPhone: to,
             message,
           }),
         });
