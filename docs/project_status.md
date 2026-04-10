@@ -1,6 +1,6 @@
 # Project Status
 
-**Last updated:** 2026-04-09
+**Last updated:** 2026-04-10
 
 ## Milestone 1 — MVP Website ✅ Complete
 
@@ -42,8 +42,7 @@ All pages and components built, deployed to Vercel.
 - [x] Admin create + edit post forms (auto-slug, draft/publish)
 - [x] Blog link in Navbar
 
-**Pending manual step:**
-- [ ] Add Supabase Auth redirect URLs in dashboard (localhost + covecutlery.ca)
+- [x] Supabase Auth redirect URLs configured (covecutlery.ca + www + localhost:3002)
 
 ---
 
@@ -84,11 +83,32 @@ All pages and components built, deployed to Vercel.
 - [x] Stripe webhook handles invoice payments
 - [x] Invoices link in admin nav
 
+- [x] Email sending via Postmark (with shield logo header)
+- [x] SMS sending via Magpipe (updated to v2 API)
+- [x] Invoice edit mode (including paid invoices)
+- [x] Send popover with editable email/phone
+- [x] Save as PDF on public invoice page
+- [x] Payment method/time in receipt emails and public view
+- [x] Admin nav link in public navbar (auth-gated)
+- [x] Shared utilities extracted (lib/admin.ts, lib/format.ts)
+
 **Pending:**
-- [ ] Email sending via Postmark
-- [ ] SMS sending via Magpipe
 - [ ] macOS Contacts import UI (currently one-time script)
-- [ ] Google Calendar API OAuth for live calendar access (currently uses ICS export)
+- [ ] Google Calendar API OAuth for live calendar access
+
+---
+
+## Milestone 3.8 — SMS Campaigns & PWA ✅ Complete
+
+- [x] SMS campaign admin tab (`/admin/campaigns`)
+- [x] Compose with personalization variables ({{first_name}}, {{name}}, {{phone}})
+- [x] Recipient selector with search, source filter, select all
+- [x] Manual phone number input for ad-hoc recipients
+- [x] Campaign history with delivery stats
+- [x] PWA manifest + service worker (installable app)
+- [x] Mobile-responsive admin nav (bottom bar + slide-out drawer)
+- [x] Mobile-responsive tables (horizontal scroll, stacking forms)
+- [x] Viewport meta + theme-color
 
 ---
 

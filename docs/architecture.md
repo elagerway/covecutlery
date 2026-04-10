@@ -45,10 +45,13 @@ src/
 │   │   │   │       ├── route.ts          # GET + PUT — invoice detail/update
 │   │   │   │       ├── send/route.ts     # POST — send invoice via email (Postmark) + SMS (Magpipe)
 │   │   │   │       └── mark-paid/route.ts # POST — mark invoice as paid (e-Transfer or manual)
+│   │   │   ├── campaigns/
+│   │   │   │   ├── route.ts              # GET list + POST create & send bulk SMS via Magpipe with personalization
+│   │   │   │   └── [id]/route.ts         # GET detail + DELETE
 │   │   │   └── customers/
 │   │   │       ├── route.ts              # GET list + POST create — reads from customers table
 │   │   │       ├── [id]/route.ts         # GET + PATCH + DELETE — customer detail by UUID
-│   │   │       └── last-booking/route.ts # GET — finds most recent booking date from Cal.com + Supabase + Google Calendar ICS
+│   │   │       └── last-booking/route.ts # GET — finds most recent booking date from Cal.com + Supabase bookings
 │   │   ├── stripe/
 │   │   │   ├── checkout/route.ts    # POST — creates Stripe Checkout session ($50 CAD), stores pending booking in Supabase
 │   │   │   └── webhook/route.ts     # POST — handles checkout.session.completed / expired; confirms booking or marks invoice paid
@@ -62,20 +65,22 @@ src/
 │   │       ├── cancel/route.ts      # POST — cancels a Cal.com booking by UID
 │   │       └── schedule/route.ts    # GET — returns 7-day DaySchedule[] from Cal.com bookings
 │   ├── auth/
-│   │   └── callback/route.ts   # PKCE code exchange → session; redirects to /admin/blog or /admin/login?error=auth
+│   │   └── callback/route.ts   # PKCE code exchange → session; redirects to /admin/invoices
 │   ├── admin/
 │   │   ├── layout.tsx          # Thin layout (metadata + robots: noindex only — no auth check)
 │   │   ├── login/page.tsx      # Magic link login form; useSearchParams wrapped in Suspense
 │   │   └── (protected)/
 │   │       ├── layout.tsx      # Auth check + AdminNav (only runs for protected routes)
-│   │       ├── page.tsx        # Redirects → /admin/blog
+│   │       ├── page.tsx        # Redirects → /admin/invoices
 │   │       ├── jobs/page.tsx   # Server Component — lists all bookings via JobsTable
 │   │       ├── invoices/
-│   │       │   ├── page.tsx          # Client — invoice list with status filter
+│   │       │   ├── page.tsx          # Client — invoice list with status filter; mobile horizontal scroll
 │   │       │   ├── new/page.tsx      # Client — create invoice; customer search; line items; preview modal; mark-as-paid
-│   │       │   └── [id]/page.tsx     # Client — invoice detail view
+│   │       │   └── [id]/page.tsx     # Client — invoice detail with edit mode, send popover, preview link
+│   │       ├── campaigns/
+│   │       │   └── page.tsx          # Client — SMS campaign compose, recipient selector, send, history
 │   │       ├── customers/
-│   │       │   ├── page.tsx          # Client — customer list with search, add customer form
+│   │       │   ├── page.tsx          # Client — customer list with search, add customer form; mobile horizontal scroll
 │   │       │   └── [id]/page.tsx     # Client — editable customer detail (name, email, phone, address, notes)
 │   │       └── blog/
 │   │           ├── page.tsx        # Server Component — lists all posts via PostTable
@@ -106,14 +111,14 @@ src/
 │   ├── privacy/page.tsx        # Privacy Policy — data collection, third-party services, cookies, rights
 │   └── terms/page.tsx          # Terms of Service — bookings, payment, 30-day guarantee, service area, cancellations
 ├── components/
-│   ├── Navbar.tsx              # Sticky nav, mobile hamburger; Blog link; Book Now opens BookingModal; logo is icon-512.png
+│   ├── Navbar.tsx              # Sticky nav, mobile hamburger; Blog + Admin (auth-gated) links; Book Now opens BookingModal
 │   ├── Footer.tsx              # 4-col grid, social SVGs, hours, contact; Privacy Policy + Terms of Service links
 │   ├── BookingProvider.tsx     # React context — exposes open() and openWithDate(date) globally
 │   ├── BookingModal.tsx        # 3-step modal: date picker → time slots → details form; phone required (no CAPTCHA)
 │   ├── DropBoxCodeButton.tsx   # Popover CTA offering Call or Text options for drop box code
 │   ├── ScheduleDayCard.tsx     # Client component — clickable day tile that opens BookingModal for that date
 │   ├── admin/
-│   │   ├── AdminNav.tsx        # Sidebar nav with Jobs + Customers + Blog links; logout
+│   │   ├── AdminNav.tsx        # Desktop sidebar + mobile bottom bar + slide-out drawer; Jobs/Invoices/Campaigns/Customers/Blog
 │   │   ├── PostForm.tsx        # Client form; auto-generates slug; Save Draft / Publish
 │   │   ├── PostTable.tsx       # Client component; Delete/Publish/Unpublish via PATCH
 │   │   ├── JobsTable.tsx       # Client component; cash/card payment capture; receipt popover; row-click detail drawer; status dropdown
@@ -139,13 +144,15 @@ src/
 └── lib/
     ├── schema.ts               # safeJsonLd(), breadcrumbSchema(), faqPageSchema(), FAQ interface — shared SEO helpers
     ├── calSchedule.ts          # getWeekSchedule() — fetches Cal.com bookings, extracts city per day
-    ├── format.ts               # formatPhone() — normalises any phone input to (XXX) XXX-XXXX
+    ├── admin.ts                # Shared requireAdmin(), getServiceClient(), ADMIN_EMAIL
+    ├── format.ts               # formatCAD(), formatPhone(), normalizePhone(), escapeHtml(), LineItem interface
     ├── supabase.ts             # Lazy Supabase anon client — getSupabase() defers init until first call; safe for preview builds without env vars
     └── cn.ts                   # className utility
 
 public/
+├── manifest.json              # PWA manifest — standalone, dark theme, shield icon, start_url /admin/invoices
 ├── promaster.png              # Background-removed Ram ProMaster side-profile photo
-├── logo-icon-512.png          # 512×512 shield + sword logo icon (navbar, favicon)
+├── logo-icon-512.png          # 512×512 shield + sword logo icon (navbar, favicon, PWA icon)
 ├── icon-512.png               # 512×512 Gyuto knife icon (gold on dark)
 ├── og-default.png             # Default OG image (1200×630) — gold-lit Japanese knife on dark background
 ├── llms.txt                   # AI engine comprehension file — business info for LLM crawlers
@@ -341,6 +348,21 @@ RLS: admin full access only. Seeded from Cal.com bookings (both accounts), macOS
 | stripe_session_id | text | Nullable |
 | stripe_payment_intent_id | text | Nullable |
 | created_at | timestamptz | Auto |
+
+RLS: admin full access only.
+
+**`campaigns`**
+| Column | Type | Notes |
+|--------|------|-------|
+| id | uuid | Primary key |
+| message | text | SMS body (may contain personalization variables) |
+| recipient_count | integer | Total recipients |
+| sent_count | integer | Successfully sent |
+| failed_count | integer | Failed to send |
+| status | text | `draft`, `sending`, `completed`, `failed` |
+| recipients | jsonb | `[{ id, name, phone }]` |
+| created_at | timestamptz | Auto |
+| sent_at | timestamptz | When campaign was sent |
 
 RLS: admin full access only.
 

@@ -1,5 +1,50 @@
 # Changelog
 
+## [2.1.0] — 2026-04-10
+
+### Added
+- **SMS marketing campaigns** — new `/admin/campaigns` tab for bulk SMS outreach
+  - Compose message with 160-char SMS counter and personalization variables (`{{first_name}}`, `{{name}}`, `{{phone}}`)
+  - Recipient selector: search, filter by source, select all/individual, only customers with phone numbers
+  - Manual phone number input for ad-hoc recipients alongside customer selection
+  - Preview modal and send confirmation with recipient count
+  - Campaign history with expandable cards, delivery stats (sent/failed), delete
+  - `campaigns` table in Supabase with recipient JSONB tracking
+- **PWA support** — installable as a mobile/desktop app
+  - Web manifest (standalone, dark theme, shield icon, starts at `/admin/invoices`)
+  - Service worker via `@ducanh2912/next-pwa` (disabled in dev)
+  - Viewport meta with `theme-color: #0D1117`
+- **Mobile-responsive admin**
+  - Bottom navigation bar on mobile with icon buttons (Jobs, Invoices, Campaigns, Customers, Blog, More)
+  - Slide-out drawer for full menu via hamburger button
+  - Desktop sidebar unchanged (hidden on mobile)
+  - Horizontal scroll on invoice and customer tables with min-width
+  - Form grids stack to single column on mobile
+  - Search inputs full-width on mobile
+- **Invoice enhancements**
+  - Save as PDF button on public invoice page with print-optimized light-theme layout
+  - Payment method and time shown on public invoice page and in receipt emails
+  - Shield logo in email headers (invoice + booking receipt)
+  - Preview button on invoice detail page
+  - Send popover with editable email/phone before sending
+  - Inline edit mode on any invoice (including paid)
+- **Admin nav link** — gold "Admin" link in public navbar when logged in
+- **Auth fixes** — Supabase site URL + redirect URLs configured for production; PKCE flow re-enabled; login redirects to `/admin/invoices`
+
+### Changed
+- **Shared utilities extracted** — `requireAdmin`/`getServiceClient`/`ADMIN_EMAIL` to `lib/admin.ts`; `formatCAD`/`normalizePhone`/`escapeHtml`/`LineItem` to `lib/format.ts`
+- **Magpipe SMS endpoint** — updated from deprecated `/v1/sms` to `/functions/v1/send-user-sms` with new field names across all 3 SMS routes
+- **SMS from number** — reverted to `+16043731500` (provisioned Magpipe number)
+
+### Fixed
+- **XSS in email templates** — all dynamic values now escaped via `escapeHtml()`
+- **Origin header spoofing** — hardcoded to `covecutlery.ca` in production
+- **Line item input validation** — type/range checks on invoice creation
+- **UUID validation** on public pay endpoint
+- **Null due_date** handled in email templates and public invoice view
+- **Vercel build** — fixed `createBrowserClient` import in Navbar
+- **Vercel SUPABASE_SERVICE_ROLE_KEY** — corrected typo causing 500s on production
+
 ## [2.0.0] — 2026-04-09
 
 ### Added
