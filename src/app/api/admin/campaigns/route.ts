@@ -23,29 +23,45 @@ export async function POST(req: NextRequest) {
   if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const body = await req.json();
-  const { message, recipientIds } = body;
+  const { message, recipientIds, manualNumbers } = body;
 
   if (!message || !message.trim()) {
     return NextResponse.json({ error: "Message is required" }, { status: 400 });
   }
-  if (!recipientIds || !Array.isArray(recipientIds) || recipientIds.length === 0) {
+  const hasCustomers = Array.isArray(recipientIds) && recipientIds.length > 0;
+  const hasManual = Array.isArray(manualNumbers) && manualNumbers.length > 0;
+  if (!hasCustomers && !hasManual) {
     return NextResponse.json({ error: "At least one recipient is required" }, { status: 400 });
   }
 
   const supabase = getServiceClient();
 
   // Look up customers by IDs
-  const { data: customers, error: custError } = await supabase
-    .from("customers")
-    .select("*")
-    .in("id", recipientIds);
+  const validRecipients: { id: string; name: string; normalized_phone: string }[] = [];
 
-  if (custError) return NextResponse.json({ error: custError.message }, { status: 500 });
+  if (hasCustomers) {
+    const { data: customers, error: custError } = await supabase
+      .from("customers")
+      .select("*")
+      .in("id", recipientIds);
 
-  // Filter to only those with valid phone numbers
-  const validRecipients = (customers || [])
-    .map((c) => ({ ...c, normalized_phone: normalizePhone(c.phone) }))
-    .filter((c) => c.normalized_phone);
+    if (custError) return NextResponse.json({ error: custError.message }, { status: 500 });
+
+    for (const c of customers || []) {
+      const phone = normalizePhone(c.phone);
+      if (phone) validRecipients.push({ id: c.id, name: c.name, normalized_phone: phone });
+    }
+  }
+
+  // Add manual numbers
+  if (hasManual) {
+    for (const num of manualNumbers) {
+      const phone = normalizePhone(num);
+      if (phone && !validRecipients.some((r) => r.normalized_phone === phone)) {
+        validRecipients.push({ id: `manual-${phone}`, name: phone, normalized_phone: phone });
+      }
+    }
+  }
 
   if (validRecipients.length === 0) {
     return NextResponse.json({ error: "No recipients with valid phone numbers" }, { status: 400 });

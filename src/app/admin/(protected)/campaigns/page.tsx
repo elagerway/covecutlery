@@ -55,6 +55,8 @@ export default function CampaignsPage() {
   const [showPreview, setShowPreview] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
   const [expandedCampaign, setExpandedCampaign] = useState<string | null>(null);
+  const [manualNumbers, setManualNumbers] = useState<string[]>([]);
+  const [manualInput, setManualInput] = useState("");
 
   // Load customers and campaigns
   useEffect(() => {
@@ -121,6 +123,18 @@ export default function CampaignsPage() {
   }
 
   const selectedCustomers = customers.filter((c) => selectedIds.has(c.id));
+  const totalRecipients = selectedIds.size + manualNumbers.length;
+
+  function addManualNumber() {
+    const num = manualInput.trim();
+    if (!num) return;
+    const digits = num.replace(/\D/g, "");
+    const normalized = digits.length === 10 ? "+1" + digits : digits.length === 11 && digits.startsWith("1") ? "+" + digits : num.startsWith("+") ? num.replace(/[^+\d]/g, "") : num;
+    if (!manualNumbers.includes(normalized)) {
+      setManualNumbers([...manualNumbers, normalized]);
+    }
+    setManualInput("");
+  }
 
   async function handleSend() {
     setShowConfirm(false);
@@ -132,6 +146,7 @@ export default function CampaignsPage() {
         body: JSON.stringify({
           message,
           recipientIds: Array.from(selectedIds),
+          manualNumbers,
         }),
       });
       const data = await res.json();
@@ -143,6 +158,7 @@ export default function CampaignsPage() {
       setCampaigns((prev) => [data, ...prev]);
       setMessage("");
       setSelectedIds(new Set());
+      setManualNumbers([]);
     } catch {
       alert("Failed to send campaign");
     } finally {
@@ -156,7 +172,7 @@ export default function CampaignsPage() {
     setCampaigns((prev) => prev.filter((c) => c.id !== id));
   }
 
-  const canSend = message.trim().length > 0 && selectedIds.size > 0 && !sending;
+  const canSend = message.trim().length > 0 && totalRecipients > 0 && !sending;
 
   if (loading) {
     return (
@@ -278,8 +294,52 @@ export default function CampaignsPage() {
             )}
           </div>
 
+          {/* Manual number input */}
+          <div className="mt-3 pt-3" style={{ borderTop: "1px solid #30363D" }}>
+            <p className="text-xs font-medium mb-1.5" style={{ color: "#6B7280" }}>Add manual number</p>
+            <div className="flex gap-2">
+              <input
+                type="tel"
+                value={manualInput}
+                onChange={(e) => setManualInput(e.target.value)}
+                onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addManualNumber(); } }}
+                placeholder="604-555-1234"
+                className="flex-1 px-3 py-1.5 rounded-lg text-sm text-white outline-none placeholder-[#6B7280]"
+                style={inputStyle}
+              />
+              <button
+                onClick={addManualNumber}
+                disabled={!manualInput.trim()}
+                className="px-3 py-1.5 rounded-lg text-xs font-medium transition-colors hover:brightness-110 disabled:opacity-30"
+                style={{ backgroundColor: "#D4A01722", color: "#D4A017", border: "1px solid #D4A01744" }}
+              >
+                Add
+              </button>
+            </div>
+            {manualNumbers.length > 0 && (
+              <div className="flex flex-wrap gap-1.5 mt-2">
+                {manualNumbers.map((num) => (
+                  <span
+                    key={num}
+                    className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-xs"
+                    style={{ backgroundColor: "#30363D", color: "#E6EDF3" }}
+                  >
+                    {num}
+                    <button
+                      onClick={() => setManualNumbers(manualNumbers.filter((n) => n !== num))}
+                      className="hover:text-red-400"
+                    >
+                      ×
+                    </button>
+                  </span>
+                ))}
+              </div>
+            )}
+          </div>
+
           <div className="mt-2 text-xs font-medium" style={{ color: "#D4A017" }}>
-            {selectedIds.size} recipient{selectedIds.size !== 1 ? "s" : ""} selected
+            {totalRecipients} recipient{totalRecipients !== 1 ? "s" : ""} selected
+            {manualNumbers.length > 0 && ` (${selectedIds.size} customers + ${manualNumbers.length} manual)`}
           </div>
         </div>
 
@@ -351,8 +411,8 @@ export default function CampaignsPage() {
           >
             <h3 className="text-sm font-semibold text-white mb-3">Confirm Send</h3>
             <p className="text-sm mb-4" style={{ color: "#6B7280" }}>
-              Send this SMS to <strong className="text-white">{selectedIds.size}</strong> recipient
-              {selectedIds.size !== 1 ? "s" : ""}?
+              Send this SMS to <strong className="text-white">{totalRecipients}</strong> recipient
+              {totalRecipients !== 1 ? "s" : ""}?
             </p>
             <div className="flex gap-3">
               <button
