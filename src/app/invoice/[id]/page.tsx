@@ -17,6 +17,7 @@ interface Invoice {
   due_date: string | null;
   created_at: string;
   paid_at: string | null;
+  payment_method: string | null;
 }
 
 function formatDate(d: string) {
@@ -108,7 +109,13 @@ export default function PublicInvoicePage() {
             <CheckCircle className="w-6 h-6 shrink-0" style={{ color: "#22C55E" }} />
             <div>
               <p className="text-sm font-semibold" style={{ color: "#22C55E" }}>Payment Received</p>
-              <p className="text-xs" style={{ color: "#6B7280" }}>Thank you for your payment!</p>
+              <p className="text-xs" style={{ color: "#6B7280" }}>
+                {invoice!.paid_at && new Date(invoice!.paid_at).toLocaleDateString("en-CA", {
+                  weekday: "long", month: "long", day: "numeric", year: "numeric",
+                  hour: "numeric", minute: "2-digit", timeZone: "America/Vancouver",
+                })}
+                {invoice!.payment_method && ` via ${invoice!.payment_method === "stripe" ? "Credit Card" : invoice!.payment_method === "etransfer" ? "Interac e-Transfer" : invoice!.payment_method}`}
+              </p>
             </div>
           </div>
         )}
