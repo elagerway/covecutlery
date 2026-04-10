@@ -207,6 +207,16 @@ export default function InvoiceDetailPage() {
               Cancel
             </button>
           )}
+          <a
+            href={publicUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors hover:brightness-110"
+            style={{ backgroundColor: "#D4A01722", color: "#D4A017", border: "1px solid #D4A01744" }}
+          >
+            <Eye className="w-3 h-3" />
+            Preview
+          </a>
           <div className="relative">
             <button
               onClick={() => setShowSend(!showSend)}
