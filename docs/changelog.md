@@ -1,5 +1,33 @@
 # Changelog
 
+## [2.0.0] — 2026-04-09
+
+### Added
+- **Invoice system** — full CRUD for creating, sending, and collecting payment on invoices for mobile sharpening clients
+  - Admin pages: invoice list (`/admin/invoices`), create new (`/admin/invoices/new`), invoice detail (`/admin/invoices/[id]`)
+  - Public invoice view (`/invoice/[id]`) — branded Cove Cutlery display with Stripe card payment and Interac e-Transfer instructions
+  - API routes: create, list, detail, send (email + SMS), mark-paid, public view, Stripe checkout
+  - Line items with preset pricing (Knife Sharpening $12, Lawnmower blade $15, etc.) + custom items
+  - Invoice preview modal on the create form
+  - Mark as Paid button for pre-paid invoices
+  - Optional due date (checkbox to include)
+  - Work Completed date — auto-filled from most recent Cal.com or Google Calendar booking
+  - Stripe webhook extended to handle invoice payment completion
+- **Customers table** — dedicated `customers` table in Supabase replacing the derived-from-bookings approach
+  - Seeded from both Cal.com accounts (Cove Cutlery + Cove Blades), macOS Contacts, and Google Calendar export
+  - 437 customers imported with phone numbers from `smsReminderNumber` and `attendeePhoneNumber` Cal.com fields
+  - Searchable customer dropdown on invoice creation form
+  - Admin customers page with search, add customer form, and editable customer detail
+  - Source badges: `cal.com`, `imported`, `manual`, `invoice`
+  - Auto-upsert on invoice creation
+- **Last booking date lookup** — `/api/admin/customers/last-booking` searches Cal.com (both accounts), Supabase bookings, and Google Calendar ICS export by email, phone, and name/address
+- **Invoices link** added to admin sidebar nav
+
+### Changed
+- **Customers page** — rebuilt as client component reading from the `customers` table; added search filter, add customer form, source badges, and click-through to editable detail
+- **Customer detail page** — rebuilt with editable name, email, phone, address, notes; delete button; routes by UUID instead of email
+- **Customer API** — `/api/admin/customers` now reads/writes the `customers` table; `[id]` route replaces `[email]` with GET/PATCH/DELETE
+
 ## [1.9.0] — 2026-04-08
 
 ### Changed

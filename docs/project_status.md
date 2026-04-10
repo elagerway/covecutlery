@@ -1,6 +1,6 @@
 # Project Status
 
-**Last updated:** 2026-04-08
+**Last updated:** 2026-04-09
 
 ## Milestone 1 — MVP Website ✅ Complete
 
@@ -68,6 +68,27 @@ All pages and components built, deployed to Vercel.
 - [ ] Google Business Profile verification
 - [ ] Lighthouse SEO audit (target >= 95)
 - [ ] Search Console monitoring (4-6 weeks) before expanding to more cities
+
+---
+
+## Milestone 3.7 — Invoice System & Customers Table ✅ Complete
+
+- [x] `customers` table in Supabase (replaces derived-from-bookings approach)
+- [x] Customer import from Cal.com (both accounts), macOS Contacts, Google Calendar
+- [x] Admin customer list with search, add, edit, delete
+- [x] `invoices` table with full CRUD
+- [x] Admin invoice creation with customer search, line items, preview
+- [x] Public branded invoice view with Stripe + e-Transfer payment
+- [x] Mark as Paid for pre-paid invoices
+- [x] Work Completed date auto-filled from Cal.com / Google Calendar
+- [x] Stripe webhook handles invoice payments
+- [x] Invoices link in admin nav
+
+**Pending:**
+- [ ] Email sending via Postmark
+- [ ] SMS sending via Magpipe
+- [ ] macOS Contacts import UI (currently one-time script)
+- [ ] Google Calendar API OAuth for live calendar access (currently uses ICS export)
 
 ---
 

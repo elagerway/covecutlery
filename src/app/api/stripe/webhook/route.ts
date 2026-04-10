@@ -33,14 +33,29 @@ export async function POST(req: NextRequest) {
 
   if (event.type === "checkout.session.completed") {
     const session = event.data.object as Stripe.Checkout.Session;
-    await supabase
-      .from("bookings")
-      .update({
-        status: "confirmed",
-        stripe_payment_intent_id: session.payment_intent as string,
-        stripe_customer_id: session.customer as string ?? null,
-      })
-      .eq("stripe_session_id", session.id);
+
+    // Check if this is an invoice payment
+    if (session.metadata?.invoice_id) {
+      await supabase
+        .from("invoices")
+        .update({
+          status: "paid",
+          payment_method: "stripe",
+          paid_at: new Date().toISOString(),
+          stripe_payment_intent_id: session.payment_intent as string,
+        })
+        .eq("id", session.metadata.invoice_id);
+    } else {
+      // Booking deposit payment
+      await supabase
+        .from("bookings")
+        .update({
+          status: "confirmed",
+          stripe_payment_intent_id: session.payment_intent as string,
+          stripe_customer_id: session.customer as string ?? null,
+        })
+        .eq("stripe_session_id", session.id);
+    }
   }
 
   if (event.type === "checkout.session.expired") {

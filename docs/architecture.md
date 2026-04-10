@@ -39,11 +39,23 @@ src/
 │   │   │   │       ├── refund/route.ts  # POST — Stripe full refund; sets status to refunded
 │   │   │   │       ├── charge/route.ts  # POST — off-session Stripe charge using saved customer card
 │   │   │   │       └── receipt/route.ts # POST — sends receipt via Postmark email + Magpipe SMS
+│   │   │   ├── invoices/
+│   │   │   │   ├── route.ts              # GET list + POST create; auto-generates YYYYMMDD-NNN number; upserts customer record
+│   │   │   │   └── [id]/
+│   │   │   │       ├── route.ts          # GET + PUT — invoice detail/update
+│   │   │   │       ├── send/route.ts     # POST — send invoice via email (Postmark) + SMS (Magpipe)
+│   │   │   │       └── mark-paid/route.ts # POST — mark invoice as paid (e-Transfer or manual)
 │   │   │   └── customers/
-│   │   │       └── [email]/route.ts     # PATCH — update customer_name/phone across all bookings
+│   │   │       ├── route.ts              # GET list + POST create — reads from customers table
+│   │   │       ├── [id]/route.ts         # GET + PATCH + DELETE — customer detail by UUID
+│   │   │       └── last-booking/route.ts # GET — finds most recent booking date from Cal.com + Supabase + Google Calendar ICS
 │   │   ├── stripe/
 │   │   │   ├── checkout/route.ts    # POST — creates Stripe Checkout session ($50 CAD), stores pending booking in Supabase
-│   │   │   └── webhook/route.ts     # POST — handles checkout.session.completed / expired; confirms or cancels booking
+│   │   │   └── webhook/route.ts     # POST — handles checkout.session.completed / expired; confirms booking or marks invoice paid
+│   │   ├── invoices/
+│   │   │   └── [id]/
+│   │   │       ├── route.ts         # GET — public invoice data (marks as viewed on first visit)
+│   │   │       └── pay/route.ts     # POST — creates Stripe Checkout session for invoice payment
 │   │   └── cal/
 │   │       ├── slots/route.ts       # GET proxy → Cal.com v2 /slots
 │   │       ├── book/route.ts        # POST proxy → Cal.com v2 /bookings; saves to Supabase as confirmed; sends SMS to admin + customer via Magpipe
@@ -58,13 +70,19 @@ src/
 │   │       ├── layout.tsx      # Auth check + AdminNav (only runs for protected routes)
 │   │       ├── page.tsx        # Redirects → /admin/blog
 │   │       ├── jobs/page.tsx   # Server Component — lists all bookings via JobsTable
+│   │       ├── invoices/
+│   │       │   ├── page.tsx          # Client — invoice list with status filter
+│   │       │   ├── new/page.tsx      # Client — create invoice; customer search; line items; preview modal; mark-as-paid
+│   │       │   └── [id]/page.tsx     # Client — invoice detail view
 │   │       ├── customers/
-│   │       │   ├── page.tsx          # Server Component — groups bookings by email → CustomersTable
-│   │       │   └── [email]/page.tsx  # Server Component — customer detail + CustomerDetail client component
+│   │       │   ├── page.tsx          # Client — customer list with search, add customer form
+│   │       │   └── [id]/page.tsx     # Client — editable customer detail (name, email, phone, address, notes)
 │   │       └── blog/
 │   │           ├── page.tsx        # Server Component — lists all posts via PostTable
 │   │           ├── new/page.tsx    # Renders PostForm with no initial data
 │   │           └── [id]/edit/page.tsx  # Server Component — fetches post, passes to PostForm
+│   ├── invoice/
+│   │   └── [id]/page.tsx       # Public invoice view — branded display, Stripe card payment, e-Transfer instructions
 │   ├── booking/
 │   │   ├── layout.tsx          # Adds robots: noindex to all booking pages
 │   │   ├── success/page.tsx    # Static booking confirmation page
@@ -210,7 +228,8 @@ PostTable (client) → DELETE/PATCH /api/admin/posts/[id] → requireAdmin() →
 ### Environment Variables
 | Variable | Used In |
 |----------|---------|
-| `CAL_API_KEY` | `/api/cal/slots`, `/api/cal/book`, `lib/calSchedule.ts` |
+| `CAL_API_KEY` | `/api/cal/slots`, `/api/cal/book`, `lib/calSchedule.ts`, `/api/admin/customers/last-booking` |
+| `CAL_API_KEY_BLADES` | `/api/admin/customers/last-booking` — second Cal.com account (Cove Blades) |
 | `CAL_EVENT_TYPE_ID` | `/api/cal/slots`, `/api/cal/book` |
 | `NEXT_PUBLIC_SUPABASE_URL` | `lib/supabase.ts`, `utils/supabase/server.ts`, `utils/supabase/client.ts`, blog pages |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | `lib/supabase.ts`, `utils/supabase/client.ts`, blog pages |
@@ -287,6 +306,43 @@ RLS policies:
 | notes | text | Admin notes |
 
 RLS: admin full access only (`auth.jwt() ->> 'email' = 'elagerway@gmail.com'`)
+
+**`customers`**
+| Column | Type | Notes |
+|--------|------|-------|
+| id | uuid | Primary key |
+| name | text | Required |
+| email | text | Nullable, unique (partial index on non-null) |
+| phone | text | Nullable |
+| address | text | Nullable |
+| notes | text | Nullable |
+| source | text | `manual`, `cal.com`, `booking`, `invoice`, `imported` |
+| created_at | timestamptz | Auto |
+| updated_at | timestamptz | Auto |
+
+RLS: admin full access only. Seeded from Cal.com bookings (both accounts), macOS Contacts, and Google Calendar export.
+
+**`invoices`**
+| Column | Type | Notes |
+|--------|------|-------|
+| id | uuid | Primary key |
+| invoice_number | text | Unique, format `YYYYMMDD-NNN` |
+| client_name/email/phone | text | From customer selection |
+| client_address | text | Nullable |
+| line_items | jsonb | `[{ description, quantity, unit_price }]` |
+| subtotal | integer | Cents, calculated from line items |
+| notes | text | Nullable |
+| status | text | `draft`, `sent`, `viewed`, `paid`, `overdue` |
+| payment_method | text | `stripe` or `etransfer` |
+| due_date | date | Nullable |
+| work_completed_date | date | Nullable — auto-filled from last Cal.com/gcal booking |
+| sent_at | timestamptz | When invoice was sent |
+| paid_at | timestamptz | When payment received |
+| stripe_session_id | text | Nullable |
+| stripe_payment_intent_id | text | Nullable |
+| created_at | timestamptz | Auto |
+
+RLS: admin full access only.
 
 ## Design Tokens
 
