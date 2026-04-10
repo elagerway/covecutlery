@@ -6,7 +6,7 @@ import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
 import Image from "next/image";
 import { useBooking } from "@/components/BookingProvider";
-import { createBrowserClient } from "@/utils/supabase/client";
+import { createClient as createBrowserClient } from "@/utils/supabase/client";
 
 const navLinks = [
   { label: "Services", href: "/#services" },
