@@ -185,9 +185,11 @@ export async function POST(
     } else {
       try {
         const viewUrl = `${origin}/invoice/${invoice.id}`;
+        const emailSent = sent > 0;
+        const emailNote = emailSent ? " We've also sent this to your email." : "";
         const msg = invoice.status === "paid"
-          ? `Hi ${invoice.client_name.split(" ")[0]}, here's your Cove Cutlery receipt for invoice #${invoice.invoice_number} (${formatCAD(invoice.subtotal)}). View: ${viewUrl}`
-          : `Hi ${invoice.client_name.split(" ")[0]}, your Cove Cutlery invoice #${invoice.invoice_number} for ${formatCAD(invoice.subtotal)} is ready. View & pay: ${viewUrl}`;
+          ? `Hi ${invoice.client_name.split(" ")[0]}, here's your Cove Cutlery receipt for invoice #${invoice.invoice_number} (${formatCAD(invoice.subtotal)}). View: ${viewUrl}${emailNote}`
+          : `Hi ${invoice.client_name.split(" ")[0]}, your Cove Cutlery invoice #${invoice.invoice_number} for ${formatCAD(invoice.subtotal)} is ready. View & pay: ${viewUrl}${emailNote}`;
         const res = await fetch("https://api.magpipe.ai/functions/v1/send-user-sms", {
           method: "POST",
           headers: {
