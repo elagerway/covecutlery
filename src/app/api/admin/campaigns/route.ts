@@ -97,6 +97,13 @@ export async function POST(req: NextRequest) {
 
   for (const recipient of validRecipients) {
     try {
+      // Replace personalization variables
+      const firstName = recipient.name.split(" ")[0] || recipient.name;
+      const personalizedMsg = message.trim()
+        .replace(/\{\{first_name\}\}/gi, firstName)
+        .replace(/\{\{name\}\}/gi, recipient.name)
+        .replace(/\{\{phone\}\}/gi, recipient.normalized_phone);
+
       const res = await fetch("https://api.magpipe.ai/functions/v1/send-user-sms", {
         method: "POST",
         headers: {
@@ -106,7 +113,7 @@ export async function POST(req: NextRequest) {
         body: JSON.stringify({
           serviceNumber,
           contactPhone: recipient.normalized_phone,
-          message: message.trim(),
+          message: personalizedMsg,
         }),
       });
 

@@ -200,7 +200,25 @@ export default function CampaignsPage() {
           className="w-full rounded-lg px-3 py-2.5 text-sm resize-none focus:outline-none focus:ring-1 focus:ring-[#D4A017]"
           style={inputStyle}
         />
-        <div className="flex justify-end mt-1">
+        <div className="flex items-center justify-between mt-1">
+          <div className="flex items-center gap-1.5 flex-wrap">
+            <span className="text-xs" style={{ color: "#6B7280" }}>Insert:</span>
+            {[
+              { label: "First Name", tag: "{{first_name}}" },
+              { label: "Name", tag: "{{name}}" },
+              { label: "Phone", tag: "{{phone}}" },
+            ].map(({ label, tag }) => (
+              <button
+                key={tag}
+                type="button"
+                onClick={() => setMessage((m) => m + tag)}
+                className="px-2 py-0.5 rounded text-xs font-medium transition-colors hover:brightness-125"
+                style={{ backgroundColor: "#D4A01722", color: "#D4A017", border: "1px solid #D4A01744" }}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
           <span className="text-xs" style={{ color: message.length > 160 ? "#EF4444" : "#6B7280" }}>
             {message.length}/160
           </span>
