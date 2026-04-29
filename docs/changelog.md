@@ -1,6 +1,17 @@
 # Changelog
 
-## [2.4.0] — 2026-04-29 — Citywide SEO/GEO expansion (Phases 1–2)
+## [2.4.0] — 2026-04-29 — Citywide SEO/GEO expansion (Phases 1–3)
+
+### Phase 3 — Five close-in mobile cities
+
+- **`/service-area/richmond`** — Asian food capital, dim sum + Vietnamese + izakaya context, Steveston fishing village, Chinese cleavers and fillet knives. 25–30 min drive
+- **`/service-area/surrey`** — All six town centres (Whalley/City Centre, Guildford, Newton, Fleetwood, Cloverdale, South Surrey); Punjabi food capital framing for Newton; 35–50 min drive depending on town centre
+- **`/service-area/delta`** — All three communities (North Delta, Ladner, Tsawwassen) with distinct food-culture context per community; fillet knives for waterfront homes; 35–50 min drive
+- **`/service-area/new-westminster`** — Royal City; Quay, Sapperton, Brewery District, Queensborough; 25–35 min drive
+- **`/service-area/maple-ridge`** — Semi-rural character; equestrian properties, garden tools, hunting/fillet knives alongside kitchen blades; 40–50 min drive
+
+Each page has a unique 3-paragraph description grounded in actual local geography and food culture, 4 city-specific FAQs, distinct neighbourhood list, and dedicated meta tags. All flagged `dropOffEmphasis: false` with appropriate `subRegion`.
+
 
 ### Phase 2 — Tri-Cities split
 

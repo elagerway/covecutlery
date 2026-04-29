@@ -277,6 +277,194 @@ Mobile sharpening is the right fit for Port Coquitlam because dropping off doesn
     dropOffEmphasis: false,
     subRegion: 'Tri-Cities',
   },
+  {
+    slug: 'richmond',
+    name: 'Richmond',
+    description: `Cove Blades brings professional mobile knife sharpening to Richmond, from City Centre and Aberdeen Square through Steveston Village out to South Arm and Hamilton. We come over from North Vancouver via the Knight Street or Oak Street bridge, typically reaching most Richmond addresses in 25–30 minutes with our full mobile sharpening setup.
+
+Richmond is, by most measures, the Asian food capital of North America — the dim sum, hot pot, hand-pulled noodles, Hong Kong-style cafes, izakaya, and Vietnamese kitchens here are world class. With a population around 209,000 and one of the highest densities of restaurants per capita in Metro Vancouver, the city's commercial kitchens and home cooks both depend on knives that can handle volume and precision. Chinese cleavers, Japanese gyutos, Vietnamese vegetable knives, and the specialty blades for Cantonese and Sichuan cooking all need different bevels and different techniques. We sharpen them all.
+
+Steveston is a different story but the same conclusion. The historic fishing village still has a working harbour, salmon coming off boats, and home kitchens that prep fresh catch the same day. Fillet knives, sashimi blades, and old hand-me-down knives that have been sharpened a hundred times over — all welcome on the bench. Mobile service fits Richmond particularly well: the city is flat, addresses are easy to find, and we can plan a route that hits multiple streets in a single visit. $12 per kitchen knife, $18 for Japanese single-bevel, 30-day edge guarantee on every blade we touch.`,
+    neighbourhoods: [
+      'City Centre', 'Steveston', 'Hamilton', 'Bridgeport',
+      'East Richmond', 'South Arm', 'Broadmoor', 'Sea Island',
+      'Aberdeen', 'Brighouse', 'Seafair', 'No.5 Road',
+    ],
+    driveTime: '25–30 minutes from our North Vancouver base',
+    faqs: [
+      {
+        question: 'Do you sharpen Chinese cleavers and Japanese knives in Richmond?',
+        answer: 'Yes — Richmond is one of the cities where we sharpen the widest variety of blades. Chinese cleavers (both vegetable and bone) get matched to their proper bevel; Japanese single-bevel yanagiba and deba get the waterstone treatment; double-bevel gyuto and santoku get the appropriate factory angle. Standard kitchen knives are $12, Japanese single-bevel and ceramic are $18, large cleavers around $15.',
+      },
+      {
+        question: 'How long does it take you to drive from North Vancouver to Richmond?',
+        answer: 'Most Richmond addresses are 25–30 minutes from our shop, depending on bridge traffic. We typically take Knight Street or Oak Street into the city, then route through depending on whether you are in City Centre, Steveston, Hamilton, or East Richmond. We schedule mobile visits 1–2 business days out.',
+      },
+      {
+        question: 'What is the minimum order for mobile sharpening in Richmond?',
+        answer: 'Mobile visits to Richmond require a minimum of 5 knives ($60). Many home cooks easily hit this with their everyday set; restaurant clients on a scheduled rotation usually book 30–80 knives per visit. Strata buildings and apartment complexes often coordinate building-wide service days that drop the per-customer minimum.',
+      },
+      {
+        question: 'Do you offer scheduled service for Richmond restaurants and dim sum kitchens?',
+        answer: 'Yes. We provide weekly and bi-weekly scheduled mobile sharpening for restaurants across Richmond, including high-volume dim sum kitchens, izakaya, hot pot, and Vietnamese pho operations. We work around your prep schedule — typically arriving between morning prep and lunch service — and sharpen the entire knife inventory on-site.',
+      },
+    ],
+    metaTitle: 'Knife Sharpening Richmond, BC | Mobile Service | Cove Blades',
+    metaDescription: 'Professional mobile knife sharpening in Richmond, BC. Serving City Centre, Steveston, Hamilton. Chinese cleavers, Japanese knives, restaurant kitchens. $12/knife.',
+    dropOffEmphasis: false,
+    subRegion: 'Vancouver',
+  },
+  {
+    slug: 'surrey',
+    name: 'Surrey',
+    description: `Cove Blades brings professional mobile knife sharpening across Surrey — the largest city in British Columbia — covering all six town centres from Whalley/City Centre and Guildford through Newton, Fleetwood, Cloverdale, and South Surrey/White Rock. Drive time from our North Vancouver shop ranges from 35 to 50 minutes depending on which corner of Surrey we are heading to and which bridge we cross.
+
+Surrey is over 568,000 residents and growing fast — by some projections, it will surpass Vancouver in population within a decade. The food scene reflects that scale and that diversity. Newton and the 152nd Street corridor anchor the Punjabi food capital of Canada — tandoori, biryani, sweets, and the kind of spice-prep volume that demands sharp blades. Cloverdale's heritage runs through the rodeo grounds and the older village core. Whalley is revitalizing alongside the Skytrain expansion, with new restaurants every quarter. South Surrey trends affluent and Japanese-knife heavy; Guildford is family-dense and home to dozens of independent restaurants.
+
+Mobile sharpening makes more sense in Surrey than almost anywhere else in the Lower Mainland — drop-off across the Pattullo or Port Mann is a non-starter for most residents. We arrive at your address, work through 5–15 blades on-site in 20–30 minutes, and you are back to cooking. Restaurant accounts in Newton, City Centre, and Cloverdale are typically on weekly or bi-weekly schedules. Standard kitchen knives are $12, Japanese single-bevel and ceramic $18, with our 30-day edge guarantee on every blade.`,
+    neighbourhoods: [
+      'City Centre / Whalley', 'Guildford', 'Newton', 'Fleetwood',
+      'Cloverdale', 'South Surrey', 'Sullivan Heights',
+      'Panorama Ridge', 'Clayton', 'Fraser Heights',
+      'Bridgeview', 'Bear Creek',
+    ],
+    driveTime: '35–50 minutes from our North Vancouver base',
+    faqs: [
+      {
+        question: 'Which parts of Surrey do you serve for mobile knife sharpening?',
+        answer: 'All six town centres: Whalley/City Centre, Guildford, Newton, Fleetwood, Cloverdale, and South Surrey. Drive times vary — Whalley and Guildford are closest at around 35–40 minutes; Newton, Fleetwood, and Cloverdale are 40–50 minutes; South Surrey runs 45–55 minutes depending on traffic.',
+      },
+      {
+        question: 'Do you sharpen the kinds of knives used in Newton and Surrey Punjabi kitchens?',
+        answer: 'Yes — heavy-duty chef knives, cleavers, vegetable knives, and the specialty blades used for tandoori prep are all routine work for us. We match each blade to its correct bevel and grind. Standard kitchen knives are $12 each, larger cleavers $15, ceramic and Japanese single-bevel $18.',
+      },
+      {
+        question: 'What is the minimum for mobile sharpening in Surrey?',
+        answer: 'Mobile visits to Surrey require a minimum of 5 knives ($60) given the longer drive. South Surrey and Cloverdale clients sometimes batch with neighbours to hit the minimum efficiently — we are happy to do multi-stop visits on the same street or strata.',
+      },
+      {
+        question: 'Do you provide scheduled service for Surrey restaurants?',
+        answer: 'Yes. We run weekly and bi-weekly mobile rotations for restaurants across all six Surrey town centres, including high-volume Punjabi kitchens in Newton, the diverse food scene in Whalley/City Centre, and the South Surrey strip. We work around your prep schedule and sharpen on-site without taking blades off the line.',
+      },
+    ],
+    metaTitle: 'Knife Sharpening Surrey, BC | Mobile Service | Cove Blades',
+    metaDescription: 'Professional mobile knife sharpening across Surrey — City Centre, Guildford, Newton, Fleetwood, Cloverdale, South Surrey. $12/knife with 30-day guarantee.',
+    dropOffEmphasis: false,
+    subRegion: 'South of Fraser',
+  },
+  {
+    slug: 'delta',
+    name: 'Delta',
+    description: `Cove Blades provides mobile knife sharpening across all three communities of Delta — North Delta, Ladner, and Tsawwassen. We come over from North Vancouver, typically reaching North Delta in 35–45 minutes, Ladner in 40–50 minutes, and Tsawwassen in around 50 minutes. Mobile makes sense here: from Delta, dropping off across two bridges and a tunnel is not realistic for most customers.
+
+Delta is one of those Lower Mainland cities that does not feel like one. North Delta is suburban-dense, with a strong residential character along Scott Road and the corridor up to Sunshine Hills. Ladner is a riverfront village with deep fishing roots, working farms, and a tight-knit community where many homes have been in the same family for generations. Tsawwassen is the beach town — wide oceanfront views, the BC Ferries terminal, the relatively new Tsawwassen Mills shopping district, and a residential mix that skews toward retirees and families. Each community cooks differently. North Delta runs Punjabi, Filipino, and Vietnamese kitchens; Ladner does seafood and farm-to-table; Tsawwassen tilts toward Japanese, Italian, and West Coast.
+
+Our mobile setup is self-contained — we bring power, lighting, and a portable sharpening station. Most home collections of 5–12 blades take 20–30 minutes on-site. We sharpen every type of kitchen knife, plus garden tools, fishing fillet knives (a common request from Ladner and Tsawwassen waterfront homes), and the occasional axe or machete. $12 per kitchen knife, $18 for Japanese single-bevel and ceramic, with our 30-day edge guarantee on every blade.`,
+    neighbourhoods: [
+      'North Delta', 'Sunshine Hills', 'Annacis Island',
+      'Ladner', 'Ladner Village', 'East Ladner',
+      'Tsawwassen', 'Tsawwassen Heights', 'English Bluff',
+      'Beach Grove', 'Scott Road',
+    ],
+    driveTime: '35–50 minutes from our North Vancouver base',
+    faqs: [
+      {
+        question: 'Do you serve all three communities of Delta?',
+        answer: 'Yes — North Delta, Ladner, and Tsawwassen. Drive times vary: North Delta is 35–45 minutes, Ladner is 40–50 minutes, and Tsawwassen is around 50 minutes from our North Vancouver shop. Tsawwassen Heights and beach-side addresses are at the far end of that range.',
+      },
+      {
+        question: 'What is the minimum for mobile sharpening in Delta?',
+        answer: 'Mobile visits to Delta require a minimum of 5 knives ($60) given the drive. Many Ladner and Tsawwassen households coordinate with friends or neighbours to combine into one visit — that is the most economical way to use the service.',
+      },
+      {
+        question: 'Do you sharpen fillet knives and fishing blades for Ladner and Tsawwassen waterfront homes?',
+        answer: 'Yes — fillet knives, fishing knives, and bait knives are routine work for us, especially for Ladner and Tsawwassen customers. Fillet knives are $12 each; we restore tip damage and re-set the flex/edge geometry on flexible blades.',
+      },
+      {
+        question: 'Do you serve Delta restaurants on a scheduled basis?',
+        answer: 'Yes. We provide weekly and bi-weekly mobile sharpening for restaurants and commercial kitchens across Delta, including the Tsawwassen and Ladner waterfronts. We arrive during prep hours, sharpen on-site, and rotate blades so service is uninterrupted.',
+      },
+    ],
+    metaTitle: 'Knife Sharpening Delta, BC | Mobile Service | Cove Blades',
+    metaDescription: 'Professional mobile knife sharpening in North Delta, Ladner, and Tsawwassen. $12/knife with 30-day guarantee. We come to you. Book online today.',
+    dropOffEmphasis: false,
+    subRegion: 'South of Fraser',
+  },
+  {
+    slug: 'new-westminster',
+    name: 'New Westminster',
+    description: `Cove Blades brings mobile knife sharpening to New Westminster — the Royal City, BC's oldest city — covering Downtown along Columbia Street, the Quay along the Fraser River, the Brewery District, Sapperton, and across the bridge into Queensborough. From our North Vancouver shop, we typically reach New West in 25–35 minutes via the Second Narrows Bridge.
+
+New Westminster has been quietly remaking itself for years. The Quay's Public Market remains the social heart of the riverfront; Sapperton is in the middle of an obvious renaissance, with new restaurants every season and a strong cluster around Royal Columbian Hospital and the Brewery District. Columbia Street downtown is a mix of long-running diners and new openings, and Queensborough — across the Fraser, often forgotten — has its own residential and small-business scene growing fast. The city is dense, walkable in spots, and full of the kind of resident who actually knows what their knives should feel like.
+
+Mobile sharpening fits well here because parking and short drives suit the neighbourhood-scale of New West. We arrive at your address with a self-contained portable station, work through your kitchen blades on-site (usually 5–15 knives in 20–30 minutes), and you are back to your evening. We sharpen the full range — Western chef, Japanese, ceramic, serrated, scissors, and the occasional axe or pruner — and back every blade with our 30-day edge guarantee.`,
+    neighbourhoods: [
+      'Downtown New West', 'Quay', 'Sapperton',
+      'Brewery District', 'Queensborough', 'Uptown',
+      'Glenbrooke North', 'West End', 'Connaught Heights',
+      'Massey-Victory Heights', 'Queens Park',
+    ],
+    driveTime: '25–35 minutes from our North Vancouver base',
+    faqs: [
+      {
+        question: 'How quickly can you get to New Westminster for mobile sharpening?',
+        answer: 'Most New Westminster addresses are 25–35 minutes from our shop via the Second Narrows Bridge and Brunette Avenue. Queensborough takes a few extra minutes due to the river crossing. We typically schedule mobile visits 1–2 business days out.',
+      },
+      {
+        question: 'Do you serve Sapperton and the Brewery District for restaurant sharpening?',
+        answer: 'Yes — Sapperton and the Brewery District are on a regular rotation for several of our scheduled restaurant accounts. We also serve Columbia Street downtown and the Quay. Weekly and bi-weekly schedules are typical depending on volume.',
+      },
+      {
+        question: 'What is the minimum order for mobile sharpening in New Westminster?',
+        answer: 'Mobile visits to New West require a minimum of 5 knives ($60). Strata buildings on the Quay and Uptown often coordinate building-wide visits — let us know if your building wants a service day and we can sometimes drop the per-household minimum for the group.',
+      },
+      {
+        question: 'Do you sharpen Japanese knives common in New West kitchens?',
+        answer: 'Yes. We sharpen single-bevel and double-bevel Japanese blades using waterstones, matching the original factory geometry. Brands like Shun, Global, Miyabi, Tojiro, and custom makers are all welcome at $18 per Japanese knife.',
+      },
+    ],
+    metaTitle: 'Knife Sharpening New Westminster | Mobile Service | Cove Blades',
+    metaDescription: 'Professional mobile knife sharpening in New Westminster — Downtown, Quay, Sapperton, Brewery District, Queensborough. $12/knife with 30-day guarantee.',
+    dropOffEmphasis: false,
+    subRegion: 'Burnaby & New West',
+  },
+  {
+    slug: 'maple-ridge',
+    name: 'Maple Ridge',
+    description: `Cove Blades brings mobile knife sharpening to Maple Ridge, covering the central downtown along Lougheed Highway, the older neighbourhoods of West Maple Ridge and Hammond, the larger residential lots out toward Albion and Whonnock, and the equestrian and rural pockets that give the city its character. From our North Vancouver shop, we typically reach Maple Ridge in 40–50 minutes via the Second Narrows and the Pitt River Bridge.
+
+Maple Ridge has a different feel from the cities closer in to Vancouver. With around 95,000 residents and a footprint that runs from suburban downtown through semi-rural acreage out to the foot of Golden Ears, the city is full of homes with bigger lots, garden tools, hunting knives, and the kind of household that processes its own deer and salmon. Equestrian properties around 224th and 232nd Street come with the working tools that horses need; family gardens come with secateurs and pruners. Kitchen-knife customers exist too — Maple Ridge has a quietly excellent restaurant scene clustered around downtown and Maple Meadows — but the mix of work we see here is more varied than in Vancouver or Burnaby.
+
+Our mobile setup handles all of it. We arrive with our portable station, work through your blades on-site (kitchen knives in 20–25 minutes for a typical home set; garden tools and outdoor blades a little longer per piece), and you keep your day. Standard kitchen knives are $12, Japanese single-bevel and ceramic $18, larger garden tools and outdoor blades $15–$25 depending on size. 30-day edge guarantee on every blade.`,
+    neighbourhoods: [
+      'Downtown Maple Ridge', 'West Maple Ridge', 'Hammond',
+      'Albion', 'Whonnock', 'Ruskin', 'Cottonwood',
+      'Silver Valley', 'Maple Meadows', 'Thornhill',
+    ],
+    driveTime: '40–50 minutes from our North Vancouver base',
+    faqs: [
+      {
+        question: 'How long does it take you to drive to Maple Ridge?',
+        answer: 'Most Maple Ridge addresses are 40–50 minutes from our shop via the Second Narrows Bridge and the Pitt River Bridge. Whonnock, Ruskin, and the eastern edge of the city add a few minutes. We schedule mobile visits 1–2 business days out, with morning slots typically the most flexible for the longer drive.',
+      },
+      {
+        question: 'Do you sharpen garden tools, pruners, and outdoor blades in Maple Ridge?',
+        answer: 'Yes — Maple Ridge is one of the cities where we get the most outdoor and garden-tool work. We sharpen pruners, secateurs, hedge shears, hunting knives, fillet knives, axes, machetes, and the occasional draw knife or hatchet. Pricing is $15–$25 per tool depending on size and condition; small kitchen-style scissors are $12.',
+      },
+      {
+        question: 'What is the minimum for mobile sharpening in Maple Ridge?',
+        answer: 'Mobile visits to Maple Ridge require a minimum of 5 knives or tools ($60) given the longer drive. Acreage and rural-property customers often hit the minimum easily once garden tools are added in alongside the kitchen knives.',
+      },
+      {
+        question: 'Do you handle equestrian-related blade work in Maple Ridge?',
+        answer: 'Yes, on a case-by-case basis — clipper blades for horse work, hoof knives, and similar equipment can be re-edged or replaced with a fresh bevel. Reach out with the specific tool and we will tell you whether it is something we can handle.',
+      },
+    ],
+    metaTitle: 'Knife Sharpening Maple Ridge, BC | Mobile Service | Cove Blades',
+    metaDescription: 'Professional mobile knife sharpening in Maple Ridge — kitchen knives, garden tools, outdoor blades, fillet knives. $12/knife with 30-day guarantee. Book online.',
+    dropOffEmphasis: false,
+    subRegion: 'Fraser Valley',
+  },
 ]
 
 export function getCityBySlug(slug: string): CityData | undefined {
