@@ -1,6 +1,14 @@
 # Changelog
 
-## [2.4.0] — 2026-04-29 — Citywide SEO/GEO expansion (Phases 1–5)
+## [2.4.0] — 2026-04-29 — Citywide SEO/GEO expansion (Phases 1–6)
+
+### Phase 6 — Schema enrichment + answer-first H2 nudges
+
+- **City `Service` schema** enriched: `serviceType`, full `provider` block (telephone, email, address), `areaServed` now an array including each neighbourhood as a `Place`, new `hasOfferCatalog` with three priced offers (standard $12, Japanese/ceramic $18, scissors $12) — gives AI engines structured pricing they can cite directly
+- **Hub page** picked up two new schema blocks: `ItemList` of all 17 service-area pages with positional ordering, and a `SiteNavigationElement` listing each city as a navigation entry — both improve crawl-depth signals for AI search
+- **Answer-first H2 rewrites** on the city template: "How Mobile Sharpening Works in {city}" → "How does mobile sharpening work in {city}?"; "Neighbourhoods We Serve in {city}" → "Which {city} neighbourhoods do we serve?". Citation-friendly pattern for AI summarization
+
+
 
 ### Phase 5 — Hub redesign + internal linking + llms.txt
 

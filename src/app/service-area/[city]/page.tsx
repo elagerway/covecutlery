@@ -48,20 +48,58 @@ export default async function CityPage({
     '@context': 'https://schema.org',
     '@type': 'Service',
     name: `Knife Sharpening in ${city.name}`,
+    serviceType: 'Mobile knife sharpening',
     provider: {
       '@type': 'LocalBusiness',
       name: 'Cove Blades',
       url: 'https://coveblades.com',
-    },
-    areaServed: {
-      '@type': 'City',
-      name: city.name,
-      containedInPlace: {
-        '@type': 'AdministrativeArea',
-        name: 'British Columbia',
+      telephone: '+1-604-210-8180',
+      email: 'info@coveblades.com',
+      address: {
+        '@type': 'PostalAddress',
+        streetAddress: '4086 Brockton Crescent',
+        addressLocality: 'North Vancouver',
+        addressRegion: 'BC',
+        postalCode: 'V7G 1E6',
+        addressCountry: 'CA',
       },
     },
-    description: `Professional mobile knife sharpening service in ${city.name}, BC. We come to your home or restaurant.`,
+    areaServed: [
+      {
+        '@type': 'City',
+        name: city.name,
+        containedInPlace: { '@type': 'AdministrativeArea', name: 'British Columbia' },
+      },
+      ...city.neighbourhoods.map(n => ({
+        '@type': 'Place',
+        name: `${n}, ${city.name}, BC`,
+      })),
+    ],
+    hasOfferCatalog: {
+      '@type': 'OfferCatalog',
+      name: 'Knife Sharpening Services',
+      itemListElement: [
+        {
+          '@type': 'Offer',
+          itemOffered: { '@type': 'Service', name: 'Standard kitchen knife sharpening' },
+          price: '12.00',
+          priceCurrency: 'CAD',
+        },
+        {
+          '@type': 'Offer',
+          itemOffered: { '@type': 'Service', name: 'Japanese single-bevel or ceramic knife sharpening' },
+          price: '18.00',
+          priceCurrency: 'CAD',
+        },
+        {
+          '@type': 'Offer',
+          itemOffered: { '@type': 'Service', name: 'Kitchen scissors sharpening' },
+          price: '12.00',
+          priceCurrency: 'CAD',
+        },
+      ],
+    },
+    description: `Professional mobile knife sharpening service in ${city.name}, BC. We come to your home or restaurant. ${city.driveTime}.`,
   }
 
   const paragraphs = city.description.split('\n\n')
@@ -134,8 +172,8 @@ export default async function CityPage({
         >
           <div className="max-w-4xl mx-auto">
             <h2 className="text-2xl sm:text-3xl font-bold mb-10 text-center" style={{ color: '#FFFFFF' }}>
-              How Mobile Sharpening Works in{' '}
-              <span style={{ color: '#D4A017' }}>{city.name}</span>
+              How does mobile sharpening work in{' '}
+              <span style={{ color: '#D4A017' }}>{city.name}</span>?
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {[
@@ -187,8 +225,8 @@ export default async function CityPage({
         <section className="py-16 px-6" style={{ borderTop: '1px solid #30363D' }}>
           <div className="max-w-4xl mx-auto">
             <h2 className="text-2xl sm:text-3xl font-bold mb-8" style={{ color: '#FFFFFF' }}>
-              Neighbourhoods We Serve in{' '}
-              <span style={{ color: '#D4A017' }}>{city.name}</span>
+              Which {city.name} neighbourhoods do we{' '}
+              <span style={{ color: '#D4A017' }}>serve</span>?
             </h2>
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
               {city.neighbourhoods.map(hood => (

@@ -54,6 +54,26 @@ export default function ServiceAreaPage() {
 
   const faqJsonLd = faqPageSchema(hubFaqs)
 
+  const itemListJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    name: 'Cove Blades service areas across the Lower Mainland',
+    numberOfItems: cities.length,
+    itemListElement: cities.map((city, i) => ({
+      '@type': 'ListItem',
+      position: i + 1,
+      url: `https://coveblades.com/service-area/${city.slug}`,
+      name: `Knife sharpening in ${city.name}`,
+    })),
+  }
+
+  const siteNavJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'SiteNavigationElement',
+    name: cities.map(c => c.name),
+    url: cities.map(c => `https://coveblades.com/service-area/${c.slug}`),
+  }
+
   return (
     <div
       className="min-h-screen flex flex-col"
@@ -61,6 +81,8 @@ export default function ServiceAreaPage() {
     >
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(breadcrumbJsonLd) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(faqJsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(itemListJsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(siteNavJsonLd) }} />
       <Navbar />
 
       <main className="flex-1 pt-16">
