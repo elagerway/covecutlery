@@ -28,6 +28,7 @@ export default function Home() {
       <Navbar />
       <main>
         <HeroSection />
+        <InstagramFeed />
         <TrustBar />
         <ServicesSection />
         <MobileServiceSection />
@@ -35,7 +36,6 @@ export default function Home() {
         <PricingSection />
         <ReviewsSection />
         <WhereWeAreSection />
-        <InstagramFeed />
         <AboutSection />
         <ContactSection />
       </main>

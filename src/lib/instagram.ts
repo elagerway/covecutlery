@@ -12,6 +12,13 @@
  *     &access_token={current_long_lived_token}
  */
 
+export interface InstagramChild {
+  id: string;
+  media_type: "IMAGE" | "VIDEO";
+  media_url: string;
+  thumbnail_url?: string;
+}
+
 export interface InstagramPost {
   id: string;
   caption: string | null;
@@ -20,9 +27,12 @@ export interface InstagramPost {
   thumbnail_url?: string;
   permalink: string;
   timestamp: string;
+  children?: { data: InstagramChild[] };
 }
 
-const FIELDS = "id,caption,media_type,media_url,thumbnail_url,permalink,timestamp";
+const FIELDS =
+  "id,caption,media_type,media_url,thumbnail_url,permalink,timestamp," +
+  "children{id,media_type,media_url,thumbnail_url}";
 const REVALIDATE_SECONDS = 3600; // 1 hour
 
 export async function getInstagramFeed(limit = 6): Promise<InstagramPost[]> {

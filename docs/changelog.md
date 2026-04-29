@@ -1,5 +1,20 @@
 # Changelog
 
+## [2.6.1] — 2026-04-29 — Instagram in-page modal + repositioned to under Hero
+
+### Changed
+- **Instagram section moved from below `WhereWeAreSection` to right under `HeroSection`** — pictures-first instinct: visual social proof immediately after the hero CTAs, before the rest of the funnel. The hero is `min-h-screen` so the feed becomes the first thing visitors see when they scroll
+- **Posts now open in a modal instead of redirecting to instagram.com** — keeps users on the site. Modal is media-type aware:
+  - **Images** render full-size, contained to 60vh
+  - **Videos** play inline with HTML5 controls, autoplay, `playsInline`
+  - **Carousels** show all child items with prev/next chevrons, slide counter (`1 / 4`), and arrow-key navigation
+  - Caption rendered with preserved line breaks below the media; "View on Instagram" footer link kept as escape hatch
+  - Backdrop click + Escape key close; body scroll locked while open
+
+### Added
+- **`children` field added to Graph API query** — each carousel post now includes its full set of `id, media_type, media_url, thumbnail_url` children in one API call, so the modal has everything it needs without an additional round trip
+- **`InstagramFeedClient`** client component (`src/components/sections/InstagramFeedClient.tsx`) — handles modal state, keyboard, body-scroll-lock, and renders the grid as `<button>` elements (was `<a>`). The server-component `InstagramFeed.tsx` stays as a thin shell that fetches data and passes it to the client component
+
 ## [2.6.0] — 2026-04-29 — Instagram feed on the home page
 
 ### Added

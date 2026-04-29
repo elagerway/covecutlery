@@ -1,5 +1,6 @@
-import { Play, Images, ExternalLink } from "lucide-react";
-import { getInstagramFeed, postPreviewUrl } from "@/lib/instagram";
+import { ExternalLink } from "lucide-react";
+import { getInstagramFeed } from "@/lib/instagram";
+import InstagramFeedClient from "@/components/sections/InstagramFeedClient";
 
 const InstagramIcon = () => (
   <svg
@@ -56,7 +57,7 @@ export default async function InstagramFeed() {
             Recent <span style={{ color: "#D4A017" }}>Work</span>
           </h2>
           <p className="text-base" style={{ color: "#6B7280" }}>
-            Real edges from the bench. Fresh from{" "}
+            Real edges from the bench. Tap any post to view it here, or follow{" "}
             <a
               href="https://www.instagram.com/coveblades/"
               target="_blank"
@@ -65,62 +66,12 @@ export default async function InstagramFeed() {
               style={{ color: "#D4A017" }}
             >
               @coveblades
-            </a>
-            .
+            </a>{" "}
+            on Instagram.
           </p>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 sm:gap-4">
-          {posts.map((post) => {
-            const preview = postPreviewUrl(post);
-            const isVideo = post.media_type === "VIDEO";
-            const isCarousel = post.media_type === "CAROUSEL_ALBUM";
-            return (
-              <a
-                key={post.id}
-                href={post.permalink}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group relative block aspect-square overflow-hidden rounded-xl border"
-                style={{ backgroundColor: "#161B22", borderColor: "#30363D" }}
-              >
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img
-                  src={preview}
-                  alt={post.caption?.slice(0, 100) ?? "Cove Blades Instagram post"}
-                  loading="lazy"
-                  className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                />
-
-                {/* Media-type badge */}
-                {(isVideo || isCarousel) && (
-                  <div
-                    className="absolute top-2 right-2 w-8 h-8 rounded-full flex items-center justify-center"
-                    style={{ backgroundColor: "rgba(0,0,0,0.55)", backdropFilter: "blur(4px)" }}
-                  >
-                    {isVideo ? (
-                      <Play size={14} style={{ color: "#FFFFFF" }} fill="#FFFFFF" />
-                    ) : (
-                      <Images size={14} style={{ color: "#FFFFFF" }} />
-                    )}
-                  </div>
-                )}
-
-                {/* Caption hover overlay */}
-                {post.caption && (
-                  <div
-                    className="absolute inset-0 flex items-end p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
-                    style={{ background: "linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0) 60%)" }}
-                  >
-                    <p className="text-xs leading-snug line-clamp-3" style={{ color: "#FFFFFF" }}>
-                      {post.caption}
-                    </p>
-                  </div>
-                )}
-              </a>
-            );
-          })}
-        </div>
+        <InstagramFeedClient posts={posts} />
 
         <div className="text-center mt-10">
           <a
