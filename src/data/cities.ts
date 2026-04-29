@@ -465,6 +465,194 @@ Our mobile setup handles all of it. We arrive with our portable station, work th
     dropOffEmphasis: false,
     subRegion: 'Fraser Valley',
   },
+  {
+    slug: 'pitt-meadows',
+    name: 'Pitt Meadows',
+    description: `Cove Blades brings mobile knife sharpening to Pitt Meadows — the agricultural pocket between Maple Ridge and Coquitlam, sitting between the Pitt and Fraser rivers. Most Pitt Meadows addresses are 40–45 minutes from our North Vancouver shop via the Second Narrows Bridge and the Pitt River Bridge, and we plan our routes so we can serve Pitt Meadows and Maple Ridge in the same trip when scheduling allows.
+
+Pitt Meadows is small — about 22,000 residents — but it has a distinct character. The Pitt Polder area is one of the most productive blueberry and cranberry growing regions in BC, and the agricultural fields of central Pitt Meadows produce vegetables for kitchens across the Lower Mainland. Most of the residential side sits south of the Pitt River, with Mitchell Island and the airport on the western edge. The community is family-dense, lots are larger than in Vancouver proper, and the ratio of garden tools to kitchen knives we see from Pitt Meadows customers is usually higher than the average.
+
+Mobile sharpening fits Pitt Meadows naturally because there is no reasonable drop-off from this side of the Lower Mainland. We arrive at your address with our portable station, work through your kitchen blades, garden tools, and outdoor knives on-site, and you keep your day. Pricing is $12 per kitchen knife, $18 for Japanese single-bevel and ceramic, $15–$25 for larger garden tools and outdoor blades. Every blade is backed by our 30-day edge guarantee.`,
+    neighbourhoods: [
+      'Central Pitt Meadows', 'Pitt Polder', 'South Bonson',
+      'Bonson', 'North Pitt Meadows', 'Mitchell Island',
+      'Lougheed Highway corridor',
+    ],
+    driveTime: '40–45 minutes from our North Vancouver base',
+    faqs: [
+      {
+        question: 'How far is Pitt Meadows from your North Vancouver shop?',
+        answer: 'About 40–45 minutes via the Second Narrows Bridge and the Pitt River Bridge. We frequently route Pitt Meadows and Maple Ridge in the same trip — if your timing is flexible, we can sometimes get you on the same day as a Maple Ridge visit, which makes scheduling easier on both sides.',
+      },
+      {
+        question: 'Do you sharpen garden tools and outdoor blades in Pitt Meadows?',
+        answer: 'Yes. Pitt Meadows is one of the cities where we see the most garden-tool work — pruners, secateurs, hedge shears, fillet knives, hunting knives, axes, and machetes. Pricing depends on the tool: kitchen knives are $12, kitchen-sized scissors $12, larger garden and outdoor blades $15–$25.',
+      },
+      {
+        question: 'What is the minimum for mobile sharpening in Pitt Meadows?',
+        answer: 'Mobile visits to Pitt Meadows require a minimum of 5 knives or tools ($60). Combining kitchen knives with garden and outdoor tools is the easiest way to hit the minimum if you do not have a deep kitchen-knife collection.',
+      },
+      {
+        question: 'Do you serve Pitt Meadows farms and agricultural operations?',
+        answer: 'Yes — we sharpen knives, machetes, harvest tools, and pruning equipment for Pitt Meadows blueberry and cranberry growers and other agricultural operations. Reach out to discuss volume and we can build a schedule that fits the harvest cycle.',
+      },
+    ],
+    metaTitle: 'Knife Sharpening Pitt Meadows, BC | Mobile Service | Cove Blades',
+    metaDescription: 'Professional mobile knife sharpening in Pitt Meadows. Kitchen knives, garden tools, agricultural blades. $12/knife with 30-day guarantee. Book online today.',
+    dropOffEmphasis: false,
+    subRegion: 'Fraser Valley',
+  },
+  {
+    slug: 'langley',
+    name: 'Langley',
+    description: `Cove Blades brings mobile knife sharpening to Langley — both the City of Langley downtown and the wider Township, from Walnut Grove and Willoughby through Brookswood, Aldergrove, Murrayville, and historic Fort Langley. Most Langley addresses are 50–65 minutes from our North Vancouver shop, depending on which corner of the Township we are heading to and which route we take.
+
+Langley is roughly 155,000 residents combined and one of the fastest-growing parts of Metro Vancouver. The Township covers a remarkable range: rural acreages and horse properties out toward Aldergrove and Otter, the cluster of family wineries and farm-to-table restaurants that make Langley one of BC's emerging culinary destinations, the rapid new-build sprawl of Willoughby, and the historic core of Fort Langley with its riverfront restaurants and weekend farmers' market. The City of Langley downtown is denser, with diverse food along Fraser Highway and 200 Street. Each pocket cooks differently, and the knives we see vary accordingly — high-end Japanese in Murrayville, working-kitchen Westerns in Aldergrove, restaurant-grade everything in Fort Langley.
+
+Mobile sharpening is essentially the only way knife sharpening gets done in Langley — drop-off across the Pattullo or Port Mann is not realistic for Township customers. We arrive at your address with a self-contained station, work through 5–15 blades in 20–30 minutes (longer for restaurant rotations), and you keep your day. Standard kitchen knives are $12, Japanese single-bevel and ceramic $18, garden and outdoor tools $15–$25 depending on size. 30-day edge guarantee on every blade.`,
+    neighbourhoods: [
+      'City of Langley', 'Walnut Grove', 'Willoughby',
+      'Brookswood', 'Murrayville', 'Aldergrove',
+      'Fort Langley', 'Otter District', 'Salmon River Uplands',
+      'Campbell Valley', 'Fernridge',
+    ],
+    driveTime: '50–65 minutes from our North Vancouver base',
+    faqs: [
+      {
+        question: 'Which parts of Langley do you serve?',
+        answer: 'Both the City of Langley and the Township — Walnut Grove, Willoughby, Brookswood, Murrayville, Aldergrove, Fort Langley, and the rural pockets. Drive times vary: Walnut Grove and Willoughby are at the closer end (50–55 minutes); Aldergrove, Otter, and southern Brookswood are 60–65 minutes.',
+      },
+      {
+        question: 'What is the minimum for mobile sharpening in Langley?',
+        answer: 'Mobile visits to Langley require a minimum of 5 knives or tools ($60) given the longer drive. Many Langley customers — especially Walnut Grove and Murrayville households — coordinate with friends or strata neighbours so a single visit covers two or three homes at the per-knife rate.',
+      },
+      {
+        question: 'Do you provide scheduled service for Langley restaurants and wineries?',
+        answer: 'Yes. We provide weekly and bi-weekly scheduled mobile sharpening for Langley restaurants, wineries with on-site dining, and the food businesses around Fort Langley and the City of Langley downtown. We work around your prep schedule and sharpen on-site.',
+      },
+      {
+        question: 'Do you handle horse-property and equestrian-related blade work in Langley?',
+        answer: 'Yes — clipper blades, hoof knives, and similar work are case-by-case but we have experience with them. Send us a note describing the specific tool and we will confirm whether it is something we can sharpen on a mobile visit.',
+      },
+    ],
+    metaTitle: 'Knife Sharpening Langley, BC | Mobile Service | Cove Blades',
+    metaDescription: 'Professional mobile knife sharpening across Langley — Walnut Grove, Willoughby, Murrayville, Aldergrove, Fort Langley. $12/knife with 30-day guarantee.',
+    dropOffEmphasis: false,
+    subRegion: 'South of Fraser',
+  },
+  {
+    slug: 'white-rock',
+    name: 'White Rock',
+    description: `Cove Blades brings mobile knife sharpening to White Rock and the immediately surrounding South Surrey neighbourhoods that share the city's beachfront character — Crescent Beach, Ocean Park, and the streets climbing up from the promenade. Most White Rock addresses are 50–60 minutes from our North Vancouver shop, depending on bridge traffic.
+
+White Rock is small — only about 22,000 residents within its tight municipal boundary — but the lifestyle here is distinct. The promenade along Marine Drive and the pier are the social heart of the city, and the residential streets above hold a mix of long-time residents, retirees who moved here for the ocean view, and families that prize the slower pace. The food scene is anchored by the seafood and fish-and-chips spots along the water, the diverse restaurants on Johnston Road heading uphill, and the kind of high-end home kitchen you would expect in a city where many residents have invested deliberately in where they live and how they cook.
+
+Mobile sharpening fits White Rock especially well: the city is compact, parking near the promenade is rarely an issue at off-peak hours, and most residents would rather have us come to them than drive across two bridges to drop off. We arrive with a self-contained station, work through your kitchen blades on-site (typically 5–15 knives in 20–30 minutes), and you are done. Standard kitchen knives are $12, Japanese single-bevel and ceramic $18, fillet knives $12. 30-day edge guarantee on every blade.`,
+    neighbourhoods: [
+      'White Rock Promenade', 'East Beach', 'West Beach',
+      'Marine Drive', 'Johnston Road', 'Hillside',
+      'Centennial Park', 'Bayview', 'Five Corners',
+    ],
+    driveTime: '50–60 minutes from our North Vancouver base',
+    faqs: [
+      {
+        question: 'How long does it take you to drive to White Rock?',
+        answer: 'Most White Rock addresses are 50–60 minutes from our North Vancouver shop — we cross the Second Narrows or Lions Gate, then take Highway 99 down to the city. Traffic on Highway 99 is the main variable; off-peak Saturday mornings are usually faster than weekday afternoons.',
+      },
+      {
+        question: 'What is the minimum for mobile sharpening in White Rock?',
+        answer: 'Mobile visits to White Rock require a minimum of 5 knives ($60) given the drive. Strata and townhouse complexes near the promenade often coordinate building-wide service days — that drops the effective per-household minimum and makes the visit more efficient for everyone.',
+      },
+      {
+        question: 'Do you sharpen fillet knives and fishing blades in White Rock?',
+        answer: 'Yes — fillet knives, fishing knives, and bait knives are routine work, especially for White Rock and Crescent Beach customers. Fillet knives are $12 each; we re-set the flex and edge geometry, restore tip damage, and back the work with our 30-day guarantee.',
+      },
+      {
+        question: 'Do you serve White Rock restaurants on a scheduled basis?',
+        answer: 'Yes. We provide weekly and bi-weekly mobile sharpening for restaurants along Marine Drive and Johnston Road. We arrive during prep hours, sharpen on-site at a designated station, and rotate blades so the line keeps moving while we work.',
+      },
+    ],
+    metaTitle: 'Knife Sharpening White Rock, BC | Mobile Service | Cove Blades',
+    metaDescription: 'Professional mobile knife sharpening in White Rock — Marine Drive, Johnston Road, the promenade. Fillet knives, kitchen blades. $12/knife with 30-day guarantee.',
+    dropOffEmphasis: false,
+    subRegion: 'South of Fraser',
+  },
+  {
+    slug: 'abbotsford',
+    name: 'Abbotsford',
+    description: `Cove Blades brings mobile knife sharpening to Abbotsford — the largest city in the Fraser Valley — covering Clearbrook, the Old Clayburn Village area, the Sumas Mountain neighbourhoods, the agricultural pockets out toward the US border, and the growing residential and commercial corridors along South Fraser Way and Highway 1. Drive time from our North Vancouver shop is typically 70–80 minutes, depending on traffic on Highway 1.
+
+Abbotsford is around 155,000 residents and unlike any other city in our service area. It is the agricultural capital of BC — the province's number-one dairy producer, with more milk coming out of Abbotsford alone than any other municipality, and the largest blueberry-growing region in Canada. The Mennonite community has shaped the city's food culture for generations, alongside more recent South Asian, Filipino, and Vietnamese influences. The result is a food scene that runs from family-run roadside farm stands to high-end farm-to-table restaurants, with plenty of working kitchens in between. Add Tradex, the airshow, the Abbotsford Centre arena, and a steadily growing tech and small-business sector, and the city feels less like an outpost and more like its own gravitational centre.
+
+Mobile sharpening makes the most sense in Abbotsford as a planned visit rather than a one-off — we typically schedule Abbotsford trips on a route that hits multiple stops in the same day, or as part of a Fraser Valley rotation that includes Chilliwack. Restaurant accounts on weekly or bi-weekly schedules work especially well. For residential customers, batching a visit with a friend, neighbour, or strata building keeps the per-trip economics reasonable. Standard kitchen knives are $12, Japanese single-bevel and ceramic $18, garden and outdoor blades $15–$25. 30-day edge guarantee on every blade.`,
+    neighbourhoods: [
+      'Clearbrook', 'Old Clayburn Village', 'Sumas Mountain',
+      'Sumas Prairie', 'McMillan', 'Abbotsford Heights',
+      'Aberdeen', 'Bradner', 'Ridgeview', 'Bateman',
+      'East Abbotsford', 'West Abbotsford', 'Mount Lehman',
+    ],
+    driveTime: '70–80 minutes from our North Vancouver base',
+    faqs: [
+      {
+        question: 'How far is Abbotsford from your North Vancouver shop?',
+        answer: 'Most Abbotsford addresses are 70–80 minutes from our shop via Highway 1. Sumas Mountain and the eastern pockets near the Chilliwack border are at the longer end. Because of the drive, we typically schedule Abbotsford visits as planned days that hit multiple stops or as part of a Fraser Valley rotation with Chilliwack.',
+      },
+      {
+        question: 'What is the minimum for mobile sharpening in Abbotsford?',
+        answer: 'Mobile visits to Abbotsford have a minimum of 8 knives or tools ($96) given the drive. Most Abbotsford customers easily hit this by combining kitchen knives with garden tools, or by batching with a neighbour or strata building. We are happy to coordinate multi-household visits in the same neighbourhood.',
+      },
+      {
+        question: 'Do you serve Abbotsford restaurants and farms on a scheduled basis?',
+        answer: 'Yes — scheduled service is the most economical option for Abbotsford restaurants and agricultural operations. We run weekly and bi-weekly rotations that cover restaurants along South Fraser Way, the dairy and blueberry farms across the city, and Clearbrook commercial kitchens. Reach out and we will design a schedule around your prep cycle or harvest calendar.',
+      },
+      {
+        question: 'Do you handle the variety of blades used in Abbotsford agricultural operations?',
+        answer: 'Yes — beyond kitchen knives, we sharpen pruners, secateurs, hedge shears, harvest knives, machetes, axes, and similar tools regularly used on Abbotsford farms. Pricing depends on the specific tool ($15–$25 typical for larger items); reach out with the equipment list and we will quote ahead of the visit.',
+      },
+    ],
+    metaTitle: 'Knife Sharpening Abbotsford, BC | Mobile Service | Cove Blades',
+    metaDescription: 'Professional mobile knife sharpening across Abbotsford — kitchen knives, garden tools, harvest blades, restaurant rotations. Fraser Valley service. Book online.',
+    dropOffEmphasis: false,
+    subRegion: 'Fraser Valley',
+  },
+  {
+    slug: 'chilliwack',
+    name: 'Chilliwack',
+    description: `Cove Blades brings mobile knife sharpening to Chilliwack — covering the central downtown, the growing Sardis neighbourhoods, the Vedder corridor toward Cultus Lake, the older heart around Yarrow and Promontory, and the agricultural belt that gives Chilliwack its character. We are about 90–105 minutes from our North Vancouver shop via Highway 1, which puts Chilliwack at the eastern edge of our service radius — but reachable, and a city we are committed to serving.
+
+Chilliwack is around 93,000 residents and feels different from anywhere else in our service area. The mountains are right there — Vedder Mountain, the Cheam range, Mount Slesse — and the Vedder River cuts through neighbourhoods that still feel rural at their edges. Cultus Lake anchors a significant recreational and cottage economy, especially in summer. The agricultural side runs deep: dairy farms, hop growers, corn, blueberries, and the kind of multi-generational family operations that define the eastern Fraser Valley. Sardis is the newer growth area; downtown Chilliwack along Yale Road is in the middle of a slow but real revitalization with new restaurants and renovated storefronts.
+
+Mobile sharpening to Chilliwack works best as a scheduled visit rather than ad-hoc — we typically come out as part of a Fraser Valley route that includes Abbotsford, or as a planned day that hits several Chilliwack stops in a single trip. Restaurant accounts on weekly or bi-weekly rotations are a natural fit; residential customers benefit most from batching with neighbours or strata buildings. Standard kitchen knives are $12, Japanese single-bevel and ceramic $18, larger garden and outdoor blades $15–$25, with our 30-day edge guarantee on every piece.`,
+    neighbourhoods: [
+      'Downtown Chilliwack', 'Sardis', 'Vedder Crossing',
+      'Promontory', 'Yarrow', 'Greendale', 'Rosedale',
+      'East Chilliwack', 'Chilliwack Mountain', 'Garrison Crossing',
+      'Cultus Lake area',
+    ],
+    driveTime: '90–105 minutes from our North Vancouver base',
+    faqs: [
+      {
+        question: 'Is Chilliwack within your service area?',
+        answer: 'Yes. Chilliwack sits at the eastern edge of our service radius — about 90–105 minutes from our North Vancouver shop via Highway 1. Because of the drive, we typically schedule Chilliwack visits as planned days that hit multiple stops, or as part of a Fraser Valley rotation that also covers Abbotsford.',
+      },
+      {
+        question: 'What is the minimum for mobile sharpening in Chilliwack?',
+        answer: 'Mobile visits to Chilliwack have a minimum of 10 knives or tools ($120) given the longer drive. Restaurant accounts and farm operations easily exceed this on a routine visit. Residential customers often batch with neighbours, family on the same street, or strata buildings to hit the minimum efficiently.',
+      },
+      {
+        question: 'Do you serve Chilliwack restaurants, farms, and agricultural operations?',
+        answer: 'Yes — scheduled service is how Chilliwack works best. We run weekly and bi-weekly rotations for restaurants along Yale Road and in Sardis, dairy and hop operations across the city, and the larger agricultural businesses in Greendale, Yarrow, and East Chilliwack. Reach out to design a schedule around your prep or harvest cycle.',
+      },
+      {
+        question: 'Can I batch a Chilliwack mobile visit with neighbours to share the trip?',
+        answer: 'Absolutely — and we encourage it. Coordinated visits to multiple homes on the same street or strata are how most Chilliwack residential bookings work. Each household pays the per-knife rate without each one independently hitting the per-trip minimum. Just let us know who is participating and we will plan the route.',
+      },
+    ],
+    metaTitle: 'Knife Sharpening Chilliwack, BC | Mobile Service | Cove Blades',
+    metaDescription: 'Professional mobile knife sharpening in Chilliwack — Sardis, Downtown, Vedder, Promontory. Fraser Valley scheduled rotations. $12/knife with 30-day guarantee.',
+    dropOffEmphasis: false,
+    subRegion: 'Fraser Valley',
+  },
 ]
 
 export function getCityBySlug(slug: string): CityData | undefined {

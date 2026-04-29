@@ -1,6 +1,18 @@
 # Changelog
 
-## [2.4.0] — 2026-04-29 — Citywide SEO/GEO expansion (Phases 1–3)
+## [2.4.0] — 2026-04-29 — Citywide SEO/GEO expansion (Phases 1–4)
+
+### Phase 4 — Five Fraser Valley + South Fraser cities
+
+- **`/service-area/pitt-meadows`** — Agricultural pocket between Maple Ridge and Coquitlam; blueberry/cranberry growing context; bundled-routing note with Maple Ridge. 40–45 min drive
+- **`/service-area/langley`** — Both City and Township; Walnut Grove, Willoughby, Brookswood, Murrayville, Aldergrove, Fort Langley; wineries + farm-to-table angle. 50–65 min drive
+- **`/service-area/white-rock`** — Beachfront character; promenade, pier, fillet knife focus; coordinated strata visits. 50–60 min drive
+- **`/service-area/abbotsford`** — Largest Fraser Valley city; agricultural capital framing (dairy, blueberries, Mennonite + South Asian food culture); minimum bumped to 8 knives ($96) given drive. 70–80 min drive
+- **`/service-area/chilliwack`** — Eastern edge of service area; Sardis, Vedder, Cultus Lake, Yarrow; minimum bumped to 10 knives ($120); explicit batched-route framing. 90–105 min drive
+
+Drive-distance-aware minimums on the longer cities (Abbotsford 8 knives, Chilliwack 10 knives) keep mobile economics realistic without rejecting the customer entirely. Each page has unique 3-paragraph local content, 4 city-specific FAQs, distinct neighbourhood list, and dedicated meta tags.
+
+
 
 ### Phase 3 — Five close-in mobile cities
 
