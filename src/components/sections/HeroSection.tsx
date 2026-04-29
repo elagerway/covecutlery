@@ -13,7 +13,7 @@ export default function HeroSection() {
 
   return (
     <section
-      className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden"
+      className="relative min-h-screen flex flex-col items-center justify-center overflow-hidden pt-24 pb-16 sm:pt-20 sm:pb-12"
       style={{ backgroundColor: "#0D1117" }}
     >
       {/* Diagonal gradient overlay */}

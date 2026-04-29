@@ -1,5 +1,10 @@
 # Changelog
 
+## [2.6.2] — 2026-04-29 — Hero padding fix: van no longer obscured by navbar on mobile
+
+### Fixed
+- **Hero section** added `pt-24 pb-16 sm:pt-20 sm:pb-12` to clear the fixed `h-16` navbar. The van decoration (with the new tire-smoke animation) was rendering behind the navbar on mobile because `flex justify-center` was vertically-centering content with no top margin reserved for the navbar overlap. Van now sits 30 px below the navbar with breathing room
+
 ## [2.6.1] — 2026-04-29 — Instagram in-page modal + repositioned to under Hero
 
 ### Changed
