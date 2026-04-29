@@ -168,37 +168,112 @@ The difference between a dull knife and a professionally sharpened one is immedi
   {
     slug: 'coquitlam',
     name: 'Coquitlam',
-    description: `Cove Blades provides professional mobile knife sharpening to Coquitlam, Port Moody, and Port Coquitlam — the entire Tri-Cities area. From our North Vancouver base, we reach most Coquitlam addresses in 30–35 minutes via the Second Narrows Bridge, bringing our full sharpening setup directly to your kitchen.
+    description: `Cove Blades brings professional mobile knife sharpening to Coquitlam — from Coquitlam Centre and Burke Mountain to Westwood Plateau and the historic Maillardville district. We drive over from North Vancouver via the Second Narrows Bridge, typically reaching Coquitlam addresses in 25–30 minutes with our full portable sharpening setup.
 
-The Tri-Cities is one of Metro Vancouver's fastest-growing regions, with Coquitlam alone home to over 150,000 residents. As the community has grown, so has its food scene — from the diverse restaurant offerings at Coquitlam Centre to the family-owned eateries along Austin Avenue and the growing culinary strip in Port Moody's Brewers Row. Sharp knives are essential whether you are cooking for a family of four or running a commercial kitchen serving hundreds of covers per night.
+Coquitlam is the largest of the Tri-Cities, home to roughly 150,000 residents and one of Metro Vancouver's most varied food scenes. From the dim sum and pho along North Road to the family-run kitchens of Austin Heights and the upscale dining clustering near Lafarge Lake, sharp knives are the difference between a kitchen that works and one that fights you. Burke Mountain and Westwood Plateau are full of well-equipped kitchens — Wüsthof and Shun blades that deserve professional sharpening rather than a pull-through sharpener that grinds away years of life.
 
-Most home cooks do not realize how dull their knives actually are until they use a professionally sharpened blade. The difference is dramatic: clean cuts through onions without tears, paper-thin slices of sashimi-grade fish, and effortless mincing of herbs. A sharp knife is also a safe knife — the majority of kitchen cuts happen when a dull blade slips off the food surface. We sharpen every type of blade including German (Wusthof, Henckels), Japanese (Shun, Global, Miyabi), ceramic, serrated, and specialty blades. Our 30-day edge guarantee backs every sharpening.`,
+Our mobile service is straightforward: book online, we arrive at your Coquitlam address at the agreed time, and we work through your knives on-site. Most residential collections of 5–10 knives are sharpened in 20–25 minutes. Every blade — Western chef, Japanese gyuto, ceramic, serrated bread, kitchen scissors — is matched to its correct angle and tested before we hand it back. The 30-day edge guarantee means if it does not hold under normal use, we re-sharpen at no charge.`,
     neighbourhoods: [
       'Coquitlam Centre', 'Burke Mountain', 'Westwood Plateau',
-      'Austin Heights', 'Maillardville', 'Ranch Park',
-      'Port Moody', 'Port Coquitlam', 'Anmore',
+      'Austin Heights', 'Maillardville', 'Town Centre',
+      'Ranch Park', 'Eagle Ridge', 'Cape Horn', 'River Springs',
+    ],
+    driveTime: '25–30 minutes from our North Vancouver base',
+    faqs: [
+      {
+        question: 'How quickly can you reach Coquitlam for mobile knife sharpening?',
+        answer: 'We are typically 25–30 minutes from most Coquitlam addresses, coming over the Second Narrows Bridge. Mobile appointments are usually available within 1–2 business days. Burke Mountain and Westwood Plateau add a few minutes due to elevation, but we include that in our scheduling.',
+      },
+      {
+        question: 'What is the minimum for mobile sharpening in Coquitlam?',
+        answer: 'Mobile visits to Coquitlam require a minimum of 5 knives ($60). Many Coquitlam customers coordinate with neighbours or family on the same street to combine orders — that gets everyone the per-knife rate without each household hitting the minimum.',
+      },
+      {
+        question: 'Do you handle Japanese knives that are common in Burke Mountain and Westwood Plateau kitchens?',
+        answer: 'Yes — Japanese knives are a specialty. We sharpen single-bevel and double-bevel Japanese blades using waterstones, matching the original factory geometry rather than forcing a Western grind. Brands like Shun, Global, Miyabi, Tojiro, and custom makers all welcome. Japanese knives are $18 each.',
+      },
+      {
+        question: 'Do you sharpen for Coquitlam restaurants and commercial kitchens?',
+        answer: 'Yes. We provide scheduled weekly and bi-weekly mobile sharpening for restaurants across Coquitlam — from Coquitlam Centre operations to neighbourhood eateries in Austin Heights. Consistent professional sharpening reduces blade replacement costs and keeps your line moving without downtime.',
+      },
+    ],
+    metaTitle: 'Knife Sharpening Coquitlam | Mobile Service | Cove Blades',
+    metaDescription: 'Professional mobile knife sharpening in Coquitlam, BC. We come to your home or restaurant in 25–30 minutes from North Vancouver. $12/knife with 30-day guarantee.',
+    dropOffEmphasis: false,
+    subRegion: 'Tri-Cities',
+  },
+  {
+    slug: 'port-moody',
+    name: 'Port Moody',
+    description: `Cove Blades provides professional mobile knife sharpening across Port Moody, from Newport Village and Suter Brook to the Brewer's Row craft-beer corridor and the homes climbing Heritage Mountain. We are about 22–28 minutes away in our North Vancouver shop, bringing the full sharpening setup directly to your door.
+
+Port Moody is small by Lower Mainland standards — roughly 33,000 residents — but the food and drink scene punches well above its weight. Brewer's Row alone (Yellow Dog, Twin Sails, Parkside, Moody Ales, Mariner) anchors a culinary district that draws visitors from across Metro Vancouver. Newport Village and Suter Brook fill in with neighbourhood restaurants, grocery, and the kind of resident who actually cares which knife is sharp. Add the foodie reputation built around Pajo's smoked salmon at Rocky Point and the slow-burning growth of Inlet Centre, and you have a city where dull knives do not stay dull for long.
+
+Mobile sharpening fits Port Moody especially well: the inlet's geography means most homes are clustered along a manageable corridor between Inlet Centre, Newport, and Heritage. We can arrive, work through 5–15 blades on-site in 20–30 minutes, and be on our way without anyone having to ship knives off or drive to the North Shore. We sharpen the full range — German, Japanese, ceramic, serrated, scissors, and the occasional axe or machete from the garage — and back every blade with our 30-day edge guarantee.`,
+    neighbourhoods: [
+      'Newport Village', 'Suter Brook', 'Inlet Centre',
+      'Heritage Mountain', 'Heritage Woods', 'Glenayre',
+      'College Park', 'Pleasantside', 'Anmore', 'Belcarra',
+      "Rocky Point", "Brewer's Row",
+    ],
+    driveTime: '22–28 minutes from our North Vancouver base',
+    faqs: [
+      {
+        question: 'How quickly can you get to Port Moody for mobile knife sharpening?',
+        answer: 'Most Port Moody addresses are 22–28 minutes from our North Vancouver shop, depending on traffic on the Second Narrows. Heritage Mountain and Anmore add a few minutes for elevation. We typically schedule mobile visits within 1–2 business days, with same-day spots when calendars allow.',
+      },
+      {
+        question: "Do you sharpen for restaurants and breweries on Brewer's Row?",
+        answer: "Yes. We work with several Brewer's Row taprooms and the surrounding food businesses on a scheduled weekly or bi-weekly mobile rotation. We come during prep hours, sharpen on-site at a designated station, and rotate blades so the line keeps moving while we work.",
+      },
+      {
+        question: 'What is the minimum order for mobile sharpening in Port Moody?',
+        answer: 'Mobile visits to Port Moody require a minimum of 5 knives ($60). Many Port Moody customers combine orders with friends or strata neighbours — you can hit the minimum quickly with even one or two extra households on the same visit.',
+      },
+      {
+        question: 'Do you handle the high-end Japanese knives common in Suter Brook and Newport kitchens?',
+        answer: 'Yes. Japanese knives are a specialty — single-bevel yanagiba, deba, usuba, double-bevel gyuto and santoku, plus custom makers. We use Japanese waterstones and match the original factory angle rather than forcing a Western grind. Japanese knives are $18 each.',
+      },
+    ],
+    metaTitle: 'Knife Sharpening Port Moody | Mobile Service | Cove Blades',
+    metaDescription: "Professional mobile knife sharpening in Port Moody. Serving Newport Village, Suter Brook, Brewer's Row, Heritage Mountain. $12/knife with 30-day guarantee. Book online.",
+    dropOffEmphasis: false,
+    subRegion: 'Tri-Cities',
+  },
+  {
+    slug: 'port-coquitlam',
+    name: 'Port Coquitlam',
+    description: `Cove Blades brings professional mobile knife sharpening to Port Coquitlam, covering Downtown PoCo along Shaughnessy Street, the established neighbourhoods of Mary Hill and Lincoln Park, and the newer developments climbing Citadel Heights. We come over from North Vancouver, typically arriving in 30–35 minutes with our full portable sharpening station.
+
+Port Coquitlam is its own city, distinct from Coquitlam — about 62,000 residents, with a more residential and family-oriented character than its larger neighbour. Downtown PoCo has been quietly revitalizing for years; Shaughnessy Street's mix of long-running diners and newer kitchens shows what happens when a community keeps cooking through generations. PoCo is also Terry Fox's hometown, and that no-shortcuts ethic shows up in the kind of customer who calls us — people who would rather take care of one good knife than churn through three bad ones.
+
+Mobile sharpening is the right fit for Port Coquitlam because dropping off doesn't make sense from this side of the Fraser. We arrive at your home, work through your kitchen knives on-site (typically 5–12 blades in 20–25 minutes), and you're back to cooking without disrupting your day. Beyond kitchen knives, Port Coquitlam customers regularly bring out garden pruners, secateurs, hunting knives, fishing fillet blades, and the occasional hatchet or axe from the garage. We sharpen all of it and back every edge with our 30-day guarantee.`,
+    neighbourhoods: [
+      'Downtown Port Coquitlam', 'Mary Hill', 'Citadel Heights',
+      'Birchland Manor', 'Lincoln Park', 'Glenwood',
+      'Riverwood', 'Central Port Coquitlam', 'Oxford Heights',
     ],
     driveTime: '30–35 minutes from our North Vancouver base',
     faqs: [
       {
-        question: 'Do you serve the entire Tri-Cities for knife sharpening?',
-        answer: 'Yes. Our mobile service covers Coquitlam, Port Moody, Port Coquitlam, and Anmore. We drive to your location with our full sharpening setup and work on-site. Most home collections take about 20 minutes.',
+        question: 'How long does it take you to drive to Port Coquitlam?',
+        answer: 'Port Coquitlam is 30–35 minutes from our North Vancouver shop via the Second Narrows Bridge. Citadel Heights and Mary Hill are at the longer end of that range. We schedule mobile visits 1–2 business days out, with morning slots typically the most flexible.',
       },
       {
-        question: 'What is the minimum for mobile sharpening in Coquitlam?',
-        answer: 'Mobile visits to the Tri-Cities require a minimum of 5 knives ($60). Many customers coordinate with neighbours to combine orders and get the most value from a single visit.',
+        question: 'What is the minimum order for mobile sharpening in Port Coquitlam?',
+        answer: 'Mobile visits to Port Coquitlam require a minimum of 5 knives ($60). It is a popular city for combined orders — Mary Hill and Lincoln Park families often coordinate with neighbours so a single visit covers two or three households at the per-knife rate.',
       },
       {
-        question: 'How is professional sharpening different from using a pull-through sharpener?',
-        answer: 'Pull-through sharpeners remove excessive metal and create an inconsistent edge angle. Professional sharpening uses precision equipment to match your knife original factory angle, removing only the minimum metal needed. This extends knife life by years and produces a significantly sharper, longer-lasting edge.',
+        question: 'Do you sharpen garden pruners, secateurs, and outdoor blades in Port Coquitlam?',
+        answer: 'Yes. Beyond kitchen knives, we routinely sharpen pruners, secateurs, hedge shears, hunting knives, fillet knives, axes, and machetes for Port Coquitlam customers. Pricing depends on the tool — kitchen knives are $12, scissors $12, larger garden tools and outdoor blades typically $15–$25 each.',
       },
       {
-        question: 'Can I mail in my knives from Coquitlam?',
-        answer: 'You can use our 24/7 drop-off box in North Vancouver (about 30 minutes away), or book a mobile visit for the convenience of at-home service. We do not currently offer a mail-in service for local customers as mobile and drop-off are faster options.',
+        question: 'Do you offer scheduled service for Port Coquitlam restaurants?',
+        answer: 'Yes. We provide weekly and bi-weekly scheduled mobile sharpening for restaurants in Downtown Port Coquitlam and along Lougheed. We work around your prep schedule and sharpen the entire knife inventory on-site.',
       },
     ],
-    metaTitle: 'Knife Sharpening Coquitlam & Tri-Cities | Cove Blades',
-    metaDescription: 'Professional mobile knife sharpening in Coquitlam, Port Moody & Port Coquitlam. $12/knife with 30-day guarantee. We come to you. Book online today.',
+    metaTitle: 'Knife Sharpening Port Coquitlam | Mobile Service | Cove Blades',
+    metaDescription: 'Professional mobile knife sharpening in Port Coquitlam, BC. Serving Downtown PoCo, Mary Hill, Lincoln Park, Citadel Heights. $12/knife with 30-day guarantee.',
     dropOffEmphasis: false,
     subRegion: 'Tri-Cities',
   },

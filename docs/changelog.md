@@ -1,6 +1,17 @@
 # Changelog
 
-## [2.4.0] — 2026-04-29 — Citywide SEO/GEO expansion (Phase 1: foundation)
+## [2.4.0] — 2026-04-29 — Citywide SEO/GEO expansion (Phases 1–2)
+
+### Phase 2 — Tri-Cities split
+
+Coquitlam, Port Moody, and Port Coquitlam are three distinct cities; the prior `/service-area/coquitlam` page lumped all three (plus Anmore) which diluted the SEO signal for each.
+
+- **`/service-area/coquitlam`** rewritten — focuses solely on Coquitlam (Coquitlam Centre, Burke Mountain, Westwood Plateau, Maillardville, Austin Heights). Drive time corrected to 25–30 min
+- **`/service-area/port-moody`** added — Newport Village, Suter Brook, Brewer's Row, Heritage Mountain, Inlet Centre, Anmore + Belcarra. ~33k residents context. 22–28 min drive
+- **`/service-area/port-coquitlam`** added — Downtown PoCo, Mary Hill, Citadel Heights, Lincoln Park. ~62k residents, family/residential character. 30–35 min drive
+- Each city has unique 3-paragraph description, 4 city-specific FAQs, neighbourhood list, and meta title/description; all three flagged `dropOffEmphasis: false`, `subRegion: 'Tri-Cities'`
+
+### Phase 1 — Foundation
 
 ### Added
 - **`dropOffEmphasis: boolean`** field on `CityData` — only North Vancouver is `true`. Everywhere else is mobile-only per current operations
