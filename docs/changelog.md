@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.3.1] — 2026-04-29
+
+### Changed
+- **`/train-to-be-sharp` rewritten with the actual course structure** (replaces the placeholder 3-hr / 5-hr framing): three modules — One-Inch Grinder ($600), Two-Inch Grinder ($400), Business Process & Automation ($200) — payable in advance, non-refundable
+- New page sections: course modules grid, the practicum (sharpness-tester + microscope verification, recorded sessions), return on investment ($200/hr earning potential, 1–2 month payback), equipment & startup costs ($300–$15,000 range, mobile power station ~$1,200, van ~$13,000), location (onsite at North Van home office or mobile with level parking)
+- Inquiry form `messagePlaceholder` updated to prompt for module choice; metadata description rewritten to reflect actual offering and pricing
+
 ## [2.3.0] — 2026-04-29
 
 ### Added — content parity with legacy coveblades.com
