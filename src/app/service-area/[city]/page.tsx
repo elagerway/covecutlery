@@ -98,11 +98,15 @@ export default async function CityPage({
               className="text-4xl sm:text-5xl font-bold leading-tight tracking-tight mb-6"
               style={{ color: '#FFFFFF' }}
             >
-              Looking for Knife Sharpening in{' '}
-              <span style={{ color: '#D4A017' }}>{city.name}</span>, BC?
+              {city.dropOffEmphasis
+                ? <>Looking for Knife Sharpening in <span style={{ color: '#D4A017' }}>{city.name}</span>, BC?</>
+                : <>Mobile Knife Sharpening in <span style={{ color: '#D4A017' }}>{city.name}</span>, BC</>}
             </h1>
             <p className="text-lg max-w-xl mx-auto leading-relaxed" style={{ color: '#6B7280' }}>
-              {city.driveTime}. Mobile service, 24/7 drop-off, and $12/knife with a 30-day edge guarantee.
+              {city.driveTime}.{' '}
+              {city.dropOffEmphasis
+                ? 'Mobile service, 24/7 drop-off, and $12/knife with a 30-day edge guarantee.'
+                : 'We come to your home or restaurant. $12/knife with a 30-day edge guarantee.'}
             </p>
           </div>
         </section>
@@ -238,7 +242,9 @@ export default async function CityPage({
               Ready to Get Your <span style={{ color: '#D4A017' }}>Knives Sharp?</span>
             </h2>
             <p className="text-base mb-8" style={{ color: '#6B7280' }}>
-              Book a mobile visit to {city.name} or drop off your knives at our 24/7 secure box in North Vancouver.
+              {city.dropOffEmphasis
+                ? `Book a mobile visit to ${city.name} or drop off your knives at our 24/7 secure box in North Vancouver.`
+                : `Book a mobile visit and we'll come to your ${city.name} address — no need to drop off or ship your knives.`}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link

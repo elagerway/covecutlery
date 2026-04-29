@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.4.0] — 2026-04-29 — Citywide SEO/GEO expansion (Phase 1: foundation)
+
+### Added
+- **`dropOffEmphasis: boolean`** field on `CityData` — only North Vancouver is `true`. Everywhere else is mobile-only per current operations
+- **`subRegion`** classification on `CityData` for sub-region grouping on the upcoming hub redesign (`'North Shore' | 'Vancouver' | 'Burnaby & New West' | 'Tri-Cities' | 'South of Fraser' | 'Fraser Valley'`)
+
+### Changed
+- **`/service-area/[city]` template** now conditionally renders the hero subtitle and CTA copy based on `dropOffEmphasis`. Mobile-only cities get "Mobile Knife Sharpening in {city}, BC" + "We come to your home or restaurant. $12/knife with a 30-day edge guarantee." instead of the drop-off-promoting variant
+- **Burnaby FAQ** — replaced the drop-off question with one about sharpening Burnaby's diverse food-scene blade types (Western, Chinese cleavers, Japanese gyuto/santoku, Vietnamese)
+- **West Vancouver FAQ** — replaced the drop-off question with one about typical mobile-visit duration
+- **Service radius bumped from 90 km → 105 km** (`MAX_KM` in `/api/cal/book/route.ts`) — covers Chilliwack (~95 km centroid, ~100 km edges) so booking won't reject Fraser Valley addresses once those city pages ship in Phase 4
+
 ## [2.3.1] — 2026-04-29
 
 ### Changed
