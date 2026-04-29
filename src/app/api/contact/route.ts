@@ -4,7 +4,7 @@ import { createClient } from "@supabase/supabase-js";
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { name, phone, email, service_type, item_count, message, captchaToken } = body;
+    const { name, phone, email, service_type, item_count, message, address, captchaToken } = body;
 
     // Basic validation (cheap checks first)
     if (!name || typeof name !== "string" || name.trim().length === 0) {
@@ -67,6 +67,7 @@ export async function POST(request: NextRequest) {
           service_type: service_type ?? null,
           item_count: item_count ?? null,
           message: message?.trim() ?? null,
+          address: address?.trim() ?? null,
         },
       ]);
 

@@ -335,6 +335,8 @@ export default function TrainingPage() {
                 buttonLabel="Request Training"
                 successMessage="Got it. We'll be in touch to schedule your session."
                 messagePlaceholder="Which module(s) — One-Inch ($600), Two-Inch ($400), Business ($200)? Goals, experience level, and anything else we should know..."
+                showAddress
+                addressLabel="Your address"
               />
             </div>
           </div>

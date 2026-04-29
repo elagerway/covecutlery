@@ -1,5 +1,24 @@
 # Changelog
 
+## [2.5.0] — 2026-04-29 — Validated address on training intake + form audit
+
+### Added
+- **`<AddressAutocomplete>` component** (`src/components/AddressAutocomplete.tsx`) — reusable Google Places-backed address field with debounced 350ms autocomplete, suggestion picker, outside-click dismissal, and a `validated` flag tracking whether the current value came from a real Places pick (vs free-typed). Returns address text + validated boolean to its parent
+- **`address` column on `contact_submissions`** (Supabase migration `20260429000000_contact_submissions_address.sql`) — nullable text. Backwards-compatible for existing rows
+- **`InquiryForm` props**: `showAddress: boolean`, `addressLabel?: string`. When enabled, renders `<AddressAutocomplete>` and blocks submit until the address is autocomplete-validated (with a clear error message: "Please pick your address from the autocomplete suggestions")
+
+### Changed
+- **`/train-to-be-sharp` inquiry form** now requires a validated address ("Your address" label) — covers Erik's need to know where students are coming from for both onsite and mobile training delivery
+- **`/api/contact`** accepts and stores the optional `address` field
+
+### Form Turnstile audit (no changes needed)
+All three lead-capture forms already use Cloudflare Turnstile:
+- `/contact` page form ✓
+- `ContactSection` (homepage) ✓
+- `InquiryForm` (training + events) ✓
+
+`BookingModal` deliberately has no Turnstile — CAPTCHA was previously removed from the booking flow to reduce friction, with the trade-off documented in `architecture.md`. Flagging here in case you want to revisit; not changed in this commit.
+
 ## [2.4.0] — 2026-04-29 — Citywide SEO/GEO expansion (Phases 1–6)
 
 ### Phase 6 — Schema enrichment + answer-first H2 nudges

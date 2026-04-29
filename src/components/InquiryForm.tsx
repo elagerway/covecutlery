@@ -3,6 +3,7 @@
 import { useState, useRef } from "react";
 import { Turnstile, type TurnstileInstance } from "@marsidev/react-turnstile";
 import { CheckCircle, AlertCircle } from "lucide-react";
+import AddressAutocomplete from "@/components/AddressAutocomplete";
 
 type Props = {
   serviceType: string;
@@ -10,6 +11,10 @@ type Props = {
   successMessage?: string;
   showItemCount?: boolean;
   messagePlaceholder?: string;
+  /** Show a validated address field (Google Places autocomplete). */
+  showAddress?: boolean;
+  /** Label for the address field — appears as a UPPERCASE form label. */
+  addressLabel?: string;
 };
 
 type State = "idle" | "loading" | "success" | "error";
@@ -30,6 +35,8 @@ export default function InquiryForm({
   successMessage = "Thanks — we'll be in touch soon.",
   showItemCount = false,
   messagePlaceholder = "Tell us a bit about what you need...",
+  showAddress = false,
+  addressLabel = "Address",
 }: Props) {
   const [form, setForm] = useState({
     name: "",
@@ -37,8 +44,11 @@ export default function InquiryForm({
     email: "",
     item_count: "",
     message: "",
+    address: "",
   });
+  const [addressValidated, setAddressValidated] = useState(false);
   const [state, setState] = useState<State>("idle");
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [captchaToken, setCaptchaToken] = useState<string | null>(null);
   const turnstileRef = useRef<TurnstileInstance>(null);
 
@@ -51,6 +61,12 @@ export default function InquiryForm({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!captchaToken) return;
+    if (showAddress && !addressValidated) {
+      setErrorMessage("Please pick your address from the autocomplete suggestions so we can confirm it's a real, validated address.");
+      setState("error");
+      return;
+    }
+    setErrorMessage(null);
     setState("loading");
     try {
       const res = await fetch("/api/contact", {
@@ -60,12 +76,14 @@ export default function InquiryForm({
           ...form,
           service_type: serviceType,
           item_count: showItemCount ? form.item_count : null,
+          address: showAddress ? form.address : null,
           captchaToken,
         }),
       });
       if (res.ok) {
         setState("success");
-        setForm({ name: "", phone: "", email: "", item_count: "", message: "" });
+        setForm({ name: "", phone: "", email: "", item_count: "", message: "", address: "" });
+        setAddressValidated(false);
         setCaptchaToken(null);
         turnstileRef.current?.reset();
       } else {
@@ -148,6 +166,19 @@ export default function InquiryForm({
         </div>
       )}
 
+      {showAddress && (
+        <AddressAutocomplete
+          label={addressLabel}
+          value={form.address}
+          required
+          placeholder="Start typing — pick from suggestions"
+          onChange={(addr, validated) => {
+            setForm((prev) => ({ ...prev, address: addr }));
+            setAddressValidated(validated);
+          }}
+        />
+      )}
+
       <div>
         <label htmlFor="message" className={labelClass} style={labelStyle}>
           Message
@@ -205,7 +236,7 @@ export default function InquiryForm({
           }}
         >
           <AlertCircle className="w-4 h-4 flex-shrink-0" />
-          Something went wrong. Please try calling or texting us at 604 210 8180.
+          {errorMessage ?? "Something went wrong. Please try calling or texting us at 604 210 8180."}
         </div>
       )}
     </form>
