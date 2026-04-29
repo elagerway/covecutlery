@@ -18,6 +18,7 @@ import DropOffSection from '@/components/sections/DropOffSection'
 import PricingSection from '@/components/sections/PricingSection'
 import ReviewsSection from '@/components/sections/ReviewsSection'
 import WhereWeAreSection from '@/components/sections/WhereWeAreSection'
+import InstagramFeed from '@/components/sections/InstagramFeed'
 import AboutSection from '@/components/sections/AboutSection'
 import ContactSection from '@/components/sections/ContactSection'
 
@@ -34,6 +35,7 @@ export default function Home() {
         <PricingSection />
         <ReviewsSection />
         <WhereWeAreSection />
+        <InstagramFeed />
         <AboutSection />
         <ContactSection />
       </main>

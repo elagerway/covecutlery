@@ -1,5 +1,19 @@
 # Changelog
 
+## [2.6.0] — 2026-04-29 — Instagram feed on the home page
+
+### Added
+- **`<InstagramFeed>` server section** (`src/components/sections/InstagramFeed.tsx`) — fetches the latest 6 posts from the @coveblades Instagram Business account via the Meta Graph API and renders them as a 2×3 grid (3-col on `sm+`). Inserted between `WhereWeAreSection` and `AboutSection` on the home page (early-funnel social proof, after the schedule and before the about/contact close)
+- **`lib/instagram.ts`** — `getInstagramFeed(limit)` helper. Calls `/{ig-user-id}/media?fields=id,caption,media_type,media_url,thumbnail_url,permalink,timestamp` with `next: { revalidate: 3600 }` so the result is cached at the Next.js fetch layer for 1 hour. Returns `[]` on missing credentials or API failure so the section degrades gracefully to a "Follow @coveblades" CTA only
+- **Media-type aware preview** — videos render their `thumbnail_url` with a play badge; carousels render the cover with a multi-image badge; images render directly. Hover surfaces caption (line-clamped to 3 lines) over a gradient
+- **`INSTAGRAM_USER_ID`, `INSTAGRAM_ACCESS_TOKEN`, `INSTAGRAM_APP_ID`** added to `.env.local` (token is currently short-lived; needs exchange to long-lived 60-day token via App Secret as a follow-up)
+
+### Why direct Graph API instead of a third-party widget
+- No paid middleware
+- No watermarks
+- Full styling control matched to the rest of the site
+- Tradeoff: 60-day token refresh required (handled separately)
+
 ## [2.5.5] — 2026-04-29 — Mobile overflow fixes + readable blog typography
 
 ### Fixed (mobile)
