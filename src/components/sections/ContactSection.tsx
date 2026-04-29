@@ -132,7 +132,7 @@ export default function ContactSection() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-start">
           {/* Left: Contact form */}
           <div
-            className="rounded-xl border p-8"
+            className="rounded-xl border p-5 sm:p-8"
             style={{ backgroundColor: "#161B22", borderColor: "#30363D" }}
           >
             <form onSubmit={handleSubmit} className="space-y-5">
@@ -459,7 +459,7 @@ export default function ContactSection() {
               >
                 Follow Us
               </p>
-              <div className="flex items-center gap-4">
+              <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
                 <a
                   href="https://www.instagram.com/coveblades/"
                   target="_blank"

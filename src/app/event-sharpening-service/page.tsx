@@ -228,7 +228,7 @@ export default function EventSharpeningPage() {
               </p>
             </div>
             <div
-              className="rounded-xl border p-8"
+              className="rounded-xl border p-5 sm:p-8"
               style={{ backgroundColor: "#0D1117", borderColor: "#30363D" }}
             >
               <InquiryForm

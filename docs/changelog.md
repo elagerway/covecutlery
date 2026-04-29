@@ -1,5 +1,15 @@
 # Changelog
 
+## [2.5.5] — 2026-04-29 — Mobile overflow fixes + readable blog typography
+
+### Fixed (mobile)
+- **Lead-capture form padding** reduced on mobile (`p-8` → `p-5 sm:p-8`) on `/contact`, `/train-to-be-sharp`, `/event-sharpening-service`, and the homepage `ContactSection`. The Cloudflare Turnstile widget renders ~300 px wide; previous `p-8` left only ~270 px of inner space, causing the iframe to overflow. New padding gives ~302 px inner space — Turnstile now fits with a 6 px margin (the prior 30 px overflow is gone)
+- **Pricing card `$price` text** drops from `text-4xl` to `text-3xl` on mobile (`text-3xl sm:text-4xl`); `/cutlery` suffix drops to `text-xs sm:text-sm`. Fixes the 4 px overflow inside each pricing tier card on the home page 2-col grid
+- **Footer-area social row** (Instagram / Facebook / YouTube on `ContactSection`) switched from `flex` to `flex flex-wrap items-center gap-x-4 gap-y-2` — items wrap to a second line if they don't fit, eliminating the prior 7 px row overflow
+
+### Added
+- **`@tailwindcss/typography` plugin** installed and registered in `globals.css` via `@plugin "@tailwindcss/typography"` (Tailwind v4 syntax). Blog posts (`/blog/[slug]`) now render with proper typographic hierarchy — distinct `h2` / `h3` sizing and spacing, paragraph rhythm, list/blockquote styling, gold-link `hover` underlines, white headings with `prose-invert` dark-mode contrast. Replaces the previous wall-of-text rendering where every block looked the same
+
 ## [2.5.4] — 2026-04-29 — Hero van zoom-in animation
 
 ### Added

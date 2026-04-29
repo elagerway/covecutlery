@@ -135,13 +135,13 @@ export default function PricingSection() {
               {/* Price */}
               <div className="mb-6">
                 <span
-                  className="text-4xl font-bold"
+                  className="text-3xl sm:text-4xl font-bold"
                   style={{ color: "#FFFFFF" }}
                 >
                   ${tier.price}
                 </span>
                 <span
-                  className="text-sm ml-1"
+                  className="text-xs sm:text-sm ml-1"
                   style={{ color: "#6B7280" }}
                 >
                   /cutlery

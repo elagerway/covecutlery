@@ -122,8 +122,18 @@ export default async function BlogPostPage({
         </h1>
 
         <div
-          className="prose prose-invert max-w-none text-sm leading-relaxed"
-          style={{ color: "#9CA3AF" }}
+          className="prose prose-invert prose-base sm:prose-lg max-w-none
+            prose-headings:font-bold prose-headings:tracking-tight prose-headings:text-white
+            prose-h2:mt-12 prose-h2:mb-4 prose-h2:text-2xl sm:prose-h2:text-3xl
+            prose-h3:mt-10 prose-h3:mb-3 prose-h3:text-xl sm:prose-h3:text-2xl
+            prose-p:text-[#9CA3AF] prose-p:leading-relaxed
+            prose-strong:text-white
+            prose-em:text-[#9CA3AF]
+            prose-a:text-[#D4A017] prose-a:no-underline hover:prose-a:underline
+            prose-li:text-[#9CA3AF] prose-li:leading-relaxed
+            prose-ul:my-6 prose-ol:my-6
+            prose-blockquote:border-l-[#D4A017] prose-blockquote:text-[#9CA3AF] prose-blockquote:italic
+            prose-hr:border-[#30363D]"
           dangerouslySetInnerHTML={{ __html: post.content ?? "" }}
         />
       </div>
