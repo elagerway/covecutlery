@@ -1,5 +1,27 @@
 # Changelog
 
+## [2.3.0] — 2026-04-29
+
+### Added — content parity with legacy coveblades.com
+- **`/how-we-sharpen-your-knives`** — process / methodology page (4 principles, 5-step process, no form). Legacy slug for SEO continuity
+- **`/train-to-be-sharp`** — training program page describing 3-hour core + 5-hour extended (with business module). Includes inquiry form posting to `contact_submissions` with `service_type="Training"`
+- **`/event-sharpening-service`** — on-site event sharpening landing (4 features, 5-step process, event-types list). Inquiry form posts with `service_type="Event"`
+- **Reusable `<InquiryForm>` component** — shared form for the new lead-capture pages; CAPTCHA via Turnstile, posts to existing `/api/contact`. Avoids three near-duplicate form bodies
+- **Three legacy blog posts imported** to Supabase `blog_posts`: `how-to-cut-onions`, `japanese-knife-sharpening`, `knife-sharpening-on-the-north-shore`. Featured images downloaded to `public/blog/` so they survive the DNS flip away from WordPress. Skipped two posts that contradict current operations (kitchen cutlery shop, knife rentals)
+- **`/staysharp` → `/blog` permanent redirects** in `next.config.ts` (apex slug + `/staysharp/:slug`). Preserves coveblades.com WordPress backlinks and Google indexing
+- **Sitemap updated** with the three new routes
+- **Footer**: Snapsonic credit line ("Built with love by Snapsonic") added under the Privacy/Terms row, centered. Quick Links updated to surface the new pages
+- **Navbar**: replaced the redundant "/Services" anchor with three new top-level links (How We Sharpen, Training, Events). Mobile menu inherits the same list
+
+### Changed
+- **Privacy Policy** — third-party services list updated to match reality: added Supabase, Magpipe, Cloudflare Turnstile, Vercel. Added SMS opt-in disclosure. "Last updated" bumped to 2026-04-29
+- **Terms of Service** — services list now includes training programs and explicitly mentions on-site event sharpening. Removed stale "deposits forfeited" cancellation language (deposits no longer collected since v2.0.0). "Last updated" bumped to 2026-04-29
+
+### Not imported (intentional)
+- `/kitchen-cutlery-shop-now-open` blog post — the cutlery shop is no longer offered
+- `/knife-rentals-at-cove-blades` blog post — rentals are no longer offered
+- Grails / pocket-knife collectibles page — dropped per user direction
+
 ## [2.2.0] — 2026-04-29
 
 ### Changed

@@ -14,13 +14,13 @@ export default function PrivacyPage() {
       <main className="min-h-screen bg-[#0D1117] pt-24 pb-20">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
           <h1 className="text-3xl font-bold text-white mb-2">Privacy Policy</h1>
-          <p className="text-[#6B7280] text-sm mb-10">Last updated: March 25, 2026</p>
+          <p className="text-[#6B7280] text-sm mb-10">Last updated: April 29, 2026</p>
 
           <div className="prose prose-invert prose-sm max-w-none space-y-8 text-[#9CA3AF]">
 
             <section>
               <h2 className="text-lg font-semibold text-white mb-3">1. Information We Collect</h2>
-              <p>When you book a service or contact us, we collect:</p>
+              <p>When you book a service, request training, or contact us, we collect:</p>
               <ul className="list-disc pl-5 mt-2 space-y-1">
                 <li>Name, email address, and phone number</li>
                 <li>Service address (for mobile bookings)</li>
@@ -28,6 +28,7 @@ export default function PrivacyPage() {
                 <li>Messages and notes you provide</li>
               </ul>
               <p className="mt-3">We also collect standard server logs (IP address, browser type, pages visited) for operational purposes.</p>
+              <p className="mt-3">If you opt in by providing a phone number, we may send appointment confirmations, receipts, and other transactional messages by SMS.</p>
             </section>
 
             <section>
@@ -49,8 +50,12 @@ export default function PrivacyPage() {
               <ul className="list-disc pl-5 mt-2 space-y-1">
                 <li><strong className="text-white">Stripe</strong> — payment processing</li>
                 <li><strong className="text-white">Cal.com</strong> — appointment scheduling</li>
+                <li><strong className="text-white">Supabase</strong> — secure database and authentication for booking, customer, and contact records</li>
                 <li><strong className="text-white">Postmark</strong> — transactional email delivery</li>
+                <li><strong className="text-white">Magpipe</strong> — SMS delivery for appointment confirmations and receipts</li>
                 <li><strong className="text-white">Google Maps</strong> — address lookup and service area verification</li>
+                <li><strong className="text-white">Cloudflare Turnstile</strong> — anti-bot protection on our forms</li>
+                <li><strong className="text-white">Vercel</strong> — website hosting and edge delivery</li>
               </ul>
               <p className="mt-3">Each of these services has its own privacy policy and data practices.</p>
             </section>

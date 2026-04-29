@@ -9,6 +9,13 @@ const withPWA = withPWAInit({
 
 const nextConfig: NextConfig = {
   turbopack: {},
+  async redirects() {
+    return [
+      // Legacy WordPress blog landing on coveblades.com — preserve inbound links
+      { source: "/staysharp", destination: "/blog", permanent: true },
+      { source: "/staysharp/:slug", destination: "/blog/:slug", permanent: true },
+    ];
+  },
 };
 
 export default withPWA(nextConfig);

@@ -4,12 +4,15 @@ import { Phone, Mail, ExternalLink, Clock } from "lucide-react";
 
 const quickLinks = [
   { label: "Home", href: "/" },
-  { label: "Services", href: "/#services" },
+  { label: "How We Sharpen", href: "/how-we-sharpen-your-knives" },
   { label: "Pricing", href: "/#pricing" },
   { label: "Mobile Service", href: "/#mobile-service" },
   { label: "Drop Off", href: "/#drop-off" },
-  { label: "Service Areas", href: "/service-area" },
   { label: "Restaurants", href: "/restaurants" },
+  { label: "Events", href: "/event-sharpening-service" },
+  { label: "Training", href: "/train-to-be-sharp" },
+  { label: "Service Areas", href: "/service-area" },
+  { label: "Blog", href: "/blog" },
   { label: "About", href: "/#about" },
   { label: "Contact", href: "/#contact" },
 ];
@@ -226,14 +229,27 @@ export default function Footer() {
 
       {/* Bottom bar */}
       <div className="border-t border-[#30363D]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 flex flex-col sm:flex-row items-center justify-between gap-3">
-          <p className="text-[#6B7280] text-xs">
-            &copy; {new Date().getFullYear()} Cove Blades. All rights reserved.
-          </p>
-          <div className="flex items-center gap-4">
-            <a href="/privacy" className="text-[#6B7280] text-xs hover:text-white transition-colors">Privacy Policy</a>
-            <a href="/terms" className="text-[#6B7280] text-xs hover:text-white transition-colors">Terms of Service</a>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 flex flex-col items-center gap-3">
+          <div className="w-full flex flex-col sm:flex-row items-center justify-between gap-3">
+            <p className="text-[#6B7280] text-xs">
+              &copy; {new Date().getFullYear()} Cove Blades. All rights reserved.
+            </p>
+            <div className="flex items-center gap-4">
+              <a href="/privacy" className="text-[#6B7280] text-xs hover:text-white transition-colors">Privacy Policy</a>
+              <a href="/terms" className="text-[#6B7280] text-xs hover:text-white transition-colors">Terms of Service</a>
+            </div>
           </div>
+          <p className="text-[#6B7280] text-xs text-center">
+            Built with love by{" "}
+            <a
+              href="https://snapsonic.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hover:text-[#D4A017] transition-colors"
+            >
+              Snapsonic
+            </a>
+          </p>
         </div>
       </div>
     </footer>

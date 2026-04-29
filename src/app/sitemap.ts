@@ -9,6 +9,8 @@ const BASE = 'https://coveblades.com'
 const STATIC_PAGES = [
   '/', '/about', '/pricing', '/mobile-service', '/drop-off',
   '/contact', '/blog', '/restaurants', '/service-area',
+  '/how-we-sharpen-your-knives', '/train-to-be-sharp',
+  '/event-sharpening-service',
   '/privacy', '/terms',
 ]
 

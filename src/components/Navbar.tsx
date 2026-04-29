@@ -9,10 +9,12 @@ import { useBooking } from "@/components/BookingProvider";
 import { createClient as createBrowserClient } from "@/utils/supabase/client";
 
 const navLinks = [
-  { label: "Services", href: "/#services" },
+  { label: "How We Sharpen", href: "/how-we-sharpen-your-knives" },
   { label: "Pricing", href: "/#pricing" },
-  { label: "Mobile Service", href: "/#mobile-service" },
+  { label: "Mobile", href: "/#mobile-service" },
   { label: "Drop Off", href: "/#drop-off" },
+  { label: "Training", href: "/train-to-be-sharp" },
+  { label: "Events", href: "/event-sharpening-service" },
   { label: "About", href: "/#about" },
   { label: "Blog", href: "/blog" },
   { label: "Contact", href: "/#contact" },
