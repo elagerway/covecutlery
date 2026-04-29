@@ -4,7 +4,7 @@ import { notFound } from 'next/navigation'
 import { ChevronRight, MapPin, Phone, Clock, Shield } from 'lucide-react'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
-import { cities, getCityBySlug } from '@/data/cities'
+import { cities, getCityBySlug, getRelatedCities } from '@/data/cities'
 import { safeJsonLd, breadcrumbSchema, faqPageSchema } from '@/lib/schema'
 
 export function generateStaticParams() {
@@ -65,6 +65,7 @@ export default async function CityPage({
   }
 
   const paragraphs = city.description.split('\n\n')
+  const relatedCities = getRelatedCities(city, 3)
 
   return (
     <div
@@ -234,6 +235,45 @@ export default async function CityPage({
             </div>
           </div>
         </section>
+
+        {/* Related Service Areas */}
+        {relatedCities.length > 0 && (
+          <section className="py-14 px-6" style={{ borderTop: '1px solid #30363D' }}>
+            <div className="max-w-4xl mx-auto">
+              <h2 className="text-xl sm:text-2xl font-bold mb-6 text-center" style={{ color: '#FFFFFF' }}>
+                Also serving{' '}
+                <span style={{ color: '#D4A017' }}>nearby</span>
+              </h2>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                {relatedCities.map(rc => (
+                  <Link
+                    key={rc.slug}
+                    href={`/service-area/${rc.slug}`}
+                    className="group rounded-lg border p-4 transition-all duration-200 hover:border-[#D4A017]/50"
+                    style={{ backgroundColor: '#161B22', borderColor: '#30363D' }}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <MapPin size={14} style={{ color: '#D4A017' }} />
+                        <span className="font-semibold text-sm" style={{ color: '#FFFFFF' }}>
+                          {rc.name}
+                        </span>
+                      </div>
+                      <ChevronRight
+                        size={14}
+                        className="transition-transform duration-200 group-hover:translate-x-1"
+                        style={{ color: '#6B7280' }}
+                      />
+                    </div>
+                    <p className="text-xs mt-2" style={{ color: '#6B7280' }}>
+                      {rc.driveTime}
+                    </p>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          </section>
+        )}
 
         {/* CTA */}
         <section className="py-20 px-6 text-center" style={{ borderTop: '1px solid #30363D' }}>

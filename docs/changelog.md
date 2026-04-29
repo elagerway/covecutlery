@@ -1,6 +1,15 @@
 # Changelog
 
-## [2.4.0] — 2026-04-29 — Citywide SEO/GEO expansion (Phases 1–4)
+## [2.4.0] — 2026-04-29 — Citywide SEO/GEO expansion (Phases 1–5)
+
+### Phase 5 — Hub redesign + internal linking + llms.txt
+
+- **`/service-area` hub** — cities now grouped by sub-region (North Shore / Vancouver / Burnaby & New West / Tri-Cities / South of Fraser / Fraser Valley) instead of a flat grid; hero updated to "17 cities" and "105 km service radius"; FAQ rewritten with mobile-first messaging and drive-distance-aware minimums; CTA softened on drop-off
+- **City template** — added "Also serving nearby" related-cities section (3 cities from same sub-region) before the CTA. Driven by `getRelatedCities(city, 3)` helper in `cities.ts`
+- **`public/llms.txt`** — full 17-city service-area inventory by sub-region, mobile-vs-drop-off explicitly clarified, mobile minimums per city, training/event services added, YouTube social link added
+- **Sitemap** — automatically picks up all new cities since it iterates `cities` from `cities.ts`; verified all 17 entries present
+
+
 
 ### Phase 4 — Five Fraser Valley + South Fraser cities
 

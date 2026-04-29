@@ -658,3 +658,14 @@ Mobile sharpening to Chilliwack works best as a scheduled visit rather than ad-h
 export function getCityBySlug(slug: string): CityData | undefined {
   return cities.find(c => c.slug === slug)
 }
+
+/**
+ * Pick up to `count` cities related to the given city for internal linking.
+ * Prefers same sub-region; falls back to other cities (skipping the source) if needed.
+ */
+export function getRelatedCities(city: CityData, count = 3): CityData[] {
+  const sameRegion = cities.filter(c => c.slug !== city.slug && c.subRegion === city.subRegion)
+  if (sameRegion.length >= count) return sameRegion.slice(0, count)
+  const others = cities.filter(c => c.slug !== city.slug && c.subRegion !== city.subRegion)
+  return [...sameRegion, ...others].slice(0, count)
+}
