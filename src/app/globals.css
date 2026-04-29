@@ -50,3 +50,17 @@ body {
   background: var(--border);
   border-radius: 3px;
 }
+
+@keyframes van-zoom-in {
+  0% { transform: translateX(-150vw); opacity: 0; }
+  15% { opacity: 1; }
+  100% { transform: translateX(0); opacity: 1; }
+}
+
+.van-zoom-in {
+  animation: van-zoom-in 1.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .van-zoom-in { animation: none; }
+}

@@ -37,7 +37,7 @@ export default function HeroSection() {
             src="/promaster.png"
             alt=""
             aria-hidden="true"
-            className="flex-shrink-0 object-contain"
+            className="flex-shrink-0 object-contain van-zoom-in"
             style={{ height: 48, width: "auto" }}
           />
           <div className="flex-1 h-px" style={{ background: "linear-gradient(to left, transparent, #D4A017)" }} />

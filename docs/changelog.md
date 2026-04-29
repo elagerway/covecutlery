@@ -1,5 +1,10 @@
 # Changelog
 
+## [2.5.4] — 2026-04-29 — Hero van zoom-in animation
+
+### Added
+- **Hero ProMaster van zooms in from off-screen left** on page mount and lands cleanly between the gold gradient lines. Custom CSS keyframe `van-zoom-in` (1.4 s, expo ease-out) in `globals.css`; class applied to the `<img>` in `HeroSection.tsx`. Respects `prefers-reduced-motion`
+
 ## [2.5.3] — 2026-04-29 — `{{city}}` personalization variable in SMS campaigns
 
 ### Added
