@@ -29,3 +29,16 @@ export function formatPhone(raw: string | null): string {
   if (local.length !== 10) return raw; // can't normalize — return as-is
   return `(${local.slice(0, 3)}) ${local.slice(3, 6)}-${local.slice(6)}`;
 }
+
+/**
+ * Extracts the city from a Nominatim/Google-Places-formatted address.
+ *  Format: "Street, City, Province Postal, Country"
+ *  Edge case: if parts[1] starts with a digit (unit/suite number), use parts[2] instead.
+ *  Returns null if no city can be confidently extracted.
+ */
+export function cityFromAddress(address: string | null | undefined): string | null {
+  if (!address) return null;
+  const parts = address.split(",").map((p) => p.trim()).filter(Boolean);
+  const candidate = parts[1]?.match(/^\d/) ? parts[2] : parts[1];
+  return candidate ?? null;
+}

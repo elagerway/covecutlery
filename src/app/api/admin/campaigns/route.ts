@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAdmin, getServiceClient } from "@/lib/admin";
-import { normalizePhone } from "@/lib/format";
+import { normalizePhone, cityFromAddress } from "@/lib/format";
 
 // GET /api/admin/campaigns — list all campaigns
 export async function GET() {
@@ -37,7 +37,7 @@ export async function POST(req: NextRequest) {
   const supabase = getServiceClient();
 
   // Look up customers by IDs
-  const validRecipients: { id: string; name: string; normalized_phone: string }[] = [];
+  const validRecipients: { id: string; name: string; normalized_phone: string; city: string | null }[] = [];
 
   if (hasCustomers) {
     const { data: customers, error: custError } = await supabase
@@ -49,16 +49,23 @@ export async function POST(req: NextRequest) {
 
     for (const c of customers || []) {
       const phone = normalizePhone(c.phone);
-      if (phone) validRecipients.push({ id: c.id, name: c.name, normalized_phone: phone });
+      if (phone) {
+        validRecipients.push({
+          id: c.id,
+          name: c.name,
+          normalized_phone: phone,
+          city: cityFromAddress(c.address),
+        });
+      }
     }
   }
 
-  // Add manual numbers
+  // Add manual numbers — no city available for ad-hoc recipients
   if (hasManual) {
     for (const num of manualNumbers) {
       const phone = normalizePhone(num);
       if (phone && !validRecipients.some((r) => r.normalized_phone === phone)) {
-        validRecipients.push({ id: `manual-${phone}`, name: phone, normalized_phone: phone });
+        validRecipients.push({ id: `manual-${phone}`, name: phone, normalized_phone: phone, city: null });
       }
     }
   }
@@ -97,12 +104,15 @@ export async function POST(req: NextRequest) {
 
   for (const recipient of validRecipients) {
     try {
-      // Replace personalization variables
+      // Replace personalization variables.
+      // {{city}} falls back to "your area" when no city can be parsed from the customer's address.
       const firstName = recipient.name.split(" ")[0] || recipient.name;
+      const cityValue = recipient.city ?? "your area";
       const personalizedMsg = message.trim()
         .replace(/\{\{first_name\}\}/gi, firstName)
         .replace(/\{\{name\}\}/gi, recipient.name)
-        .replace(/\{\{phone\}\}/gi, recipient.normalized_phone);
+        .replace(/\{\{phone\}\}/gi, recipient.normalized_phone)
+        .replace(/\{\{city\}\}/gi, cityValue);
 
       const res = await fetch("https://api.magpipe.ai/functions/v1/send-user-sms", {
         method: "POST",

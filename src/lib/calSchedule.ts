@@ -1,3 +1,5 @@
+import { cityFromAddress } from "@/lib/format";
+
 const HOME_CITY = "North Vancouver";
 const CAL_API = "https://api.cal.com/v2";
 
@@ -56,16 +58,6 @@ function toDayLabel(dateStr: string): string {
 function toDateLabel(dateStr: string): string {
   const [y, m, d] = dateStr.split("-").map(Number);
   return new Date(y, m - 1, d).toLocaleDateString("en-US", { month: "short", day: "numeric" });
-}
-
-/** Extracts city from a Nominatim-formatted address string.
- *  Format: "Street, City, Province Postal, Country"
- */
-function cityFromAddress(address: string): string | null {
-  const parts = address.split(",").map((p) => p.trim()).filter(Boolean);
-  // If parts[1] starts with a digit it's likely a unit/suite — use parts[2]
-  const candidate = parts[1]?.match(/^\d/) ? parts[2] : parts[1];
-  return candidate ?? null;
 }
 
 /** Extracts city from the booking. Reads location.address (new) with fallback

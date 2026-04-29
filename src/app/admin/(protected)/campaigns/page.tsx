@@ -207,6 +207,7 @@ export default function CampaignsPage() {
               { label: "First Name", tag: "{{first_name}}" },
               { label: "Name", tag: "{{name}}" },
               { label: "Phone", tag: "{{phone}}" },
+              { label: "City", tag: "{{city}}" },
             ].map(({ label, tag }) => (
               <button
                 key={tag}

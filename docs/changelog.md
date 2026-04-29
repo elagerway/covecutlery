@@ -1,5 +1,18 @@
 # Changelog
 
+## [2.5.3] — 2026-04-29 — `{{city}}` personalization variable in SMS campaigns
+
+### Added
+- **`{{city}}` variable** in SMS campaign personalization — derived from the customer's `address` field via `cityFromAddress()`. When the address can't be parsed (or for ad-hoc manual recipients), falls back to `"your area"` so the message still reads naturally
+- Insert button for `{{city}}` added alongside First Name / Name / Phone in the campaigns admin compose UI
+
+### Changed
+- **`cityFromAddress()` extracted** from `lib/calSchedule.ts` (where it was a private helper) into `lib/format.ts` so it can be shared. `calSchedule.ts` now imports it. Behavior preserved (Nominatim/Places "Street, City, Province Postal, Country" parsing with the unit-number edge case)
+- `validRecipients` in `/api/admin/campaigns` POST now carries `city` alongside name and phone
+
+This unlocks the review-request SMS template suggested earlier:
+`Hi {{first_name}}, hope your knives feel sharp! A Google review (mentioning {{city}}!) would mean a lot: {{review_link}} — Cove Blades`
+
 ## [2.5.2] — 2026-04-29 — Reinforce Service Area Business signal site-wide
 
 ### Added
