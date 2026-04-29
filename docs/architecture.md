@@ -380,14 +380,17 @@ RLS: admin full access only.
 
 ## Deployment
 
-- **Production URL:** https://coveblades.com
+- **Production URL:** https://coveblades.com (DNS flip pending; apex still on SiteGround NS)
+- **Staging URL:** https://staging.coveblades.com (live; serves the same Vercel deployment as production)
 - **Vercel URL:** https://covecutlery.vercel.app
 - **GitHub repo:** https://github.com/elagerway/covecutlery
 - Auto-deploy on push to `main`
 
-**Supabase Auth Redirect URLs** (must be set in Supabase Dashboard → Authentication → URL Configuration):
+**Supabase Auth Redirect URLs** (configured in Supabase Dashboard → Authentication → URL Configuration):
 - `http://localhost:3002/auth/callback` (dev)
-- `https://coveblades.com/auth/callback` (prod)
+- `https://coveblades.com/auth/callback`, `https://www.coveblades.com/auth/callback` (prod)
+- `https://staging.coveblades.com/auth/callback` (staging)
+- `https://covecutlery.ca/auth/callback`, `https://www.covecutlery.ca/auth/callback` (legacy — kept until prod DNS flip)
 
 Note: dev server runs on port **3002**. Never use port 3000.
 
@@ -408,3 +411,4 @@ Note: dev server runs on port **3002**. Never use port 3000.
 - Admin middleware uses `getUser()` (not `getSession()`) — Supabase recommends this for server-side auth checks as it validates the token server-side
 - The double-cookie pattern in middleware: cookies must be set on both the incoming `request` and the outgoing `supabaseResponse` to keep the session alive across edge calls
 - **Brand-rename infra divergence (2026-04-29):** display phone is `604-210-8180` (Cove Blades) but `MAGPIPE_SMS_FROM` env and `ADMIN_PHONE` constant in `/api/cal/book/route.ts` still point at `+16043731500` (the provisioned Magpipe number from the Cove Cutlery era). Customer SMS confirmations and admin booking notifications go through the old number until Magpipe is reprovisioned. Vercel project name (`covecutlery.vercel.app`) and GitHub repo (`elagerway/covecutlery`) intentionally not renamed
+- **Outgoing-URL host allowlist (`lib/origin.ts`):** `safeOrigin()` returns the request's `Origin` header iff its host is in `["coveblades.com", "www.coveblades.com", "staging.coveblades.com"]`, else `https://coveblades.com`. Used by Stripe checkout (`/api/invoices/[id]/pay`) and invoice send (`/api/admin/invoices/[id]/send`) so links/redirects respect staging. The prior hardcoded `https://coveblades.com` defended against `Origin` spoofing — the allowlist preserves that property while permitting staging

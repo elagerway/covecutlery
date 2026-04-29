@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import * as postmark from "postmark";
 import { requireAdmin, getServiceClient } from "@/lib/admin";
 import { formatCAD, escapeHtml, LineItem } from "@/lib/format";
+import { safeOrigin } from "@/lib/origin";
 
 const FROM_EMAIL = "info@coveblades.com";
 const FROM_NAME = "Cove Blades";
@@ -166,7 +167,7 @@ export async function POST(
 
   if (!invoice) return NextResponse.json({ error: "Invoice not found" }, { status: 404 });
 
-  const origin = process.env.NODE_ENV === "development" ? (req.headers.get("origin") ?? "https://coveblades.com") : "https://coveblades.com";
+  const origin = safeOrigin(req);
   const errors: string[] = [];
   let sent = 0;
 

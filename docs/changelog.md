@@ -17,11 +17,21 @@
 - `github.com/elagerway/covecutlery` repo URL kept in active docs (repo not renamed)
 - Historical docs (`changelog.md` prior entries, `docs/plans/*`, `docs/brainstorms/*`) left intact as historical record
 
-### External setup required (not in code)
-- DNS: point `coveblades.com` and `www.coveblades.com` at Vercel; attach domain to project
-- Postmark: verify sender domain `coveblades.com` so transactional email from `info@coveblades.com` actually sends
-- Supabase Auth: update redirect URL allowlist to `https://coveblades.com/auth/callback` and `https://www.coveblades.com/auth/callback`
-- Magpipe: reprovision SMS sender to `604-210-8180` and update `MAGPIPE_SMS_FROM` env + `ADMIN_PHONE` constant when ready
+### Added — staging.coveblades.com support
+- **`lib/origin.ts`** — `safeOrigin()` helper with host allowlist (`coveblades.com`, `www.coveblades.com`, `staging.coveblades.com`) for outgoing redirect/link URLs. Falls back to `https://coveblades.com` when the request origin is missing or not allowlisted, preserving the prior anti-spoofing behavior
+- **Stripe checkout origin** (`/api/invoices/[id]/pay/route.ts`) — `success_url` and `cancel_url` now use `safeOrigin()`. When triggered from staging, customers stay on staging after Stripe redirect
+- **Invoice send origin** (`/api/admin/invoices/[id]/send/route.ts`) — invoice emails + SMS now contain a `View invoice` link to whichever host the admin is on (staging or prod)
+- **Stripe booking-checkout origin** (`/api/stripe/checkout/route.ts`) — was using raw `req.headers.get("origin")` for `success_url`/`cancel_url`, which let an attacker spoof the Origin header and leak Stripe `session_id` to an arbitrary domain. Now uses `safeOrigin()` like the invoice pay flow
+- **Auth callback host allowlist** (`/auth/callback/route.ts`) — added `staging.coveblades.com`
+- Vercel: `staging.coveblades.com` attached to the `covecutlery` project (verified via API)
+- Supabase Auth: `site_url` set to `https://coveblades.com`; `uri_allow_list` updated to include staging + new + old domains for transition
+
+### External setup status
+- DNS: `coveblades.com` apex still on SiteGround NS — not yet verified by Vercel (apex won't serve until DNS flips). `staging.coveblades.com` already serving 200 OK from Vercel via SiteGround A record
+- Vercel: ✅ staging domain attached to project
+- Supabase Auth: ✅ redirect allowlist + site_url updated via Management API
+- Postmark: pending — sender domain `coveblades.com` still needs verification before transactional email sends
+- Magpipe: pending — reprovision SMS sender to `604-210-8180` and update `MAGPIPE_SMS_FROM` env + `ADMIN_PHONE` constant
 
 ## [2.1.0] — 2026-04-10
 

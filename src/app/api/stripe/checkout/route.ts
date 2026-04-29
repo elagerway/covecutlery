@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 import { createClient } from "@supabase/supabase-js";
+import { safeOrigin } from "@/lib/origin";
 
 function getStripe() {
   return new Stripe(process.env.STRIPE_SECRET_KEY!);
@@ -22,7 +23,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
   }
 
-  const origin = req.headers.get("origin") ?? "http://localhost:3002";
+  const origin = safeOrigin(req);
 
   const session = await getStripe().checkout.sessions.create({
     mode: "payment",
