@@ -3,6 +3,7 @@ import { Inter } from 'next/font/google'
 import './globals.css'
 import { BookingProvider } from '@/components/BookingProvider'
 import { safeJsonLd } from '@/lib/schema'
+import { cities } from '@/data/cities'
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
 
@@ -80,6 +81,11 @@ export default function RootLayout({
                 'https://www.youtube.com/@coveblades',
                 'https://www.google.com/search?q=Cove+Blades+-+Knife+Sharpening&stick=H4sIAAAAAAAA_-NgU1I1qDA1sTAzTzJOSzEyTDYzN06xMqhIM0k0SbKwtEg1MjUwNEsyWcQq55xflqrglJOYklqsoKvgnZeZlqoQnJFYVJCal5mXDgBtJBstSgAAAA',
               ],
+              areaServed: cities.map(c => ({
+                '@type': 'City',
+                name: c.name,
+                containedInPlace: { '@type': 'AdministrativeArea', name: 'British Columbia' },
+              })),
               openingHoursSpecification: [
                 {
                   '@type': 'OpeningHoursSpecification',

@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.5.2] — 2026-04-29 — Reinforce Service Area Business signal site-wide
+
+### Added
+- **Homepage `LocalBusiness.areaServed`** now enumerates all 17 cities (sourced from `cities.ts`). Previously the schema only carried the physical `address` + `geo`, leaving Google to infer service-area scope from city pages alone. The explicit `areaServed` array site-wide reinforces the SAB (Service Area Business) signal — works alongside the per-city `Service` schema and the GBP `sameAs` reference to give Google a coherent, deterministic picture: one entity, one physical location, 17 served cities
+
+This is the in-code piece. The companion off-site work (configuring GBP as SAB with all 17 cities, soliciting city-mentioning reviews, building city-specific citations) sits with the user.
+
 ## [2.5.1] — 2026-04-29 — Wire existing Google Business Profile into entity graph
 
 ### Added
