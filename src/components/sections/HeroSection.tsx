@@ -31,15 +31,21 @@ export default function HeroSection() {
         {/* Blade / gold line decoration — top */}
         <div className="flex items-center gap-3 mb-8 w-full max-w-xs mx-auto">
           <div className="flex-1 h-px" style={{ background: "linear-gradient(to right, transparent, #D4A017)" }} />
-          {/* Ram ProMaster 1500 */}
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src="/promaster.png"
-            alt=""
-            aria-hidden="true"
-            className="flex-shrink-0 object-contain van-zoom-in"
-            style={{ height: 48, width: "auto" }}
-          />
+          {/* Ram ProMaster 1500 — zooms in from the left, smoking the tires */}
+          <span className="van-trail flex-shrink-0">
+            <span className="smoke-puff smoke-puff-1" aria-hidden="true" />
+            <span className="smoke-puff smoke-puff-2" aria-hidden="true" />
+            <span className="smoke-puff smoke-puff-3" aria-hidden="true" />
+            <span className="smoke-puff smoke-puff-4" aria-hidden="true" />
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/promaster.png"
+              alt=""
+              aria-hidden="true"
+              className="object-contain block relative"
+              style={{ height: 48, width: "auto" }}
+            />
+          </span>
           <div className="flex-1 h-px" style={{ background: "linear-gradient(to left, transparent, #D4A017)" }} />
         </div>
 

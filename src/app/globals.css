@@ -51,16 +51,56 @@ body {
   border-radius: 3px;
 }
 
+/* Hero van zoom-in: drives in from off-screen right and lands on a dime.
+   The .van-trail wrapper carries the zoom animation and hosts the
+   smoke-puff children that trail out behind the rear (right-side) tires.
+   Plays once on page mount. Respects prefers-reduced-motion. */
 @keyframes van-zoom-in {
-  0% { transform: translateX(-150vw); opacity: 0; }
+  0% { transform: translateX(150vw); opacity: 0; }
   15% { opacity: 1; }
   100% { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes smoke-puff {
+  0% { opacity: 0; transform: translate(0, 0) scale(0.3); }
+  20% { opacity: 0.55; transform: translate(6px, -2px) scale(0.9); }
+  100% { opacity: 0; transform: translate(28px, -10px) scale(2.4); }
 }
 
 .van-zoom-in {
   animation: van-zoom-in 1.4s cubic-bezier(0.16, 1, 0.3, 1) both;
 }
 
+.van-trail {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  animation: van-zoom-in 1.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.smoke-puff {
+  position: absolute;
+  bottom: 4px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: rgba(220, 220, 220, 0.55);
+  filter: blur(3px);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.smoke-puff-1 { right: 4px;  animation: smoke-puff 1.1s ease-out 0.45s both; }
+.smoke-puff-2 { right: 8px;  animation: smoke-puff 1.2s ease-out 0.60s both; }
+.smoke-puff-3 { right: 12px; animation: smoke-puff 1.3s ease-out 0.75s both; }
+.smoke-puff-4 { right: 16px; animation: smoke-puff 1.4s ease-out 0.90s both; }
+
 @media (prefers-reduced-motion: reduce) {
-  .van-zoom-in { animation: none; }
+  .van-zoom-in,
+  .van-trail {
+    animation: none;
+  }
+  .smoke-puff {
+    display: none;
+  }
 }
