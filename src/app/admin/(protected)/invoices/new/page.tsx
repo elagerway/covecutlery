@@ -506,8 +506,8 @@ export default function NewInvoicePage() {
             <div className="p-6">
               {/* Header */}
               <div className="flex flex-col items-center mb-6">
-                <img src="/logo-icon-512.png" alt="Cove Cutlery" width={40} height={40} className="rounded-lg mb-2" />
-                <p className="text-xl font-bold tracking-wide" style={{ color: "#D4A017" }}>COVE CUTLERY</p>
+                <img src="/logo-icon-512.png" alt="Cove Blades" width={40} height={40} className="rounded-lg mb-2" />
+                <p className="text-xl font-bold tracking-wide" style={{ color: "#D4A017" }}>COVE BLADES</p>
                 <p className="text-sm mt-1" style={{ color: "#6B7280" }}>Mobile Knife Sharpening</p>
               </div>
 
@@ -596,7 +596,7 @@ export default function NewInvoicePage() {
               {/* Footer */}
               <div className="text-center mt-6">
                 <p className="text-xs" style={{ color: "#6B7280" }}>
-                  Cove Cutlery · covecutlery.ca · 604-373-1500
+                  Cove Blades · coveblades.com · 604-210-8180
                 </p>
               </div>
             </div>

@@ -1,8 +1,8 @@
-# Architecture — Cove Cutlery
+# Architecture — Cove Blades
 
 ## Overview
 
-Multi-page marketing website for Cove Cutlery cutlery sharpening service. Built with Next.js 16 App Router, deployed on Vercel. Supabase handles contact form submissions and blog content; Cal.com handles mobile appointment scheduling via server-side proxy API routes. An admin-only section at `/admin` allows the owner to manage blog posts behind Supabase magic-link authentication.
+Multi-page marketing website for Cove Blades cutlery sharpening service. Built with Next.js 16 App Router, deployed on Vercel. Supabase handles contact form submissions and blog content; Cal.com handles mobile appointment scheduling via server-side proxy API routes. An admin-only section at `/admin` allows the owner to manage blog posts behind Supabase magic-link authentication.
 
 ## Tech Stack
 
@@ -380,14 +380,14 @@ RLS: admin full access only.
 
 ## Deployment
 
-- **Production URL:** https://covecutlery.ca
+- **Production URL:** https://coveblades.com
 - **Vercel URL:** https://covecutlery.vercel.app
 - **GitHub repo:** https://github.com/elagerway/covecutlery
 - Auto-deploy on push to `main`
 
 **Supabase Auth Redirect URLs** (must be set in Supabase Dashboard → Authentication → URL Configuration):
 - `http://localhost:3002/auth/callback` (dev)
-- `https://covecutlery.ca/auth/callback` (prod)
+- `https://coveblades.com/auth/callback` (prod)
 
 Note: dev server runs on port **3002**. Never use port 3000.
 
@@ -407,3 +407,4 @@ Note: dev server runs on port **3002**. Never use port 3000.
 - `@supabase/ssr` is used for all auth-aware server contexts (middleware, server components, API routes). The older `lib/supabase.ts` anon client remains for public-facing pages. Build-time pages (blog, sitemap) guard against missing Supabase env vars to prevent preview deployment failures — same pattern as the lazy Stripe init
 - Admin middleware uses `getUser()` (not `getSession()`) — Supabase recommends this for server-side auth checks as it validates the token server-side
 - The double-cookie pattern in middleware: cookies must be set on both the incoming `request` and the outgoing `supabaseResponse` to keep the session alive across edge calls
+- **Brand-rename infra divergence (2026-04-29):** display phone is `604-210-8180` (Cove Blades) but `MAGPIPE_SMS_FROM` env and `ADMIN_PHONE` constant in `/api/cal/book/route.ts` still point at `+16043731500` (the provisioned Magpipe number from the Cove Cutlery era). Customer SMS confirmations and admin booking notifications go through the old number until Magpipe is reprovisioned. Vercel project name (`covecutlery.vercel.app`) and GitHub repo (`elagerway/covecutlery`) intentionally not renamed

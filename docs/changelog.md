@@ -1,5 +1,28 @@
 # Changelog
 
+## [2.2.0] — 2026-04-29
+
+### Changed
+- **Brand renamed: Cove Cutlery → Cove Blades** — full sweep across UI, metadata, JSON-LD, OpenGraph, manifest, llms.txt, project_spec.json, and active docs (~200 string replacements across 41 files)
+- **Production domain: `covecutlery.ca` → `coveblades.com`** — `metadataBase`, sitemap, robots.txt, auth callback host allowlist, breadcrumbs, invoice/receipt email + SMS templates all updated
+- **Email addresses** — `info@covecutlery.ca` → `info@coveblades.com`, `pay@covecutlery.ca` → `pay@coveblades.com`
+- **Social handles** — Instagram, Facebook, YouTube `@covecutlery` → `@coveblades` in JSON-LD `sameAs`, footer, About/Mobile sections, llms.txt
+- **Display phone: `604-373-1500` → `604-210-8180`** — all customer-facing tel: links, display strings, and customer SMS confirmation message body. Backend SMS sender (`MAGPIPE_SMS_FROM`) and admin notification recipient (`ADMIN_PHONE` in `/api/cal/book`) intentionally left at `+16043731500` since SMS is provisioned to that number; reprovision Magpipe and update env to converge
+- **`package.json` name** — `covecutlery` → `coveblades`
+- The word "cutlery" retained in marketing copy (page titles, meta descriptions, body copy) — only the brand name changed
+- Logo files (`public/logo-icon-512.png`, `public/og-default.png`) reused as-is
+
+### Not changed (intentional)
+- `covecutlery.vercel.app` Vercel deployment URL kept in auth callback host allowlist and active docs (Vercel project not renamed)
+- `github.com/elagerway/covecutlery` repo URL kept in active docs (repo not renamed)
+- Historical docs (`changelog.md` prior entries, `docs/plans/*`, `docs/brainstorms/*`) left intact as historical record
+
+### External setup required (not in code)
+- DNS: point `coveblades.com` and `www.coveblades.com` at Vercel; attach domain to project
+- Postmark: verify sender domain `coveblades.com` so transactional email from `info@coveblades.com` actually sends
+- Supabase Auth: update redirect URL allowlist to `https://coveblades.com/auth/callback` and `https://www.coveblades.com/auth/callback`
+- Magpipe: reprovision SMS sender to `604-210-8180` and update `MAGPIPE_SMS_FROM` env + `ADMIN_PHONE` constant when ready
+
 ## [2.1.0] — 2026-04-10
 
 ### Added

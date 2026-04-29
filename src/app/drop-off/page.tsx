@@ -6,7 +6,7 @@ import Footer from "@/components/Footer";
 import DropBoxCodeButton from "@/components/DropBoxCodeButton";
 
 export const metadata: Metadata = {
-  title: "24/7 Drop-Off Cutlery Sharpening Vancouver | Cove Cutlery",
+  title: "24/7 Drop-Off Cutlery Sharpening Vancouver | Cove Blades",
   description:
     "Secure 24/7 drop box cutlery sharpening in Vancouver. Drop your knives anytime, pick them up next day. Text us for the secure drop box code.",
 };
@@ -15,7 +15,7 @@ const steps = [
   {
     step: "01",
     title: "Call or Text for the Code",
-    desc: 'Text or call 604 373 1500 to request the secure drop box combination code. We\'ll send it to you right away — it takes less than a minute.',
+    desc: 'Text or call 604 210 8180 to request the secure drop box combination code. We\'ll send it to you right away — it takes less than a minute.',
     icon: Phone,
   },
   {
@@ -165,7 +165,7 @@ export default function DropOffPage() {
                 className="rounded-xl p-6 border mb-4"
                 style={{ backgroundColor: "#0D1117", borderColor: "#30363D" }}
               >
-                <p className="font-semibold mb-1" style={{ color: "#FFFFFF" }}>Cove Cutlery</p>
+                <p className="font-semibold mb-1" style={{ color: "#FFFFFF" }}>Cove Blades</p>
                 <p className="text-sm leading-relaxed" style={{ color: "#6B7280" }}>
                   Vancouver, BC
                   <br />

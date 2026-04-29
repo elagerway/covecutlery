@@ -3,8 +3,8 @@ import * as postmark from "postmark";
 import { requireAdmin, getServiceClient } from "@/lib/admin";
 import { formatCAD, escapeHtml, LineItem } from "@/lib/format";
 
-const FROM_EMAIL = "info@covecutlery.ca";
-const FROM_NAME = "Cove Cutlery";
+const FROM_EMAIL = "info@coveblades.com";
+const FROM_NAME = "Cove Blades";
 
 function buildInvoiceHtml(invoice: {
   invoice_number: string;
@@ -49,16 +49,16 @@ function buildInvoiceHtml(invoice: {
     <div style="background:#0D1117;padding:24px 32px;">
       <table cellpadding="0" cellspacing="0" border="0"><tr>
         <td style="vertical-align:middle;padding-right:12px;">
-          <img src="https://covecutlery.ca/logo-icon-512.png" alt="Cove Cutlery" width="40" height="40" style="display:block;border-radius:6px;" />
+          <img src="https://coveblades.com/logo-icon-512.png" alt="Cove Blades" width="40" height="40" style="display:block;border-radius:6px;" />
         </td>
         <td style="vertical-align:middle;">
-          <p style="margin:0;color:#D4A017;font-size:20px;font-weight:700;letter-spacing:.5px;">COVE CUTLERY</p>
+          <p style="margin:0;color:#D4A017;font-size:20px;font-weight:700;letter-spacing:.5px;">COVE BLADES</p>
           <p style="margin:2px 0 0;color:#6B7280;font-size:13px;">Invoice #${escapeHtml(invoice.invoice_number)}</p>
         </td>
       </tr></table>
     </div>
     <div style="padding:32px;">
-      <p style="margin:0 0 24px;font-size:15px;color:#111;">Hi ${escapeHtml(firstName)},<br>Here's your invoice from Cove Cutlery.</p>
+      <p style="margin:0 0 24px;font-size:15px;color:#111;">Hi ${escapeHtml(firstName)},<br>Here's your invoice from Cove Blades.</p>
       ${dueFormatted ? `<div style="background:#f9f9f9;border-radius:6px;padding:16px 20px;margin-bottom:24px;">
         <p style="margin:0 0 4px;font-size:13px;color:#888;">Due Date</p>
         <p style="margin:0;font-size:15px;font-weight:600;color:#111;">${dueFormatted}</p>
@@ -85,13 +85,13 @@ function buildInvoiceHtml(invoice: {
         <a href="${viewUrl}" style="display:inline-block;padding:14px 32px;background:#D4A017;color:#0D1117;font-weight:700;font-size:14px;text-decoration:none;border-radius:8px;">${invoice.status === "paid" ? "View Invoice" : "View & Pay Invoice"}</a>
       </div>
       ${invoice.status !== "paid" ? `<p style="margin:24px 0 0;font-size:12px;color:#888;text-align:center;">
-        Or pay via e-Transfer to <strong>pay@covecutlery.ca</strong><br>
+        Or pay via e-Transfer to <strong>pay@coveblades.com</strong><br>
         Include invoice #${escapeHtml(invoice.invoice_number)} in the message.
       </p>` : `<p style="margin:24px 0 0;font-size:12px;color:#888;text-align:center;">
         This invoice has been paid. Thank you!
       </p>`}
       <p style="margin:24px 0 0;font-size:13px;color:#888;text-align:center;">
-        <a href="https://covecutlery.ca" style="color:#D4A017;">covecutlery.ca</a> · 604-373-1500
+        <a href="https://coveblades.com" style="color:#D4A017;">coveblades.com</a> · 604-210-8180
       </p>
     </div>
   </div>
@@ -119,7 +119,7 @@ function buildInvoiceText(invoice: {
   return [
     `Hi ${firstName},`,
     ``,
-    `Here's your invoice from Cove Cutlery.`,
+    `Here's your invoice from Cove Blades.`,
     ``,
     `Invoice #${invoice.invoice_number}`,
     invoice.due_date ? `Due: ${invoice.due_date}` : null,
@@ -131,14 +131,14 @@ function buildInvoiceText(invoice: {
     `View online: ${origin}/invoice/${invoice.id}`,
     ``,
     invoice.status !== "paid"
-      ? `Or e-Transfer to pay@covecutlery.ca (include invoice #${invoice.invoice_number} in the message).`
+      ? `Or e-Transfer to pay@coveblades.com (include invoice #${invoice.invoice_number} in the message).`
       : null,
     invoice.status === "paid" && invoice.paid_at
       ? `Payment received: ${new Date(invoice.paid_at).toLocaleDateString("en-CA", { weekday: "long", month: "long", day: "numeric", year: "numeric", hour: "numeric", minute: "2-digit", timeZone: "America/Vancouver" })}${invoice.payment_method === "stripe" ? " via Credit Card" : invoice.payment_method === "etransfer" ? " via Interac e-Transfer" : ""}. Thank you!`
       : null,
     ``,
     invoice.notes ? `Note: ${invoice.notes}\n` : null,
-    `Cove Cutlery · covecutlery.ca · 604-373-1500`,
+    `Cove Blades · coveblades.com · 604-210-8180`,
   ].filter(l => l !== null).join("\n");
 }
 
@@ -166,7 +166,7 @@ export async function POST(
 
   if (!invoice) return NextResponse.json({ error: "Invoice not found" }, { status: 404 });
 
-  const origin = process.env.NODE_ENV === "development" ? (req.headers.get("origin") ?? "https://covecutlery.ca") : "https://covecutlery.ca";
+  const origin = process.env.NODE_ENV === "development" ? (req.headers.get("origin") ?? "https://coveblades.com") : "https://coveblades.com";
   const errors: string[] = [];
   let sent = 0;
 
@@ -180,7 +180,7 @@ export async function POST(
         await client.sendEmail({
           From: `${FROM_NAME} <${FROM_EMAIL}>`,
           To: overrideEmail || invoice.client_email,
-          Subject: `Invoice #${invoice.invoice_number} from Cove Cutlery — ${formatCAD(invoice.subtotal)}`,
+          Subject: `Invoice #${invoice.invoice_number} from Cove Blades — ${formatCAD(invoice.subtotal)}`,
           TextBody: buildInvoiceText(invoice, origin),
           HtmlBody: buildInvoiceHtml(invoice, origin),
         });
@@ -206,8 +206,8 @@ export async function POST(
         const emailSent = sent > 0;
         const emailNote = emailSent ? " We've also sent this to your email." : "";
         const msg = invoice.status === "paid"
-          ? `Hi ${invoice.client_name.split(" ")[0]}, here's your Cove Cutlery receipt for invoice #${invoice.invoice_number} (${formatCAD(invoice.subtotal)}). View: ${viewUrl}${emailNote}`
-          : `Hi ${invoice.client_name.split(" ")[0]}, your Cove Cutlery invoice #${invoice.invoice_number} for ${formatCAD(invoice.subtotal)} is ready. View & pay: ${viewUrl}${emailNote}`;
+          ? `Hi ${invoice.client_name.split(" ")[0]}, here's your Cove Blades receipt for invoice #${invoice.invoice_number} (${formatCAD(invoice.subtotal)}). View: ${viewUrl}${emailNote}`
+          : `Hi ${invoice.client_name.split(" ")[0]}, your Cove Blades invoice #${invoice.invoice_number} for ${formatCAD(invoice.subtotal)} is ready. View & pay: ${viewUrl}${emailNote}`;
         const res = await fetch("https://api.magpipe.ai/functions/v1/send-user-sms", {
           method: "POST",
           headers: {

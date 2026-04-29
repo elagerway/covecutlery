@@ -33,7 +33,7 @@ export async function generateMetadata({
 
   if (!post) return {};
   return {
-    title: `${post.title} | Cove Cutlery`,
+    title: `${post.title} | Cove Blades`,
     description: post.meta_description ?? undefined,
     alternates: { canonical: `/blog/${slug}` },
     openGraph: {
@@ -77,16 +77,16 @@ export default async function BlogPostPage({
     ...(post.featured_image_url ? { image: post.featured_image_url } : {}),
     datePublished: post.published_at ?? new Date().toISOString(),
     dateModified: post.published_at ?? new Date().toISOString(),
-    author: { '@type': 'Organization', name: 'Cove Cutlery', url: 'https://covecutlery.ca' },
-    publisher: { '@type': 'Organization', name: 'Cove Cutlery', url: 'https://covecutlery.ca' },
-    description: post.excerpt || `Read ${post.title} on Cove Cutlery`,
-    mainEntityOfPage: { '@type': 'WebPage', '@id': `https://covecutlery.ca/blog/${slug}` },
+    author: { '@type': 'Organization', name: 'Cove Blades', url: 'https://coveblades.com' },
+    publisher: { '@type': 'Organization', name: 'Cove Blades', url: 'https://coveblades.com' },
+    description: post.excerpt || `Read ${post.title} on Cove Blades`,
+    mainEntityOfPage: { '@type': 'WebPage', '@id': `https://coveblades.com/blog/${slug}` },
   }
 
   const breadcrumbJsonLd = breadcrumbSchema([
-    { name: 'Home', url: 'https://covecutlery.ca' },
-    { name: 'Blog', url: 'https://covecutlery.ca/blog' },
-    { name: post.title, url: `https://covecutlery.ca/blog/${slug}` },
+    { name: 'Home', url: 'https://coveblades.com' },
+    { name: 'Blog', url: 'https://coveblades.com/blog' },
+    { name: post.title, url: `https://coveblades.com/blog/${slug}` },
   ])
 
   return (

@@ -161,7 +161,7 @@ export async function POST(req: NextRequest) {
 
     // Notify admin + confirm to customer (parallel, non-blocking but awaited before response)
     const adminMsg = `New booking! ${name} — ${appointmentDate} at ${appointmentTime}, ${address ?? "no address"}. Phone: ${phone}`;
-    const customerMsg = `Hi ${name.split(" ")[0]}, your Cove Cutlery mobile sharpening is confirmed for ${appointmentDate} at ${appointmentTime}. We'll see you at ${address}! Questions? Call us at 604-373-1500.`;
+    const customerMsg = `Hi ${name.split(" ")[0]}, your Cove Blades mobile sharpening is confirmed for ${appointmentDate} at ${appointmentTime}. We'll see you at ${address}! Questions? Call us at 604-210-8180.`;
 
     await Promise.allSettled([
       sendSms(ADMIN_PHONE, adminMsg),

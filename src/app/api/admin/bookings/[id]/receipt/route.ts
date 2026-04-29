@@ -5,8 +5,8 @@ import { createClient as createServiceClient } from "@supabase/supabase-js";
 import { formatPhone } from "@/lib/format";
 
 const ADMIN_EMAIL = "elagerway@gmail.com";
-const FROM_EMAIL = "info@covecutlery.ca";
-const FROM_NAME = "Cove Cutlery";
+const FROM_EMAIL = "info@coveblades.com";
+const FROM_NAME = "Cove Blades";
 
 async function requireAdmin() {
   const supabase = await createClient();
@@ -38,7 +38,7 @@ function buildReceiptText(b: {
   const lines = [
     `Hi ${b.customer_name.split(" ")[0]},`,
     ``,
-    `Here's your receipt from Cove Cutlery.`,
+    `Here's your receipt from Cove Blades.`,
     ``,
     `📅 ${formatDate(b.appointment_date)} at ${b.appointment_time}`,
     b.address ? `📍 ${b.address}` : null,
@@ -50,8 +50,8 @@ function buildReceiptText(b: {
     `──────────────────────`,
     `Total:                ${formatCAD(total)}`,
     ``,
-    `Thank you for choosing Cove Cutlery!`,
-    `covecutlery.ca`,
+    `Thank you for choosing Cove Blades!`,
+    `coveblades.com`,
   ].filter((l) => l !== null).join("\n");
   return lines;
 }
@@ -75,10 +75,10 @@ function buildReceiptHtml(b: {
     <div style="background:#0D1117;padding:24px 32px;">
       <table cellpadding="0" cellspacing="0" border="0"><tr>
         <td style="vertical-align:middle;padding-right:12px;">
-          <img src="https://covecutlery.ca/logo-icon-512.png" alt="Cove Cutlery" width="40" height="40" style="display:block;border-radius:6px;" />
+          <img src="https://coveblades.com/logo-icon-512.png" alt="Cove Blades" width="40" height="40" style="display:block;border-radius:6px;" />
         </td>
         <td style="vertical-align:middle;">
-          <p style="margin:0;color:#D4A017;font-size:20px;font-weight:700;letter-spacing:.5px;">COVE CUTLERY</p>
+          <p style="margin:0;color:#D4A017;font-size:20px;font-weight:700;letter-spacing:.5px;">COVE BLADES</p>
           <p style="margin:2px 0 0;color:#6B7280;font-size:13px;">Mobile Knife Sharpening</p>
         </td>
       </tr></table>
@@ -105,7 +105,7 @@ function buildReceiptHtml(b: {
           <td style="padding:12px 0 4px;text-align:right;font-weight:700;font-size:16px;color:#111;">${formatCAD(total)}</td>
         </tr>
       </table>
-      <p style="margin:32px 0 0;font-size:13px;color:#888;text-align:center;">Thank you for choosing Cove Cutlery!<br><a href="https://covecutlery.ca" style="color:#D4A017;">covecutlery.ca</a></p>
+      <p style="margin:32px 0 0;font-size:13px;color:#888;text-align:center;">Thank you for choosing Cove Blades!<br><a href="https://coveblades.com" style="color:#D4A017;">coveblades.com</a></p>
     </div>
   </div>
 </body>
@@ -152,7 +152,7 @@ export async function POST(
         await client.sendEmail({
           From: `${FROM_NAME} <${FROM_EMAIL}>`,
           To: emailTo,
-          Subject: `Your receipt from Cove Cutlery — ${formatDate(b.appointment_date)}`,
+          Subject: `Your receipt from Cove Blades — ${formatDate(b.appointment_date)}`,
           TextBody: buildReceiptText(b),
           HtmlBody: buildReceiptHtml(b),
         });

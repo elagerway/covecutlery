@@ -20,14 +20,14 @@ const contactDetails = [
   {
     icon: Phone,
     label: "Phone",
-    value: "604 373 1500",
-    href: "tel:6043731500",
+    value: "604 210 8180",
+    href: "tel:6042108180",
   },
   {
     icon: Mail,
     label: "Email",
-    value: "info@covecutlery.ca",
-    href: "mailto:info@covecutlery.ca",
+    value: "info@coveblades.com",
+    href: "mailto:info@coveblades.com",
   },
   {
     icon: MapPin,
@@ -435,12 +435,12 @@ export default function ContactPage() {
 
               {/* Quick Call CTA */}
               <a
-                href="tel:6043731500"
+                href="tel:6042108180"
                 className="flex items-center justify-center gap-2 py-4 rounded-xl font-semibold text-base border-2 transition-all duration-200 hover:bg-yellow-900/20 active:scale-95"
                 style={{ borderColor: "#D4A017", color: "#D4A017" }}
               >
                 <Phone size={18} />
-                Call 604 373 1500
+                Call 604 210 8180
               </a>
             </div>
 

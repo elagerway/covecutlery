@@ -16,7 +16,7 @@ const reviews: Review[] = [
   },
   {
     author: "Misha M.",
-    text: "Great experience! Knives are super sharp. I dropped my knives off at Cove Cutlery in the secure lock-box and they were finished same-day. Erik was helpful and communicative.",
+    text: "Great experience! Knives are super sharp. I dropped my knives off at Cove Blades in the secure lock-box and they were finished same-day. Erik was helpful and communicative.",
     rating: 5,
   },
   {
@@ -26,17 +26,17 @@ const reviews: Review[] = [
   },
   {
     author: "Hiroko Yamamoto",
-    text: "I was able to get all of our 15 knives done within the same day (dropped off and picked up). They all came back very sharp and passed the finely chopped onion test with very little tears on my side! Sharp knives make life so much easier and cooking fun! I would definitely recommend Cove Cutlery to anybody who owns a knife.",
+    text: "I was able to get all of our 15 knives done within the same day (dropped off and picked up). They all came back very sharp and passed the finely chopped onion test with very little tears on my side! Sharp knives make life so much easier and cooking fun! I would definitely recommend Cove Blades to anybody who owns a knife.",
     rating: 5,
   },
   {
     author: "Nico Vera",
-    text: "As a former chef with a small collection of German and Japanese knives, I was thrilled to find Cove Cutlery. Erik was very professional, friendly, and punctual, and sharpened about 10 knives in half an hour. The affordable price, convenience of a mobile service, and top-notch quality of work guarantees my knives are ready for any home-cooking project. I will definitely call on Cove Cutlery again soon!",
+    text: "As a former chef with a small collection of German and Japanese knives, I was thrilled to find Cove Blades. Erik was very professional, friendly, and punctual, and sharpened about 10 knives in half an hour. The affordable price, convenience of a mobile service, and top-notch quality of work guarantees my knives are ready for any home-cooking project. I will definitely call on Cove Blades again soon!",
     rating: 5,
   },
   {
     author: "Meyrick Jones",
-    text: "His effective website had me booking a mobile service for the SAME DAY! When Erik showed up he was cheerful and happy to tell me all about his process. All 12 knives came out unbelievably sharp, and one that had an ugly broken tip looks as good as new. Price was low too. Will definitely use Cove Cutlery mobile service again. Highly recommended!",
+    text: "His effective website had me booking a mobile service for the SAME DAY! When Erik showed up he was cheerful and happy to tell me all about his process. All 12 knives came out unbelievably sharp, and one that had an ugly broken tip looks as good as new. Price was low too. Will definitely use Cove Blades mobile service again. Highly recommended!",
     rating: 5,
   },
 ];

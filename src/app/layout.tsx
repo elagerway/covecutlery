@@ -7,14 +7,14 @@ import { safeJsonLd } from '@/lib/schema'
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
 
 export const metadata: Metadata = {
-  title: 'Cove Cutlery | Professional Cutlery Sharpening in Vancouver',
+  title: 'Cove Blades | Professional Cutlery Sharpening in Vancouver',
   description: "Vancouver's premier cutlery sharpening service. Mobile service that comes to you, or use our 24/7 secure drop box. Serving the North Shore, Vancouver, Burnaby, and the Lower Mainland since 2020.",
-  keywords: 'cutlery sharpening Vancouver, cutlery sharpening North Shore, mobile cutlery sharpening, cutlery sharpening service, Cove Cutlery',
+  keywords: 'cutlery sharpening Vancouver, cutlery sharpening North Shore, mobile cutlery sharpening, cutlery sharpening service, Cove Blades',
   openGraph: {
-    title: 'Cove Cutlery | Professional Cutlery Sharpening in Vancouver',
+    title: 'Cove Blades | Professional Cutlery Sharpening in Vancouver',
     description: 'Mobile and drop-off cutlery sharpening serving the Lower Mainland. 30-day guarantee.',
-    url: 'https://covecutlery.ca',
-    siteName: 'Cove Cutlery',
+    url: 'https://coveblades.com',
+    siteName: 'Cove Blades',
     locale: 'en_CA',
     type: 'website',
     images: [{ url: '/og-default.png', width: 1200, height: 630 }],
@@ -22,7 +22,7 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
   },
-  metadataBase: new URL('https://covecutlery.ca'),
+  metadataBase: new URL('https://coveblades.com'),
   icons: {
     icon: '/logo-icon-512.png',
     apple: '/logo-icon-512.png',
@@ -55,11 +55,11 @@ export default function RootLayout({
             __html: safeJsonLd({
               '@context': 'https://schema.org',
               '@type': 'LocalBusiness',
-              name: 'Cove Cutlery',
+              name: 'Cove Blades',
               description: 'Professional cutlery sharpening service serving Vancouver and the Lower Mainland.',
-              url: 'https://covecutlery.ca',
-              telephone: '604 373 1500',
-              email: 'info@covecutlery.ca',
+              url: 'https://coveblades.com',
+              telephone: '604 210 8180',
+              email: 'info@coveblades.com',
               foundingDate: '2020',
               address: {
                 '@type': 'PostalAddress',
@@ -75,9 +75,9 @@ export default function RootLayout({
                 longitude: -123.0725,
               },
               sameAs: [
-                'https://www.instagram.com/covecutlery/',
-                'https://www.facebook.com/covecutlery',
-                'https://www.youtube.com/@covecutlery',
+                'https://www.instagram.com/coveblades/',
+                'https://www.facebook.com/coveblades',
+                'https://www.youtube.com/@coveblades',
               ],
               openingHoursSpecification: [
                 {

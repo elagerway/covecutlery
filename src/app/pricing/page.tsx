@@ -6,7 +6,7 @@ import Footer from "@/components/Footer";
 import { safeJsonLd, faqPageSchema } from "@/lib/schema";
 
 export const metadata: Metadata = {
-  title: "Cutlery Sharpening Prices Vancouver | Cove Cutlery",
+  title: "Cutlery Sharpening Prices Vancouver | Cove Blades",
   description:
     "Transparent cutlery sharpening pricing in Vancouver. $12/knife for standard blades. Mobile, drop-off, and mail-in options. 30-day edge guarantee included.",
   alternates: { canonical: '/pricing' },
@@ -277,12 +277,12 @@ export default function PricingPage() {
                 <ChevronRight size={18} />
               </Link>
               <a
-                href="tel:6043731500"
+                href="tel:6042108180"
                 className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-lg font-semibold text-base border-2 transition-all duration-200 hover:bg-yellow-900/20 active:scale-95"
                 style={{ borderColor: "#D4A017", color: "#D4A017" }}
               >
                 <Phone size={16} />
-                604 373 1500
+                604 210 8180
               </a>
             </div>
           </div>

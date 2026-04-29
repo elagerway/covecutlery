@@ -324,7 +324,7 @@ export default function ContactSection() {
           <div className="space-y-4">
             {/* Phone */}
             <a
-              href="tel:6043731500"
+              href="tel:6042108180"
               className="flex items-start gap-4 rounded-xl border p-5 transition-colors duration-200 hover:border-[#D4A017]/50 group"
               style={{ backgroundColor: "#161B22", borderColor: "#30363D" }}
             >
@@ -340,14 +340,14 @@ export default function ContactSection() {
                   Phone
                 </p>
                 <p className="font-semibold text-sm" style={{ color: "#FFFFFF" }}>
-                  604 373 1500
+                  604 210 8180
                 </p>
               </div>
             </a>
 
             {/* Email */}
             <a
-              href="mailto:info@covecutlery.ca"
+              href="mailto:info@coveblades.com"
               className="flex items-start gap-4 rounded-xl border p-5 transition-colors duration-200 hover:border-[#D4A017]/50 group"
               style={{ backgroundColor: "#161B22", borderColor: "#30363D" }}
             >
@@ -363,7 +363,7 @@ export default function ContactSection() {
                   Email
                 </p>
                 <p className="font-semibold text-sm" style={{ color: "#FFFFFF" }}>
-                  info@covecutlery.ca
+                  info@coveblades.com
                 </p>
               </div>
             </a>
@@ -461,7 +461,7 @@ export default function ContactSection() {
               </p>
               <div className="flex items-center gap-4">
                 <a
-                  href="https://www.instagram.com/covecutlery/"
+                  href="https://www.instagram.com/coveblades/"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center gap-2 text-sm font-medium transition-opacity hover:opacity-75"
@@ -472,7 +472,7 @@ export default function ContactSection() {
                   Instagram
                 </a>
                 <a
-                  href="https://www.facebook.com/covecutlery"
+                  href="https://www.facebook.com/coveblades"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center gap-2 text-sm font-medium transition-opacity hover:opacity-75"
@@ -483,7 +483,7 @@ export default function ContactSection() {
                   Facebook
                 </a>
                 <a
-                  href="https://www.youtube.com/@covecutlery"
+                  href="https://www.youtube.com/@coveblades"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center gap-2 text-sm font-medium transition-opacity hover:opacity-75"

@@ -9,6 +9,6 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ['/admin/', '/api/', '/auth/', '/booking/'],
       },
     ],
-    sitemap: 'https://covecutlery.ca/sitemap.xml',
+    sitemap: 'https://coveblades.com/sitemap.xml',
   }
 }

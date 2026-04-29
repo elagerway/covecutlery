@@ -67,7 +67,7 @@ export default function AdminNav({ email }: AdminNavProps) {
       <div className="px-5 py-5 border-b" style={{ borderColor: "#30363D" }}>
         <div className="flex items-center gap-2">
           <img src="/logo-icon-512.png" alt="" width={20} height={20} className="rounded" />
-          <span className="font-bold text-white text-sm">Cove Cutlery</span>
+          <span className="font-bold text-white text-sm">Cove Blades</span>
         </div>
         <div className="mt-1">
           <span className="text-xs px-1.5 py-0.5 rounded font-medium" style={{ backgroundColor: "#D4A01722", color: "#D4A017" }}>

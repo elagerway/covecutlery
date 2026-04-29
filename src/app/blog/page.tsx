@@ -5,7 +5,7 @@ import { getSupabase } from "@/lib/supabase";
 export const revalidate = 300;
 
 export const metadata: Metadata = {
-  title: "Blog | Cove Cutlery",
+  title: "Blog | Cove Blades",
   description: "Tips, techniques, and news from Vancouver's professional cutlery sharpening service.",
 };
 

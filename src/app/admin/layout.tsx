@@ -1,5 +1,5 @@
 export const metadata = {
-  title: "Admin — Cove Cutlery",
+  title: "Admin — Cove Blades",
   robots: "noindex, nofollow",
 };
 

@@ -3,8 +3,8 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy | Cove Cutlery",
-  description: "Privacy policy for Cove Cutlery — how we collect, use, and protect your personal information.",
+  title: "Privacy Policy | Cove Blades",
+  description: "Privacy policy for Cove Blades — how we collect, use, and protect your personal information.",
 };
 
 export default function PrivacyPage() {
@@ -68,7 +68,7 @@ export default function PrivacyPage() {
             <section>
               <h2 className="text-lg font-semibold text-white mb-3">6. Your Rights</h2>
               <p>You have the right to access, correct, or delete your personal information. To exercise these rights, contact us at{" "}
-                <a href="mailto:info@covecutlery.ca" className="text-[#D4A017] hover:underline">info@covecutlery.ca</a>.
+                <a href="mailto:info@coveblades.com" className="text-[#D4A017] hover:underline">info@coveblades.com</a>.
               </p>
             </section>
 
@@ -76,10 +76,10 @@ export default function PrivacyPage() {
               <h2 className="text-lg font-semibold text-white mb-3">7. Contact</h2>
               <p>For privacy-related questions, reach us at:</p>
               <p className="mt-2">
-                <strong className="text-white">Cove Cutlery</strong><br />
+                <strong className="text-white">Cove Blades</strong><br />
                 North Vancouver, BC<br />
-                <a href="mailto:info@covecutlery.ca" className="text-[#D4A017] hover:underline">info@covecutlery.ca</a><br />
-                <a href="tel:6043731500" className="text-[#D4A017] hover:underline">604 373 1500</a>
+                <a href="mailto:info@coveblades.com" className="text-[#D4A017] hover:underline">info@coveblades.com</a><br />
+                <a href="tel:6042108180" className="text-[#D4A017] hover:underline">604 210 8180</a>
               </p>
             </section>
 

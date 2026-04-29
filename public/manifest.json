@@ -1,6 +1,6 @@
 {
-  "name": "Cove Cutlery",
-  "short_name": "Cove Cutlery",
+  "name": "Cove Blades",
+  "short_name": "Cove Blades",
   "description": "Professional cutlery sharpening — invoices, customers, and bookings",
   "start_url": "/admin/invoices",
   "display": "standalone",

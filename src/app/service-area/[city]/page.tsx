@@ -37,9 +37,9 @@ export default async function CityPage({
   if (!city) notFound()
 
   const breadcrumbJsonLd = breadcrumbSchema([
-    { name: 'Home', url: 'https://covecutlery.ca' },
-    { name: 'Service Areas', url: 'https://covecutlery.ca/service-area' },
-    { name: city.name, url: `https://covecutlery.ca/service-area/${city.slug}` },
+    { name: 'Home', url: 'https://coveblades.com' },
+    { name: 'Service Areas', url: 'https://coveblades.com/service-area' },
+    { name: city.name, url: `https://coveblades.com/service-area/${city.slug}` },
   ])
 
   const faqJsonLd = faqPageSchema(city.faqs)
@@ -50,8 +50,8 @@ export default async function CityPage({
     name: `Knife Sharpening in ${city.name}`,
     provider: {
       '@type': 'LocalBusiness',
-      name: 'Cove Cutlery',
-      url: 'https://covecutlery.ca',
+      name: 'Cove Blades',
+      url: 'https://coveblades.com',
     },
     areaServed: {
       '@type': 'City',
@@ -250,12 +250,12 @@ export default async function CityPage({
                 <ChevronRight size={18} />
               </Link>
               <a
-                href="tel:6043731500"
+                href="tel:6042108180"
                 className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-lg font-semibold text-base border-2 transition-all duration-200 hover:bg-yellow-900/20 active:scale-95"
                 style={{ borderColor: '#D4A017', color: '#D4A017' }}
               >
                 <Phone size={16} />
-                604 373 1500
+                604 210 8180
               </a>
             </div>
 

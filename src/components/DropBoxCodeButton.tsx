@@ -3,8 +3,8 @@
 import { useState, useRef, useEffect } from "react";
 import { Phone, MessageSquare, Lock } from "lucide-react";
 
-const PHONE = "6043731500";
-const DISPLAY = "604 373 1500";
+const PHONE = "6042108180";
+const DISPLAY = "604 210 8180";
 
 export default function DropBoxCodeButton({ className }: { className?: string }) {
   const [open, setOpen] = useState(false);

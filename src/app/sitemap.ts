@@ -4,7 +4,7 @@ import { cities } from '@/data/cities'
 
 export const revalidate = 3600
 
-const BASE = 'https://covecutlery.ca'
+const BASE = 'https://coveblades.com'
 
 const STATIC_PAGES = [
   '/', '/about', '/pricing', '/mobile-service', '/drop-off',

@@ -5,9 +5,9 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
 export const metadata: Metadata = {
-  title: "About Cove Cutlery | Vancouver Cutlery Sharpening",
+  title: "About Cove Blades | Vancouver Cutlery Sharpening",
   description:
-    "Learn the story behind Cove Cutlery — Vancouver's mobile cutlery sharpening service. Professional wet-wheel sharpening since 2020, serving home cooks and restaurants alike.",
+    "Learn the story behind Cove Blades — Vancouver's mobile cutlery sharpening service. Professional wet-wheel sharpening since 2020, serving home cooks and restaurants alike.",
 };
 
 const values = [
@@ -63,7 +63,7 @@ export default function AboutPage() {
               className="text-4xl sm:text-5xl font-bold leading-tight tracking-tight mb-6"
               style={{ color: "#FFFFFF" }}
             >
-              About <span style={{ color: "#D4A017" }}>Cove Cutlery</span>
+              About <span style={{ color: "#D4A017" }}>Cove Blades</span>
             </h1>
             <p className="text-lg leading-relaxed" style={{ color: "#6B7280" }}>
               Vancouver-based cutlery sharpening with a mobile-first approach. We come to you so you never have to go out of your way for a sharp knife again.
@@ -79,13 +79,13 @@ export default function AboutPage() {
             </h2>
             <div className="flex flex-col gap-5 text-sm leading-relaxed" style={{ color: "#6B7280" }}>
               <p>
-                Cove Cutlery started in 2020 with a single wet-wheel sharpening setup and a belief that great cutlery sharpening should be easy to access — not something you have to plan your week around. What began as a weekend passion project grew quickly into a full mobile service covering the entire Metro Vancouver area and the Fraser Valley.
+                Cove Blades started in 2020 with a single wet-wheel sharpening setup and a belief that great cutlery sharpening should be easy to access — not something you have to plan your week around. What began as a weekend passion project grew quickly into a full mobile service covering the entire Metro Vancouver area and the Fraser Valley.
               </p>
               <p>
                 We built our business around one core idea: come to the customer. No storefront, no waiting in line, no guessing when your knives will be ready. Whether you're a home cook who wants their chef's knife feeling like new, a restaurant that needs a full knife roll done before service, or a market vendor who wants us set up on-site — we bring the full professional setup directly to you.
               </p>
               <p>
-                Since 2020 we've sharpened thousands of blades across Vancouver, North Shore, Burnaby, Surrey, Langley, and the Fraser Valley. We also run a YouTube channel — <strong className="text-white">@covecutlery</strong> — where we share sharpening techniques, knife care tips, and behind-the-scenes content. Check it out if you want to geek out on edges as much as we do.
+                Since 2020 we've sharpened thousands of blades across Vancouver, North Shore, Burnaby, Surrey, Langley, and the Fraser Valley. We also run a YouTube channel — <strong className="text-white">@coveblades</strong> — where we share sharpening techniques, knife care tips, and behind-the-scenes content. Check it out if you want to geek out on edges as much as we do.
               </p>
               <p>
                 We're 5-star rated on Google and proud of every review. Our 30-day edge guarantee isn't just a marketing line — it's a commitment we take seriously. If a blade we've sharpened doesn't hold its edge under normal use within 30 days, we'll re-sharpen it free of charge.
@@ -131,10 +131,10 @@ export default function AboutPage() {
                     Watch Us on YouTube
                   </h3>
                   <p className="text-sm mb-4" style={{ color: "#6B7280" }}>
-                    We share sharpening tutorials, knife reviews, and behind-the-scenes looks at how we work. Follow <strong className="text-white">@covecutlery</strong> for regular uploads.
+                    We share sharpening tutorials, knife reviews, and behind-the-scenes looks at how we work. Follow <strong className="text-white">@coveblades</strong> for regular uploads.
                   </p>
                   <a
-                    href="https://www.youtube.com/@covecutlery"
+                    href="https://www.youtube.com/@coveblades"
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg font-semibold text-sm transition-all duration-200 hover:brightness-110 active:scale-95"

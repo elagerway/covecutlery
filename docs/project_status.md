@@ -42,7 +42,7 @@ All pages and components built, deployed to Vercel.
 - [x] Admin create + edit post forms (auto-slug, draft/publish)
 - [x] Blog link in Navbar
 
-- [x] Supabase Auth redirect URLs configured (covecutlery.ca + www + localhost:3002)
+- [x] Supabase Auth redirect URLs configured (coveblades.com + www + localhost:3002)
 
 ---
 

@@ -82,7 +82,7 @@ export default function PublicInvoicePage() {
         <div className="text-center">
           <h1 className="text-2xl font-bold text-white mb-2">Invoice Not Found</h1>
           <p className="mb-6" style={{ color: "#6B7280" }}>This invoice link may be invalid or expired.</p>
-          <Link href="/" style={{ color: "#D4A017" }} className="hover:underline">Back to Cove Cutlery</Link>
+          <Link href="/" style={{ color: "#D4A017" }} className="hover:underline">Back to Cove Blades</Link>
         </div>
       </main>
     );
@@ -95,8 +95,8 @@ export default function PublicInvoicePage() {
       <div className="max-w-lg mx-auto">
         {/* Header */}
         <div className="flex flex-col items-center mb-8">
-          <img src="/logo-icon-512.png" alt="Cove Cutlery" width={48} height={48} className="rounded-lg mb-3" />
-          <p className="text-xl font-bold tracking-wide" style={{ color: "#D4A017" }}>COVE CUTLERY</p>
+          <img src="/logo-icon-512.png" alt="Cove Blades" width={48} height={48} className="rounded-lg mb-3" />
+          <p className="text-xl font-bold tracking-wide" style={{ color: "#D4A017" }}>COVE BLADES</p>
           <p className="text-sm mt-1" style={{ color: "#6B7280" }}>Mobile Knife Sharpening</p>
         </div>
 
@@ -204,7 +204,7 @@ export default function PublicInvoicePage() {
                     <div className="flex flex-col gap-2.5">
                       <div>
                         <p className="text-xs" style={{ color: "#6B7280" }}>Send to</p>
-                        <p className="text-sm font-medium text-white">pay@covecutlery.ca</p>
+                        <p className="text-sm font-medium text-white">pay@coveblades.com</p>
                       </div>
                       <div>
                         <p className="text-xs" style={{ color: "#6B7280" }}>Amount</p>
@@ -230,7 +230,7 @@ export default function PublicInvoicePage() {
         {/* Footer */}
         <div className="text-center mt-8">
           <p className="text-xs" style={{ color: "#6B7280" }}>
-            Cove Cutlery · <a href="https://covecutlery.ca" style={{ color: "#D4A017" }}>covecutlery.ca</a> · 604-373-1500
+            Cove Blades · <a href="https://coveblades.com" style={{ color: "#D4A017" }}>coveblades.com</a> · 604-210-8180
           </p>
         </div>
 
@@ -251,8 +251,8 @@ export default function PublicInvoicePage() {
       <div className="print-only" style={{ display: "none" }}>
         <div style={{ maxWidth: 560, margin: "0 auto", fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif", color: "#111" }}>
           <div style={{ textAlign: "center", marginBottom: 24 }}>
-            <img src="/logo-icon-512.png" alt="Cove Cutlery" width={40} height={40} style={{ borderRadius: 6, marginBottom: 8 }} />
-            <p style={{ fontSize: 20, fontWeight: 700, color: "#B8860B", letterSpacing: 0.5, margin: 0 }}>COVE CUTLERY</p>
+            <img src="/logo-icon-512.png" alt="Cove Blades" width={40} height={40} style={{ borderRadius: 6, marginBottom: 8 }} />
+            <p style={{ fontSize: 20, fontWeight: 700, color: "#B8860B", letterSpacing: 0.5, margin: 0 }}>COVE BLADES</p>
             <p style={{ fontSize: 13, color: "#666", margin: "4px 0 0" }}>Mobile Knife Sharpening</p>
           </div>
 
@@ -322,7 +322,7 @@ export default function PublicInvoicePage() {
           </div>
 
           <p style={{ textAlign: "center", fontSize: 12, color: "#888", marginTop: 24 }}>
-            Cove Cutlery · covecutlery.ca · 604-373-1500
+            Cove Blades · coveblades.com · 604-210-8180
           </p>
         </div>
       </div>

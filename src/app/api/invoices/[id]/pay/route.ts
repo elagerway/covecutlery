@@ -30,7 +30,7 @@ export async function POST(
     return NextResponse.json({ error: invoice.status === "paid" ? "Already paid" : "Invoice is not payable" }, { status: 400 });
   }
 
-  const origin = process.env.NODE_ENV === "development" ? (req.headers.get("origin") ?? "https://covecutlery.ca") : "https://covecutlery.ca";
+  const origin = process.env.NODE_ENV === "development" ? (req.headers.get("origin") ?? "https://coveblades.com") : "https://coveblades.com";
 
   const session = await getStripe().checkout.sessions.create({
     mode: "payment",

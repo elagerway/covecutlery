@@ -40,7 +40,7 @@ export default function AboutSection() {
             style={{ color: "#FFFFFF" }}
           >
             About{" "}
-            <span style={{ color: "#D4A017" }}>Cove Cutlery</span>
+            <span style={{ color: "#D4A017" }}>Cove Blades</span>
           </h2>
         </div>
 
@@ -52,7 +52,7 @@ export default function AboutSection() {
               className="text-base leading-relaxed"
               style={{ color: "#6B7280" }}
             >
-              Based on the North Shore of Vancouver, Cove Cutlery has been
+              Based on the North Shore of Vancouver, Cove Blades has been
               delivering professional cutlery sharpening since 2020. We use
               custom-built and Bucktool sharpening machines with{" "}
               <a href="https://airplaten.com" target="_blank" rel="noopener noreferrer" className="underline hover:text-white transition-colors" style={{ color: "#D4A017" }}>Airplaten</a>{" "}
@@ -74,7 +74,7 @@ export default function AboutSection() {
 
           {/* YouTube placeholder */}
           <a
-            href="https://www.youtube.com/@covecutlery"
+            href="https://www.youtube.com/@coveblades"
             target="_blank"
             rel="noopener noreferrer"
             className="group relative flex flex-col items-center justify-center rounded-xl border overflow-hidden transition-opacity duration-200 hover:opacity-90 active:scale-[0.99]"
@@ -85,7 +85,7 @@ export default function AboutSection() {
               background:
                 "linear-gradient(135deg, #161B22 0%, #1a1f2b 50%, #161B22 100%)",
             }}
-            aria-label="Watch Cove Cutlery on YouTube"
+            aria-label="Watch Cove Blades on YouTube"
           >
             {/* Play button circle */}
             <div
@@ -105,7 +105,7 @@ export default function AboutSection() {
               className="relative z-10 text-sm"
               style={{ color: "#6B7280" }}
             >
-              @covecutlery
+              @coveblades
             </p>
           </a>
         </div>

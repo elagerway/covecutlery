@@ -2,7 +2,7 @@ import { Clock, ExternalLink } from "lucide-react";
 import DropBoxCodeButton from "@/components/DropBoxCodeButton";
 
 const steps = [
-  "Text 604 373 1500 to receive your unique drop box code",
+  "Text 604 210 8180 to receive your unique drop box code",
   "Drop off your knives in the secure lock box",
   "We'll sharpen and notify you when ready for pickup",
   "Next-day service available",

@@ -7,15 +7,15 @@ import { cities } from '@/data/cities'
 import { safeJsonLd, breadcrumbSchema, faqPageSchema } from '@/lib/schema'
 
 export const metadata: Metadata = {
-  title: 'Knife Sharpening Service Areas | Metro Vancouver | Cove Cutlery',
+  title: 'Knife Sharpening Service Areas | Metro Vancouver | Cove Blades',
   description:
-    'Cove Cutlery provides mobile knife sharpening across Metro Vancouver. Serving North Vancouver, Vancouver, Burnaby, West Vancouver, and Coquitlam. Book online today.',
+    'Cove Blades provides mobile knife sharpening across Metro Vancouver. Serving North Vancouver, Vancouver, Burnaby, West Vancouver, and Coquitlam. Book online today.',
   alternates: { canonical: '/service-area' },
 }
 
 const hubFaqs = [
   {
-    question: 'What areas does Cove Cutlery serve for mobile knife sharpening?',
+    question: 'What areas does Cove Blades serve for mobile knife sharpening?',
     answer:
       'We serve the entire Metro Vancouver region including North Vancouver, Vancouver, Burnaby, West Vancouver, Coquitlam, Port Moody, and Port Coquitlam. Based in North Vancouver, we reach most Lower Mainland addresses within 35 minutes.',
   },
@@ -32,14 +32,14 @@ const hubFaqs = [
   {
     question: 'How do I book a mobile knife sharpening visit?',
     answer:
-      'Book online through our website or call 604-373-1500. Choose your preferred date and time, and we will confirm your appointment. We bring our full sharpening setup to your door.',
+      'Book online through our website or call 604-210-8180. Choose your preferred date and time, and we will confirm your appointment. We bring our full sharpening setup to your door.',
   },
 ]
 
 export default function ServiceAreaPage() {
   const breadcrumbJsonLd = breadcrumbSchema([
-    { name: 'Home', url: 'https://covecutlery.ca' },
-    { name: 'Service Areas', url: 'https://covecutlery.ca/service-area' },
+    { name: 'Home', url: 'https://coveblades.com' },
+    { name: 'Service Areas', url: 'https://coveblades.com/service-area' },
   ])
 
   const faqJsonLd = faqPageSchema(hubFaqs)
@@ -72,7 +72,7 @@ export default function ServiceAreaPage() {
               <span style={{ color: '#D4A017' }}>Metro Vancouver</span>
             </h1>
             <p className="text-lg max-w-xl mx-auto leading-relaxed" style={{ color: '#6B7280' }}>
-              Cove Cutlery provides mobile knife sharpening to homes, restaurants, and businesses
+              Cove Blades provides mobile knife sharpening to homes, restaurants, and businesses
               across Metro Vancouver. Based in North Vancouver, we serve the entire Lower Mainland
               within a 90 km radius.
             </p>
@@ -166,12 +166,12 @@ export default function ServiceAreaPage() {
                 <ChevronRight size={18} />
               </Link>
               <a
-                href="tel:6043731500"
+                href="tel:6042108180"
                 className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-lg font-semibold text-base border-2 transition-all duration-200 hover:bg-yellow-900/20 active:scale-95"
                 style={{ borderColor: '#D4A017', color: '#D4A017' }}
               >
                 <Phone size={16} />
-                604 373 1500
+                604 210 8180
               </a>
             </div>
           </div>

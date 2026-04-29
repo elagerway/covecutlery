@@ -1,13 +1,13 @@
 {
   "project": {
-    "name": "Cove Cutlery",
-    "description": "A modern, SEO-optimized cutlery sharpening service website for Cove Cutlery — a mobile and drop-off cutlery sharpening business serving Vancouver and the Lower Mainland since 2020. The site replaces covecutlery.com under a new brand name, retaining all existing service content, pricing, and contact information while providing a cleaner, faster, more conversion-focused experience.",
+    "name": "Cove Blades",
+    "description": "A modern, SEO-optimized cutlery sharpening service website for Cove Blades — a mobile and drop-off cutlery sharpening business serving Vancouver and the Lower Mainland since 2020. The site replaces coveblades.com under a new brand name, retaining all existing service content, pricing, and contact information while providing a cleaner, faster, more conversion-focused experience.",
     "type": "Web Application (Multi-page + PWA-ready)",
     "target_audience": "Home cooks, chefs, restaurants, and businesses in Metro Vancouver and Lower Mainland BC",
     "business_details": {
-      "brand": "Cove Cutlery",
-      "phone": "604 373 1500",
-      "email": "info@covecutlery.ca",
+      "brand": "Cove Blades",
+      "phone": "604 210 8180",
+      "email": "info@coveblades.com",
       "address": "4086 Brockton Crescent, North Vancouver, BC V7G 1E6",
       "hours": {
         "monday_friday": "Noon – 7:00pm",
@@ -15,9 +15,9 @@
         "dropbox": "24/7"
       },
       "social": {
-        "instagram": "https://www.instagram.com/covecutlery/",
-        "facebook": "https://www.facebook.com/covecutlery",
-        "youtube": "https://www.youtube.com/@covecutlery"
+        "instagram": "https://www.instagram.com/coveblades/",
+        "facebook": "https://www.facebook.com/coveblades",
+        "youtube": "https://www.youtube.com/@coveblades"
       },
       "google_review_url": "https://g.page/r/CbQWUOKYuKT0EBM/review",
       "google_maps_url": "https://goo.gl/maps/C5GSo2wYLX36tTnv7"
@@ -26,7 +26,7 @@
   "milestones": {
     "milestone_1": {
       "name": "MVP – Core Website",
-      "description": "Full single-page marketing site with all service, pricing, and contact information. Closely emulates covecutlery.com structure and content. Deployed on Vercel.",
+      "description": "Full single-page marketing site with all service, pricing, and contact information. Closely emulates coveblades.com structure and content. Deployed on Vercel.",
       "tech_stack": {
         "framework": "Next.js 14 (App Router)",
         "language": "TypeScript",
@@ -34,7 +34,7 @@
         "backend": "Supabase (contact/booking form submissions)",
         "deployment": "Vercel",
         "domains": {
-          "production": "covecutlery.com (or TBD)",
+          "production": "coveblades.com (or TBD)",
           "preview": "Vercel preview URLs"
         },
         "external_apis": [
@@ -95,7 +95,7 @@
         },
         {
           "name": "Dropbox Code Request",
-          "description": "Simple CTA that tel: links to 604 373 1500 with pre-filled message, or shows a modal with instructions"
+          "description": "Simple CTA that tel: links to 604 210 8180 with pre-filled message, or shows a modal with instructions"
         },
         {
           "name": "Mobile-Responsive Design",
@@ -111,7 +111,7 @@
         },
         {
           "name": "Instagram Feed Link",
-          "description": "Instagram grid teaser or link to @covecutlery account"
+          "description": "Instagram grid teaser or link to @coveblades account"
         }
       ],
       "subagent_jobs": [
@@ -149,11 +149,11 @@
     }
   },
   "design": {
-    "aesthetic": "Premium, dark, high-contrast. Similar to covecutlery.com — clean whitespace, professional typography, strong CTAs.",
+    "aesthetic": "Premium, dark, high-contrast. Similar to coveblades.com — clean whitespace, professional typography, strong CTAs.",
     "colors": {
       "primary": "#0D1117 (near-black background)",
-      "accent": "#D4A017 (gold/amber — matching Cove Cutlery logo)",
-      "secondary": "#1E90FF (teal/blue — matching pricing underlines on covecutlery.com)",
+      "accent": "#D4A017 (gold/amber — matching Cove Blades logo)",
+      "secondary": "#1E90FF (teal/blue — matching pricing underlines on coveblades.com)",
       "text": "#FFFFFF and #6B7280",
       "card_bg": "#161B22"
     },
@@ -200,14 +200,14 @@
       { "area": "Whistler, Squamish, Chilliwack & Rest of Lower Mainland", "minimum": 14 }
     ],
     "reviews": [
-      { "author": "Erin S.", "text": "Friendly and efficient. My knives were picked up, sharpened and returned within 22 hours. I highly recommend Cove Cutlery.", "rating": 5 },
+      { "author": "Erin S.", "text": "Friendly and efficient. My knives were picked up, sharpened and returned within 22 hours. I highly recommend Cove Blades.", "rating": 5 },
       { "author": "Brad W.", "text": "Dropped off a custom fillet knife and an old Bruks axe — both in dire need of blade repair and sharpening. They did an amazing job. Couldn't be more satisfied with the price and quality of the workmanship.", "rating": 5 },
       { "author": "David C.", "text": "They dropped by our place, picked up the knives and returned them sharp as promised, within a couple of days. Highly recommended. Will use again for sure.", "rating": 5 },
       { "author": "Steve M.", "text": "Excellent experience, beautifully sharpened and ready before promised! Will use and refer always!", "rating": 5 },
-      { "author": "Lana Joyce", "text": "It was so convenient that Cove Cutlery came to me, and returned all knives sharp enough to slice hair!", "rating": 5 },
+      { "author": "Lana Joyce", "text": "It was so convenient that Cove Blades came to me, and returned all knives sharp enough to slice hair!", "rating": 5 },
       { "author": "Keith Labrecque", "text": "Erik was able to bring my kitchen knives back like new sharpness, or maybe even better than brand new.", "rating": 5 },
       { "author": "Malae Blakeley", "text": "Excellent service, quick turnaround; don't have to go into Vancouver. A north shore gem!", "rating": 5 },
-      { "author": "Peter Teevan", "text": "Very happy with my first visit to Cove Cutlery! I felt nervous about the lock-box drop off but it worked perfectly.", "rating": 5 }
+      { "author": "Peter Teevan", "text": "Very happy with my first visit to Cove Blades! I felt nervous about the lock-box drop off but it worked perfectly.", "rating": 5 }
     ]
   },
   "supabase": {

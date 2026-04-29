@@ -6,7 +6,7 @@ import Footer from '@/components/Footer'
 import { safeJsonLd, breadcrumbSchema, faqPageSchema } from '@/lib/schema'
 
 export const metadata: Metadata = {
-  title: 'Restaurant Knife Sharpening Vancouver | Cove Cutlery',
+  title: 'Restaurant Knife Sharpening Vancouver | Cove Blades',
   description:
     'Scheduled mobile knife sharpening for Vancouver restaurants. Weekly or bi-weekly service, on-site sharpening, no kitchen downtime. Serving the Lower Mainland since 2020.',
   alternates: { canonical: '/restaurants' },
@@ -74,8 +74,8 @@ const faqs = [
 
 export default function RestaurantsPage() {
   const breadcrumbJsonLd = breadcrumbSchema([
-    { name: 'Home', url: 'https://covecutlery.ca' },
-    { name: 'Restaurant Service', url: 'https://covecutlery.ca/restaurants' },
+    { name: 'Home', url: 'https://coveblades.com' },
+    { name: 'Restaurant Service', url: 'https://coveblades.com/restaurants' },
   ])
 
   const faqJsonLd = faqPageSchema(faqs)
@@ -108,7 +108,7 @@ export default function RestaurantsPage() {
               <span style={{ color: '#D4A017' }}>Vancouver</span>
             </h1>
             <p className="text-lg max-w-xl mx-auto leading-relaxed" style={{ color: '#6B7280' }}>
-              Cove Cutlery offers scheduled mobile knife sharpening for Vancouver restaurants. We
+              Cove Blades offers scheduled mobile knife sharpening for Vancouver restaurants. We
               visit weekly or bi-weekly, sharpening your entire knife inventory on-site so your
               kitchen never misses a beat.
             </p>
@@ -120,7 +120,7 @@ export default function RestaurantsPage() {
           <div className="max-w-5xl mx-auto">
             <h2 className="text-2xl sm:text-3xl font-bold mb-10 text-center" style={{ color: '#FFFFFF' }}>
               Why Restaurants Choose{' '}
-              <span style={{ color: '#D4A017' }}>Cove Cutlery</span>
+              <span style={{ color: '#D4A017' }}>Cove Blades</span>
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               {benefits.map(benefit => (
@@ -164,7 +164,7 @@ export default function RestaurantsPage() {
                   step: '1',
                   title: 'Contact Us to Set Up a Schedule',
                   description:
-                    'Call 604-373-1500 or book through our website. We will discuss your knife inventory, volume, and preferred schedule to find the right fit.',
+                    'Call 604-210-8180 or book through our website. We will discuss your knife inventory, volume, and preferred schedule to find the right fit.',
                 },
                 {
                   step: '2',
@@ -255,12 +255,12 @@ export default function RestaurantsPage() {
                 <ChevronRight size={18} />
               </Link>
               <a
-                href="tel:6043731500"
+                href="tel:6042108180"
                 className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-lg font-semibold text-base border-2 transition-all duration-200 hover:bg-yellow-900/20 active:scale-95"
                 style={{ borderColor: '#D4A017', color: '#D4A017' }}
               >
                 <Phone size={16} />
-                604 373 1500
+                604 210 8180
               </a>
             </div>
             <div className="mt-6 flex justify-center gap-6">

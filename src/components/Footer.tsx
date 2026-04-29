@@ -78,17 +78,17 @@ const YouTubeIcon = () => (
 const socialLinks = [
   {
     label: "Instagram",
-    href: "https://www.instagram.com/covecutlery/",
+    href: "https://www.instagram.com/coveblades/",
     Icon: InstagramIcon,
   },
   {
     label: "Facebook",
-    href: "https://www.facebook.com/covecutlery",
+    href: "https://www.facebook.com/coveblades",
     Icon: FacebookIcon,
   },
   {
     label: "YouTube",
-    href: "https://www.youtube.com/@covecutlery",
+    href: "https://www.youtube.com/@coveblades",
     Icon: YouTubeIcon,
   },
 ];
@@ -108,14 +108,14 @@ export default function Footer() {
             <Link
               href="/"
               className="inline-flex items-center gap-2 group mb-4"
-              aria-label="Cove Cutlery Home"
+              aria-label="Cove Blades Home"
             >
               <Image src="/logo-icon-512.png" alt="" width={28} height={28} />
               <span
                 className="text-[#D4A017] group-hover:text-[#e8b82a] font-bold tracking-widest text-sm uppercase transition-colors duration-200"
                 style={{ letterSpacing: "0.18em" }}
               >
-                Cove Cutlery
+                Cove Blades
               </span>
             </Link>
             <p className="text-[#6B7280] text-sm leading-relaxed mt-3 max-w-xs">
@@ -185,31 +185,31 @@ export default function Footer() {
             <ul className="flex flex-col gap-4">
               <li>
                 <a
-                  href="tel:6043731500"
+                  href="tel:6042108180"
                   className="inline-flex items-center gap-2 text-[#6B7280] hover:text-[#D4A017] text-sm transition-colors duration-200 group"
                 >
                   <Phone
                     size={14}
                     className="text-[#D4A017] shrink-0 group-hover:scale-110 transition-transform duration-200"
                   />
-                  604 373 1500
+                  604 210 8180
                 </a>
               </li>
               <li>
                 <a
-                  href="mailto:info@covecutlery.ca"
+                  href="mailto:info@coveblades.com"
                   className="inline-flex items-center gap-2 text-[#6B7280] hover:text-[#D4A017] text-sm transition-colors duration-200 group"
                 >
                   <Mail
                     size={14}
                     className="text-[#D4A017] shrink-0 group-hover:scale-110 transition-transform duration-200"
                   />
-                  info@covecutlery.ca
+                  info@coveblades.com
                 </a>
               </li>
               <li className="pt-1">
                 <a
-                  href="https://www.instagram.com/covecutlery/"
+                  href="https://www.instagram.com/coveblades/"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-1.5 text-[#6B7280] hover:text-[#D4A017] text-sm transition-colors duration-200"
@@ -228,7 +228,7 @@ export default function Footer() {
       <div className="border-t border-[#30363D]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 flex flex-col sm:flex-row items-center justify-between gap-3">
           <p className="text-[#6B7280] text-xs">
-            &copy; {new Date().getFullYear()} Cove Cutlery. All rights reserved.
+            &copy; {new Date().getFullYear()} Cove Blades. All rights reserved.
           </p>
           <div className="flex items-center gap-4">
             <a href="/privacy" className="text-[#6B7280] text-xs hover:text-white transition-colors">Privacy Policy</a>

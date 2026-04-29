@@ -103,14 +103,14 @@ export default function MobileServiceSection() {
           </button>
 
           <a
-            href="https://www.instagram.com/covecutlery/"
+            href="https://www.instagram.com/coveblades/"
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-2 px-8 py-4 rounded-lg font-semibold text-base border-2 transition-all duration-200 hover:bg-white/5 active:scale-95"
             style={{ borderColor: "#30363D", color: "#FFFFFF" }}
           >
             <span style={{ color: "#D4A017" }}><InstagramIcon /></span>
-            Follow us @covecutlery
+            Follow us @coveblades
           </a>
         </div>
 

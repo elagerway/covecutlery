@@ -3,8 +3,8 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
 export const metadata: Metadata = {
-  title: "Terms of Service | Cove Cutlery",
-  description: "Terms of service for Cove Cutlery sharpening services.",
+  title: "Terms of Service | Cove Blades",
+  description: "Terms of service for Cove Blades sharpening services.",
 };
 
 export default function TermsPage() {
@@ -20,7 +20,7 @@ export default function TermsPage() {
 
             <section>
               <h2 className="text-lg font-semibold text-white mb-3">1. Services</h2>
-              <p>Cove Cutlery provides professional cutlery and blade sharpening services in Metro Vancouver and the Lower Mainland, BC. Services include mobile sharpening, drop-off, and special event sharpening.</p>
+              <p>Cove Blades provides professional cutlery and blade sharpening services in Metro Vancouver and the Lower Mainland, BC. Services include mobile sharpening, drop-off, and special event sharpening.</p>
             </section>
 
             <section>
@@ -59,10 +59,10 @@ export default function TermsPage() {
               <h2 className="text-lg font-semibold text-white mb-3">8. Contact</h2>
               <p>Questions about these terms? Reach us at:</p>
               <p className="mt-2">
-                <strong className="text-white">Cove Cutlery</strong><br />
+                <strong className="text-white">Cove Blades</strong><br />
                 North Vancouver, BC<br />
-                <a href="mailto:info@covecutlery.ca" className="text-[#D4A017] hover:underline">info@covecutlery.ca</a><br />
-                <a href="tel:6043731500" className="text-[#D4A017] hover:underline">604 373 1500</a>
+                <a href="mailto:info@coveblades.com" className="text-[#D4A017] hover:underline">info@coveblades.com</a><br />
+                <a href="tel:6042108180" className="text-[#D4A017] hover:underline">604 210 8180</a>
               </p>
             </section>
 

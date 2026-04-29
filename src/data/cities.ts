@@ -15,7 +15,7 @@ export const cities: readonly CityData[] = [
   {
     slug: 'north-vancouver',
     name: 'North Vancouver',
-    description: `Cove Cutlery is based right here in North Vancouver, making us the fastest knife sharpening option on the North Shore. Our workshop is located at 4086 Brockton Crescent, where we offer both mobile service and a 24/7 secure drop-off box. Whether you are a home cook in Lynn Valley or a chef at a Lonsdale Quay restaurant, we can have your knives razor-sharp and back in your hands within 24 hours for drop-off orders.
+    description: `Cove Blades is based right here in North Vancouver, making us the fastest knife sharpening option on the North Shore. Our workshop is located at 4086 Brockton Crescent, where we offer both mobile service and a 24/7 secure drop-off box. Whether you are a home cook in Lynn Valley or a chef at a Lonsdale Quay restaurant, we can have your knives razor-sharp and back in your hands within 24 hours for drop-off orders.
 
 North Vancouver is home to some of the Lower Mainland's finest dining establishments and most passionate home cooks. With over 120 restaurants on Lonsdale alone, the demand for professional knife sharpening has never been higher. Since 2020, we have sharpened over 15,000 knives for North Shore residents and businesses. Our mobile service covers every corner of the City and District of North Vancouver, from Deep Cove to Capilano and everywhere in between.
 
@@ -28,7 +28,7 @@ Professional sharpening extends the life of your knives by years compared to at-
     driveTime: 'Same-day — we are based here',
     faqs: [
       {
-        question: 'Where is the Cove Cutlery drop-off box in North Vancouver?',
+        question: 'Where is the Cove Blades drop-off box in North Vancouver?',
         answer: 'Our 24/7 secure drop-off box is located at 4086 Brockton Crescent in North Vancouver. Simply place your knives in the box at any time, and we will sharpen and return them within 24–48 hours. No appointment needed.',
       },
       {
@@ -44,13 +44,13 @@ Professional sharpening extends the life of your knives by years compared to at-
         answer: 'Standard kitchen knives are $12 each. Japanese single-bevel knives, ceramic knives, and cleavers are $18. Every sharpening includes our 30-day edge guarantee at no extra charge.',
       },
     ],
-    metaTitle: 'Knife Sharpening North Vancouver | Same-Day Service | Cove Cutlery',
+    metaTitle: 'Knife Sharpening North Vancouver | Same-Day Service | Cove Blades',
     metaDescription: 'Professional knife sharpening in North Vancouver. Same-day drop-off turnaround, mobile service, and 24/7 secure drop box. $12/knife with 30-day guarantee. Based on the North Shore since 2020.',
   },
   {
     slug: 'vancouver',
     name: 'Vancouver',
-    description: `Cove Cutlery brings professional mobile knife sharpening directly to homes and restaurants across Vancouver. Based just over the Lions Gate Bridge in North Vancouver, we reach most Vancouver neighbourhoods in under 30 minutes. From Kitsilano kitchens to Gastown restaurant lines, we sharpen every type of blade on-site so you never have to pack up your knives or wait days for mail-in service.
+    description: `Cove Blades brings professional mobile knife sharpening directly to homes and restaurants across Vancouver. Based just over the Lions Gate Bridge in North Vancouver, we reach most Vancouver neighbourhoods in under 30 minutes. From Kitsilano kitchens to Gastown restaurant lines, we sharpen every type of blade on-site so you never have to pack up your knives or wait days for mail-in service.
 
 Vancouver is Canada's culinary capital, home to over 4,000 restaurants and a food culture that prizes quality ingredients and precise technique. A sharp knife is the foundation of every great kitchen, yet most home cooks and even some professional kitchens let their blades go dull far longer than they should. Industry data shows the average kitchen knife loses its working edge within 2–3 months of regular use. Our mobile service eliminates the friction: we come to you, sharpen your knives on-site in 15–30 minutes, and you are back to cooking immediately.
 
@@ -80,13 +80,13 @@ We use a combination of professional-grade belt systems and Japanese waterstones
         answer: 'Absolutely. We specialize in Japanese single-bevel knives including yanagiba, deba, and usuba. We match the original factory angle using Japanese waterstones rather than forcing a Western double-bevel grind. Japanese knives are $18 each.',
       },
     ],
-    metaTitle: 'Knife Sharpening Vancouver | Mobile Service | Cove Cutlery',
+    metaTitle: 'Knife Sharpening Vancouver | Mobile Service | Cove Blades',
     metaDescription: 'Professional mobile knife sharpening in Vancouver. We come to your home or restaurant. $12/knife, 30-day guarantee. Japanese knife specialists. Book online today.',
   },
   {
     slug: 'burnaby',
     name: 'Burnaby',
-    description: `Cove Cutlery provides professional mobile knife sharpening across Burnaby, from Metrotown to Burnaby Heights and everywhere in between. Located in neighbouring North Vancouver, we reach most Burnaby addresses in 20–25 minutes, making us one of the fastest knife sharpening options available to Burnaby residents and businesses.
+    description: `Cove Blades provides professional mobile knife sharpening across Burnaby, from Metrotown to Burnaby Heights and everywhere in between. Located in neighbouring North Vancouver, we reach most Burnaby addresses in 20–25 minutes, making us one of the fastest knife sharpening options available to Burnaby residents and businesses.
 
 Burnaby is home to over 250,000 residents and a thriving food scene that spans everything from family-run dim sum houses on Hastings to upscale dining near Brentwood. With that density comes serious demand for sharp kitchen tools. Whether you are meal-prepping for the week in your Edmonds townhouse or running a high-volume commercial kitchen near Boundary Road, dull knives cost you time, safety, and food quality. A professionally sharpened knife cuts prep time by up to 30% and reduces the risk of slipping injuries that happen when you apply excess force to compensate for a dull edge.
 
@@ -100,7 +100,7 @@ Our mobile service is simple: book online, and we arrive at your door with our f
     faqs: [
       {
         question: 'How do I book knife sharpening in Burnaby?',
-        answer: 'Book online through our website or call 604-373-1500. Choose a date and time that works for you, and we will drive to your Burnaby address with our full mobile sharpening setup. The whole process takes about 20 minutes for a typical home collection.',
+        answer: 'Book online through our website or call 604-210-8180. Choose a date and time that works for you, and we will drive to your Burnaby address with our full mobile sharpening setup. The whole process takes about 20 minutes for a typical home collection.',
       },
       {
         question: 'What is the mobile sharpening minimum for Burnaby?',
@@ -115,13 +115,13 @@ Our mobile service is simple: book online, and we arrive at your door with our f
         answer: 'Yes. We provide scheduled weekly and bi-weekly mobile sharpening for commercial kitchens across Burnaby. Consistent professional sharpening keeps your line running smoothly and reduces blade replacement costs by extending knife life.',
       },
     ],
-    metaTitle: 'Knife Sharpening Burnaby | Mobile Service | Cove Cutlery',
+    metaTitle: 'Knife Sharpening Burnaby | Mobile Service | Cove Blades',
     metaDescription: 'Professional mobile knife sharpening in Burnaby. We come to your home or restaurant in 20–25 minutes. $12/knife with 30-day edge guarantee. Book online today.',
   },
   {
     slug: 'west-vancouver',
     name: 'West Vancouver',
-    description: `Cove Cutlery serves West Vancouver with professional mobile knife sharpening, reaching Ambleside, Dundarave, and British Properties in as little as 15 minutes from our North Vancouver base. As your nearest professional sharpening service, we offer the fastest turnaround on the North Shore — with same-day availability for drop-off orders and mobile appointments typically within 1–2 business days.
+    description: `Cove Blades serves West Vancouver with professional mobile knife sharpening, reaching Ambleside, Dundarave, and British Properties in as little as 15 minutes from our North Vancouver base. As your nearest professional sharpening service, we offer the fastest turnaround on the North Shore — with same-day availability for drop-off orders and mobile appointments typically within 1–2 business days.
 
 West Vancouver is known for its discerning residents who invest in quality kitchen equipment. High-end Japanese knives from makers like Shun, Global, and Miyabi are common in West Vancouver kitchens, and these blades deserve expert care. Pull-through sharpeners and electric grinders remove too much metal and can ruin the precise edge geometry that makes Japanese knives special. Our technicians use Japanese waterstones and precision belt systems to restore each blade to its factory angle, preserving the integrity and longevity of your investment.
 
@@ -150,13 +150,13 @@ The difference between a dull knife and a professionally sharpened one is immedi
         answer: 'Yes. Our 24/7 secure drop-off box at 4086 Brockton Crescent in North Vancouver is a quick 10–15 minute drive from West Vancouver. No minimum order for drop-off, with 24–48 hour turnaround.',
       },
     ],
-    metaTitle: 'Knife Sharpening West Vancouver | 15-Min Away | Cove Cutlery',
+    metaTitle: 'Knife Sharpening West Vancouver | 15-Min Away | Cove Blades',
     metaDescription: 'Professional knife sharpening in West Vancouver. Japanese knife specialists just 15 minutes away. Mobile service, 24/7 drop-off, $12/knife with 30-day guarantee.',
   },
   {
     slug: 'coquitlam',
     name: 'Coquitlam',
-    description: `Cove Cutlery provides professional mobile knife sharpening to Coquitlam, Port Moody, and Port Coquitlam — the entire Tri-Cities area. From our North Vancouver base, we reach most Coquitlam addresses in 30–35 minutes via the Second Narrows Bridge, bringing our full sharpening setup directly to your kitchen.
+    description: `Cove Blades provides professional mobile knife sharpening to Coquitlam, Port Moody, and Port Coquitlam — the entire Tri-Cities area. From our North Vancouver base, we reach most Coquitlam addresses in 30–35 minutes via the Second Narrows Bridge, bringing our full sharpening setup directly to your kitchen.
 
 The Tri-Cities is one of Metro Vancouver's fastest-growing regions, with Coquitlam alone home to over 150,000 residents. As the community has grown, so has its food scene — from the diverse restaurant offerings at Coquitlam Centre to the family-owned eateries along Austin Avenue and the growing culinary strip in Port Moody's Brewers Row. Sharp knives are essential whether you are cooking for a family of four or running a commercial kitchen serving hundreds of covers per night.
 
@@ -185,7 +185,7 @@ Most home cooks do not realize how dull their knives actually are until they use
         answer: 'You can use our 24/7 drop-off box in North Vancouver (about 30 minutes away), or book a mobile visit for the convenience of at-home service. We do not currently offer a mail-in service for local customers as mobile and drop-off are faster options.',
       },
     ],
-    metaTitle: 'Knife Sharpening Coquitlam & Tri-Cities | Cove Cutlery',
+    metaTitle: 'Knife Sharpening Coquitlam & Tri-Cities | Cove Blades',
     metaDescription: 'Professional mobile knife sharpening in Coquitlam, Port Moody & Port Coquitlam. $12/knife with 30-day guarantee. We come to you. Book online today.',
   },
 ]
