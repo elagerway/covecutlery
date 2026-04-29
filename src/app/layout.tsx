@@ -78,6 +78,7 @@ export default function RootLayout({
                 'https://www.instagram.com/coveblades/',
                 'https://www.facebook.com/coveblades',
                 'https://www.youtube.com/@coveblades',
+                'https://www.google.com/search?q=Cove+Blades+-+Knife+Sharpening&stick=H4sIAAAAAAAA_-NgU1I1qDA1sTAzTzJOSzEyTDYzN06xMqhIM0k0SbKwtEg1MjUwNEsyWcQq55xflqrglJOYklqsoKvgnZeZlqoQnJFYVJCal5mXDgBtJBstSgAAAA',
               ],
               openingHoursSpecification: [
                 {

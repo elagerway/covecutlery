@@ -1,5 +1,13 @@
 # Changelog
 
+## [2.5.1] — 2026-04-29 — Wire existing Google Business Profile into entity graph
+
+### Added
+- **Google Business Profile URL added to LocalBusiness `sameAs`** in `src/app/layout.tsx`. Cove Blades' GBP already exists; without `sameAs` linkage Google has to infer the website-to-entity match from address/phone/name signals alone. With the explicit reference, entity disambiguation becomes deterministic
+- **`public/llms.txt`** picks up the same GBP URL under contact references so AI crawlers see the listing alongside socials
+
+The URL form is the Google Search knowledge-panel anchor (`/search?q=...&stick=...`) since that is what the user had on hand. The `stick` parameter is a stable entity reference that Google's parsers recognize for `sameAs`. If a cleaner `https://maps.google.com/?cid=...` form turns up later, it's a one-line swap.
+
 ## [2.5.0] — 2026-04-29 — Validated address on training intake + form audit
 
 ### Added
