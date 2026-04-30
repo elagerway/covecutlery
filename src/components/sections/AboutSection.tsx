@@ -38,7 +38,7 @@ export default function AboutSection() {
         </div>
 
         {/* Two-column: text + YouTube */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-stretch mb-14">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center mb-14">
           {/* Text */}
           <div>
             <p
@@ -65,23 +65,26 @@ export default function AboutSection() {
             </p>
           </div>
 
-          {/* YouTube — embedded video player */}
-          <div
-            className="relative w-full overflow-hidden rounded-xl border"
-            style={{
-              backgroundColor: "#000000",
-              borderColor: "#30363D",
-              aspectRatio: "16 / 9",
-            }}
-          >
-            <iframe
-              src="https://www.youtube-nocookie.com/embed/s6PMhZmC2Qk?rel=0&modestbranding=1"
-              title="Cove Blades — knife sharpening on YouTube"
-              loading="lazy"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-              allowFullScreen
-              className="absolute inset-0 w-full h-full border-0"
-            />
+          {/* YouTube — embedded vertical video (Short), portrait 9:16 to match content */}
+          <div className="flex justify-center lg:justify-start">
+            <div
+              className="relative w-full overflow-hidden rounded-xl border"
+              style={{
+                backgroundColor: "#000000",
+                borderColor: "#30363D",
+                aspectRatio: "9 / 16",
+                maxWidth: "320px",
+              }}
+            >
+              <iframe
+                src="https://www.youtube-nocookie.com/embed/s6PMhZmC2Qk?rel=0&modestbranding=1"
+                title="Cove Blades — knife sharpening on YouTube"
+                loading="lazy"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowFullScreen
+                className="absolute inset-0 w-full h-full border-0"
+              />
+            </div>
           </div>
         </div>
 
