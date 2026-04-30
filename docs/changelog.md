@@ -12,8 +12,16 @@
 ### Changed
 - **`lib/instagram.ts` `getInstagramToken()`** — now reads from `app_credentials` first, falls back to `INSTAGRAM_ACCESS_TOKEN` env var. The env-var path covers the seed window (before the first cron run writes the row) and any Supabase outage
 
-### Migration application pending
-- The `app_credentials` migration ships in the repo but isn't yet applied to the live database (Supabase PAT rotated mid-session). Either run `supabase db push` against the project once the CLI is logged into the right account, or apply via the Management API with a fresh PAT. Until then, the cron runs and gracefully fails at the Supabase write step — the IG feed continues to work via the env-var fallback
+### Verified end-to-end (2026-04-30)
+- Migration applied to live DB; `app_credentials` table created with `service_role_all` RLS policy
+- Initial `instagram_access_token` row seeded with `2026-06-28T22:30:00Z` expiry
+- Production cron route hit successfully: `{ refreshed: false, reason: "expires in 59.2 days — no refresh needed" }`
+- Vercel Cron registered (visible in dashboard)
+- First active refresh expected on or near `2026-06-14` (14 days before token expiry)
+
+### Also (2026-04-30)
+- Supabase project renamed in the dashboard from "Cove Cutlery" → "Cove Blades" via Management API (`PATCH /v1/projects/{ref}`)
+- Initial deploy of this slice failed because `CRON_SECRET` had a trailing newline from `openssl rand -hex 32` output capture; fixed by re-adding via `printf "%s"` (no `\n`) instead of `echo`
 
 ## [2.6.3] — 2026-04-29 — SMS infra now on the new (604-210-8180) number
 

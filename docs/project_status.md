@@ -60,9 +60,23 @@ Site fully rebranded and live at the new domain.
 
 ---
 
-## Time-sensitive follow-ups
+## Milestone 8 — Auto-rotating Instagram token ✅ Complete
 
-- **2026-06-28** — Instagram long-lived access token expires. Refresh via `/oauth/access_token?grant_type=fb_exchange_token` using `INSTAGRAM_APP_SECRET` (already in .env / Vercel env), update `INSTAGRAM_ACCESS_TOKEN`. Or build a refresh button in admin before then.
+Set-and-forget rotation of the Instagram Graph API long-lived token. No more manual refresh ceremony every 60 days.
+
+- [x] `app_credentials` Supabase table (service-role-only RLS) for runtime-mutable secrets
+- [x] `lib/credentials.ts` — `getCredential` / `setCredential` helpers
+- [x] `lib/instagram.ts` reads token from Supabase first, falls back to env
+- [x] `/api/cron/refresh-instagram-token` — `CRON_SECRET`-gated, refreshes when expiry < 14 days away
+- [x] `vercel.json` cron schedule: `0 9 * * 1` (every Monday 09:00 UTC)
+- [x] Initial token row seeded with `2026-06-28T22:30:00Z` expiry
+- [x] First active refresh expected ~2026-06-14 (14 days before expiry)
+- [x] Verified end-to-end on production: cron route returns clean "expires in 59.2 days — no refresh needed" JSON
+
+---
+
+## Active follow-ups
+
 - **When ready** — Retire `covecutlery.ca`: 301 from apex/www to `coveblades.com`, remove from Vercel project domains, optionally drop the domain.
 
 ---

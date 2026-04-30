@@ -251,12 +251,28 @@ PostTable (client) → DELETE/PATCH /api/admin/posts/[id] → requireAdmin() →
 | `POSTMARK_API_KEY` | `/api/admin/bookings/[id]/receipt` — transactional email receipts |
 | `MAGPIPE_API_KEY` | `/api/admin/bookings/[id]/receipt` — SMS receipts via Magpipe |
 | `MAGPIPE_SMS_FROM` | `/api/admin/bookings/[id]/receipt` — sender number (`+16042108180`) |
+| `INSTAGRAM_USER_ID` | `lib/instagram.ts` — IG Business account ID for Graph API |
+| `INSTAGRAM_ACCESS_TOKEN` | `lib/instagram.ts` — env-var fallback for the IG token (canonical lives in Supabase `app_credentials`) |
+| `INSTAGRAM_APP_ID` | `/api/cron/refresh-instagram-token` — Meta app id for token exchange |
+| `INSTAGRAM_APP_SECRET` | `/api/cron/refresh-instagram-token` — Meta app secret for token exchange |
+| `CRON_SECRET` | `/api/cron/refresh-instagram-token` — gates the cron route; Vercel auto-attaches as `Authorization: Bearer` |
+| `SUPABASE_ACCESS_TOKEN` | Local-only PAT for Supabase Management API (migrations, auth config); not deployed to Vercel |
 
 ## Database
 
-**Supabase project:** `kvatxuhjiinjpvsyably`
+**Supabase project:** `kvatxuhjiinjpvsyably` (named **Cove Blades** in the dashboard)
 
 ### Tables
+
+**`app_credentials`**
+| Column | Type | Notes |
+|--------|------|-------|
+| name | text | Primary key (e.g. `instagram_access_token`) |
+| value | text | Required — the actual credential |
+| expires_at | timestamptz | Nullable; used by the rotation cron to decide whether to refresh |
+| updated_at | timestamptz | Auto-set on upsert |
+
+Service-role-only access (RLS policy `service_role_all`). Used for credentials that need runtime mutation without a redeploy — primarily the Instagram Graph API long-lived token, rotated by the weekly cron at `/api/cron/refresh-instagram-token`.
 
 **`contact_submissions`**
 | Column | Type | Notes |
@@ -380,19 +396,31 @@ RLS: admin full access only.
 
 ## Deployment
 
-- **Production URL:** https://coveblades.com (DNS flip pending; apex still on SiteGround NS)
+- **Production URL:** https://coveblades.com (live; DNS flipped 2026-04-30)
 - **Staging URL:** https://staging.coveblades.com (live; serves the same Vercel deployment as production)
 - **Vercel URL:** https://covecutlery.vercel.app
 - **GitHub repo:** https://github.com/elagerway/covecutlery
+- **Supabase project:** `kvatxuhjiinjpvsyably` (named "Cove Blades" in the dashboard)
 - Auto-deploy on push to `main`
+- Legacy domain `covecutlery.ca` continues to serve in parallel (separate A record at `216.150.1.1`); retire when ready
 
 **Supabase Auth Redirect URLs** (configured in Supabase Dashboard → Authentication → URL Configuration):
 - `http://localhost:3002/auth/callback` (dev)
 - `https://coveblades.com/auth/callback`, `https://www.coveblades.com/auth/callback` (prod)
 - `https://staging.coveblades.com/auth/callback` (staging)
-- `https://covecutlery.ca/auth/callback`, `https://www.covecutlery.ca/auth/callback` (legacy — kept until prod DNS flip)
+- `https://covecutlery.ca/auth/callback`, `https://www.covecutlery.ca/auth/callback` (legacy — kept until covecutlery.ca is retired)
 
 Note: dev server runs on port **3002**. Never use port 3000.
+
+## Cron Jobs
+
+Vercel Cron registered via `vercel.json`:
+
+| Path | Schedule | Purpose |
+|------|----------|---------|
+| `/api/cron/refresh-instagram-token` | `0 9 * * 1` (Mondays 09:00 UTC) | Auto-rotates the Instagram Graph API long-lived token (~60-day expiry) when within 14 days of expiry. Reads from `app_credentials.instagram_access_token`, calls Meta's `oauth/access_token?grant_type=fb_exchange_token`, writes the new 60-day token + new `expires_at` back to Supabase. Returns no-op JSON when not yet due. |
+
+Cron auth: Vercel auto-attaches `Authorization: Bearer ${CRON_SECRET}` to cron invocations. The route returns 401 to anything else, so manual triggers require the secret. Failures are logged via `console.error` and surfaced in Vercel logs.
 
 ## Known Gotchas
 
