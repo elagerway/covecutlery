@@ -45,7 +45,7 @@ export default function AboutSection() {
         </div>
 
         {/* Two-column: text + YouTube */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center mb-14">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-stretch mb-14">
           {/* Text */}
           <div>
             <p
@@ -72,26 +72,26 @@ export default function AboutSection() {
             </p>
           </div>
 
-          {/* YouTube — live video thumbnail */}
+          {/* YouTube — live video thumbnail (fills the column, zoomed for tight crop) */}
           <a
             href="https://www.youtube.com/watch?v=s6PMhZmC2Qk"
             target="_blank"
             rel="noopener noreferrer"
-            className="group relative block rounded-xl border overflow-hidden transition-opacity duration-200 hover:opacity-95 active:scale-[0.99]"
+            className="group relative block rounded-xl border overflow-hidden transition-opacity duration-200 hover:opacity-95 active:scale-[0.99] min-h-[280px] lg:min-h-full"
             style={{
               backgroundColor: "#161B22",
               borderColor: "#30363D",
-              aspectRatio: "16 / 9",
             }}
             aria-label="Watch Cove Blades on YouTube"
           >
-            {/* Video thumbnail */}
+            {/* Video thumbnail — scaled 1.18x to crop YouTube's letterboxing and fill the frame */}
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src="https://img.youtube.com/vi/s6PMhZmC2Qk/maxresdefault.jpg"
               alt="Watch Cove Blades on YouTube"
               loading="lazy"
-              className="absolute inset-0 w-full h-full object-cover"
+              className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+              style={{ transform: "scale(1.18)", objectPosition: "center" }}
             />
 
             {/* Dark gradient overlay (for text legibility) */}
