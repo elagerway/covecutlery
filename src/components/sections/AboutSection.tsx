@@ -1,12 +1,5 @@
 import { Wrench, Leaf, ShieldCheck } from "lucide-react";
 
-const YouTubeIcon = ({ className }: { className?: string }) => (
-  <svg className={className} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-    <path d="M22.54 6.42a2.78 2.78 0 0 0-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46A2.78 2.78 0 0 0 1.46 6.42 29 29 0 0 0 1 12a29 29 0 0 0 .46 5.58 2.78 2.78 0 0 0 1.95 1.96C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 0 0 1.95-1.96A29 29 0 0 0 23 12a29 29 0 0 0-.46-5.58z" />
-    <polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02" fill="currentColor" stroke="none" />
-  </svg>
-);
-
 const values = [
   {
     icon: Wrench,
@@ -72,62 +65,24 @@ export default function AboutSection() {
             </p>
           </div>
 
-          {/* YouTube — live video thumbnail (fills the column, zoomed for tight crop) */}
-          <a
-            href="https://www.youtube.com/watch?v=s6PMhZmC2Qk"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="group relative block rounded-xl border overflow-hidden transition-opacity duration-200 hover:opacity-95 active:scale-[0.99] min-h-[280px] lg:min-h-full"
+          {/* YouTube — embedded video player */}
+          <div
+            className="relative w-full overflow-hidden rounded-xl border"
             style={{
-              backgroundColor: "#161B22",
+              backgroundColor: "#000000",
               borderColor: "#30363D",
+              aspectRatio: "16 / 9",
             }}
-            aria-label="Watch Cove Blades on YouTube"
           >
-            {/* Video thumbnail — scaled 1.18x to crop YouTube's letterboxing and fill the frame */}
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src="https://img.youtube.com/vi/s6PMhZmC2Qk/maxresdefault.jpg"
-              alt="Watch Cove Blades on YouTube"
+            <iframe
+              src="https://www.youtube-nocookie.com/embed/s6PMhZmC2Qk?rel=0&modestbranding=1"
+              title="Cove Blades — knife sharpening on YouTube"
               loading="lazy"
-              className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-              style={{ transform: "scale(1.18)", objectPosition: "center" }}
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+              allowFullScreen
+              className="absolute inset-0 w-full h-full border-0"
             />
-
-            {/* Dark gradient overlay (for text legibility) */}
-            <div
-              className="absolute inset-0"
-              style={{
-                background:
-                  "linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.25) 45%, rgba(0,0,0,0.15) 100%)",
-              }}
-            />
-
-            {/* Play button circle */}
-            <div
-              className="absolute inset-0 flex items-center justify-center"
-            >
-              <div
-                className="w-16 h-16 rounded-full flex items-center justify-center transition-transform duration-200 group-hover:scale-110 shadow-lg"
-                style={{ backgroundColor: "#FF0000" }}
-              >
-                <YouTubeIcon className="w-8 h-8 text-white" />
-              </div>
-            </div>
-
-            {/* Caption */}
-            <div className="absolute left-0 right-0 bottom-0 px-5 pb-5">
-              <p
-                className="text-base font-semibold mb-0.5"
-                style={{ color: "#FFFFFF" }}
-              >
-                Watch us on YouTube
-              </p>
-              <p className="text-sm" style={{ color: "#D1D5DB" }}>
-                @coveblades
-              </p>
-            </div>
-          </a>
+          </div>
         </div>
 
         {/* Values row */}
