@@ -54,3 +54,6 @@ memory/
 promaster-reference.png
 side-promaster.jpeg
 supabase/.temp/
+
+# stray screenshots from playwright debugging at project root
+/*.png

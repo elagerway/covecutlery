@@ -1,6 +1,73 @@
 # Project Status
 
-**Last updated:** 2026-04-10
+**Last updated:** 2026-04-30
+
+## Milestone 4 — Brand rebrand: Cove Cutlery → Cove Blades ✅ Complete
+
+Site fully rebranded and live at the new domain.
+
+- [x] Brand sweep across UI, metadata, JSON-LD, OpenGraph, manifest, llms.txt, project_spec, active docs (~200 string replacements across 41 files)
+- [x] Production domain switched: `covecutlery.ca` → `coveblades.com`
+- [x] DNS flipped (apex A → 216.150.1.1, www CNAME → vercel-dns); SSL issued by Let's Encrypt; cert valid through 2026-07-28
+- [x] Vercel project domains: `coveblades.com` apex (canonical) + `www.coveblades.com` (308 → apex) + `staging.coveblades.com` (preview)
+- [x] Email: `info@coveblades.com` and `pay@coveblades.com` via Postmark (verified)
+- [x] SMS: `+16042108180` provisioned in Magpipe; `MAGPIPE_SMS_FROM` + `ADMIN_PHONE` aligned
+- [x] Display phone changed to `604-210-8180` everywhere
+- [x] Social handles → `@coveblades` (Instagram, Facebook, YouTube)
+- [x] Google Business Profile linked into LocalBusiness `sameAs`
+- [x] Supabase Auth redirect URLs updated for new domain (kept legacy for transition)
+- [x] Vercel project + GitHub repo intentionally NOT renamed (still `covecutlery` internally)
+- [x] Legacy `covecutlery.ca` continues to serve — retire later
+
+## Milestone 5 — Citywide SEO/GEO expansion ✅ Complete
+
+17-city Lower Mainland coverage with unique local content per page.
+
+- [x] Phases 1–6 (commits 519c0f0 → 2b5ed26)
+- [x] Service radius bumped 90 km → 105 km (covers Chilliwack)
+- [x] All 17 cities flagged mobile-only outside North Vancouver via `dropOffEmphasis: false`
+- [x] Service-area hub regrouped by sub-region (North Shore, Vancouver, Burnaby & New West, Tri-Cities, South of Fraser, Fraser Valley)
+- [x] Each city page: unique 3-paragraph local content, 4 city-specific FAQs, neighbourhood list, drive-time, meta tags
+- [x] Drive-distance-aware mobile minimums (Abbotsford 8 knives, Chilliwack 10 knives)
+- [x] Internal linking: "Also serving nearby" related-cities section on each city page
+- [x] Schema: per-city Service with neighbourhood `areaServed` array + `hasOfferCatalog` pricing; ItemList + SiteNavigationElement on hub
+- [x] Homepage `LocalBusiness.areaServed` now enumerates all 17 cities
+- [x] llms.txt expanded with full city inventory
+- [x] Answer-first H2 rewrites on city template
+
+## Milestone 6 — Content parity with legacy coveblades.com ✅ Complete
+
+- [x] `/how-we-sharpen-your-knives` (process / methodology)
+- [x] `/train-to-be-sharp` (3-module course: One-Inch $600, Two-Inch $400, Business $200)
+- [x] `/event-sharpening-service` (on-site for events)
+- [x] 3 legacy blog posts imported (how-to-cut-onions, japanese-knife-sharpening, knife-sharpening-on-the-north-shore)
+- [x] `/staysharp` 308-redirects to `/blog`
+- [x] `<InquiryForm>` shared component with Turnstile
+- [x] Validated address requirement on training intake (Google Places autocomplete)
+
+## Milestone 7 — Home page polish + Instagram feed ✅ Complete
+
+- [x] Hero ProMaster van zoom-in animation (right-to-left with tire-smoke trail)
+- [x] Instagram feed below hero (live Graph API + in-page modal viewer for image/video/carousel)
+- [x] Custom landscape video poster on About section linking to YouTube
+- [x] Mon–Sat 10am–7pm hours everywhere (was Mon-Fri Noon-7, Sat Noon-4)
+- [x] Footer Snapsonic credit
+- [x] Navbar grouped: Services dropdown + 4 top-level links
+- [x] Mobile overflow fixes (form padding, pricing card text, social row wrap)
+- [x] Blog typography (Tailwind typography plugin)
+- [x] Cloudflare Turnstile in `interaction-only` mode (hidden unless challenged)
+- [x] Hero pt-24 sm:pt-20 so van clears the fixed navbar on mobile
+
+---
+
+## Time-sensitive follow-ups
+
+- **2026-06-28** — Instagram long-lived access token expires. Refresh via `/oauth/access_token?grant_type=fb_exchange_token` using `INSTAGRAM_APP_SECRET` (already in .env / Vercel env), update `INSTAGRAM_ACCESS_TOKEN`. Or build a refresh button in admin before then.
+- **When ready** — Retire `covecutlery.ca`: 301 from apex/www to `coveblades.com`, remove from Vercel project domains, optionally drop the domain.
+
+---
+
+
 
 ## Milestone 1 — MVP Website ✅ Complete
 
