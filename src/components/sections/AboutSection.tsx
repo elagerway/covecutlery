@@ -65,24 +65,55 @@ export default function AboutSection() {
             </p>
           </div>
 
-          {/* YouTube — embedded video player */}
-          <div
-            className="relative w-full overflow-hidden rounded-xl border"
+          {/* YouTube — custom thumbnail linking to the video */}
+          <a
+            href="https://www.youtube.com/watch?v=s6PMhZmC2Qk"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group relative block rounded-xl border overflow-hidden transition-opacity duration-200 hover:opacity-95 active:scale-[0.99]"
             style={{
-              backgroundColor: "#000000",
+              backgroundColor: "#000",
               borderColor: "#30363D",
               aspectRatio: "16 / 9",
             }}
+            aria-label="Watch Cove Blades on YouTube"
           >
-            <iframe
-              src="https://www.youtube-nocookie.com/embed/s6PMhZmC2Qk?rel=0&modestbranding=1"
-              title="Cove Blades — knife sharpening on YouTube"
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/about/video-poster.png"
+              alt="Cove Blades — Japanese knife sharpening"
               loading="lazy"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-              allowFullScreen
-              className="absolute inset-0 w-full h-full border-0"
+              className="absolute inset-0 w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
             />
-          </div>
+
+            {/* Subtle gradient for play-button contrast */}
+            <div
+              className="absolute inset-0"
+              style={{
+                background:
+                  "radial-gradient(circle at center, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0) 60%)",
+              }}
+            />
+
+            {/* Play button */}
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div
+                className="w-16 h-16 sm:w-20 sm:h-20 rounded-full flex items-center justify-center transition-transform duration-200 group-hover:scale-110 shadow-2xl"
+                style={{ backgroundColor: "#FF0000" }}
+              >
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="white" aria-hidden="true">
+                  <polygon points="8,5 19,12 8,19" />
+                </svg>
+              </div>
+            </div>
+
+            {/* Caption */}
+            <div className="absolute left-0 right-0 bottom-0 px-5 pb-4">
+              <p className="text-sm font-semibold" style={{ color: "#FFFFFF", textShadow: "0 1px 4px rgba(0,0,0,0.6)" }}>
+                Watch us on YouTube
+              </p>
+            </div>
+          </a>
         </div>
 
         {/* Values row */}
