@@ -250,7 +250,7 @@ PostTable (client) → DELETE/PATCH /api/admin/posts/[id] → requireAdmin() →
 | `GOOGLE_MAPS_API_KEY` | `/api/geocode` — Google Places Autocomplete + Place Details |
 | `POSTMARK_API_KEY` | `/api/admin/bookings/[id]/receipt` — transactional email receipts |
 | `MAGPIPE_API_KEY` | `/api/admin/bookings/[id]/receipt` — SMS receipts via Magpipe |
-| `MAGPIPE_SMS_FROM` | `/api/admin/bookings/[id]/receipt` — sender number (`+16043731500`) |
+| `MAGPIPE_SMS_FROM` | `/api/admin/bookings/[id]/receipt` — sender number (`+16042108180`) |
 
 ## Database
 
@@ -410,7 +410,7 @@ Note: dev server runs on port **3002**. Never use port 3000.
 - `@supabase/ssr` is used for all auth-aware server contexts (middleware, server components, API routes). The older `lib/supabase.ts` anon client remains for public-facing pages. Build-time pages (blog, sitemap) guard against missing Supabase env vars to prevent preview deployment failures — same pattern as the lazy Stripe init
 - Admin middleware uses `getUser()` (not `getSession()`) — Supabase recommends this for server-side auth checks as it validates the token server-side
 - The double-cookie pattern in middleware: cookies must be set on both the incoming `request` and the outgoing `supabaseResponse` to keep the session alive across edge calls
-- **Brand-rename infra divergence (2026-04-29):** display phone is `604-210-8180` (Cove Blades) but `MAGPIPE_SMS_FROM` env and `ADMIN_PHONE` constant in `/api/cal/book/route.ts` still point at `+16043731500` (the provisioned Magpipe number from the Cove Cutlery era). Customer SMS confirmations and admin booking notifications go through the old number until Magpipe is reprovisioned. Vercel project name (`covecutlery.vercel.app`) and GitHub repo (`elagerway/covecutlery`) intentionally not renamed
+- **Vercel project name (`covecutlery.vercel.app`) and GitHub repo (`elagerway/covecutlery`) intentionally not renamed** — only the public domain and brand changed; internal infra identifiers stayed as-is to avoid the cascade of breaking integrations that haven't been audited (CI, deploy hooks, etc.)
 - **Outgoing-URL host allowlist (`lib/origin.ts`):** `safeOrigin()` returns the request's `Origin` header iff its host is in `["coveblades.com", "www.coveblades.com", "staging.coveblades.com"]`, else `https://coveblades.com`. Used by Stripe checkout (`/api/invoices/[id]/pay`) and invoice send (`/api/admin/invoices/[id]/send`) so links/redirects respect staging. The prior hardcoded `https://coveblades.com` defended against `Origin` spoofing — the allowlist preserves that property while permitting staging
 - **Legacy slug parity:** the new pages `/how-we-sharpen-your-knives`, `/train-to-be-sharp`, `/event-sharpening-service` use the verbose slugs from the legacy WordPress site at coveblades.com so existing Google rankings and external backlinks survive the DNS flip. `/staysharp` redirects to `/blog` (and per-slug) via `next.config.ts` for the same reason. Don't "clean up" these slugs without setting up corresponding redirects
 - **`<InquiryForm>` (`src/components/InquiryForm.tsx`):** shared client form used by `/train-to-be-sharp` and `/event-sharpening-service`. Takes `serviceType` as a prop and posts to `/api/contact` along with the captcha token. The same `/api/contact` endpoint is shared with `ContactSection` and `/contact` — different `service_type` values discriminate downstream in `/admin/jobs`

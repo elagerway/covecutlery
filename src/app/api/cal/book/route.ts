@@ -4,7 +4,7 @@ import { createClient } from "@supabase/supabase-js";
 const HOME_BASE = { lat: 49.3198, lng: -123.0725 };
 const MAX_KM = 105; // covers Lower Mainland out to Chilliwack (~95 km centroid, ~100 km edges)
 const MAX_LNG = -123.35; // west of this requires a ferry (Sunshine Coast, Vancouver Island)
-const ADMIN_PHONE = "+16043731500";
+const ADMIN_PHONE = "+16042108180";
 const TIMEZONE = "America/Vancouver";
 
 function haversineKm(lat1: number, lng1: number, lat2: number, lng2: number) {

@@ -1,5 +1,12 @@
 # Changelog
 
+## [2.6.3] — 2026-04-29 — SMS infra now on the new (604-210-8180) number
+
+### Changed
+- **`MAGPIPE_SMS_FROM` env** updated from `+16043731500` (legacy Cove Cutlery number) to `+16042108180` (Cove Blades) — locally in `.env.local` and on Vercel (Production + Development). Customer-facing SMS confirmations and receipts now arrive from the same number that's displayed on the website
+- **`ADMIN_PHONE` constant** in `src/app/api/cal/book/route.ts` updated similarly. Admin booking notifications now go to the new number
+- **architecture.md** updated to reflect the now-aligned state — removed the "Brand-rename infra divergence" gotcha (the divergence is resolved); Vercel project + GitHub repo identifiers remain intentionally unrenamed
+
 ## [2.6.2] — 2026-04-29 — Hero padding fix: van no longer obscured by navbar on mobile
 
 ### Fixed
