@@ -1,5 +1,20 @@
 # Changelog
 
+## [2.7.0] — 2026-04-30 — Auto-rotating Instagram access token
+
+### Added
+- **`app_credentials` Supabase table** for runtime-mutable secrets — primarily self-rotating OAuth tokens. Service-role-only RLS. Migration: `supabase/migrations/20260430000000_app_credentials.sql`
+- **`lib/credentials.ts`** — `getCredential(name)` / `setCredential(name, value, expiresAt)` helpers backed by `app_credentials`. Used for any credential that needs to mutate at runtime without a redeploy
+- **`/api/cron/refresh-instagram-token`** — Vercel Cron handler. Reads the current IG token from Supabase (with env fallback), checks `expires_at`, calls Meta's `oauth/access_token?grant_type=fb_exchange_token` if within 14 days of expiry, writes the new 60-day token + new `expires_at` back to Supabase. Authenticated via `CRON_SECRET` (Vercel auto-attaches `Authorization: Bearer ${CRON_SECRET}` to cron invocations)
+- **`vercel.json` cron schedule** — `0 9 * * 1` (every Monday 09:00 UTC). With Meta's 60-day token life and a 14-day refresh window, the cron has 7 chances to refresh before the token expires
+- **`CRON_SECRET` env** generated and added to `.env.local` + Vercel Production/Development
+
+### Changed
+- **`lib/instagram.ts` `getInstagramToken()`** — now reads from `app_credentials` first, falls back to `INSTAGRAM_ACCESS_TOKEN` env var. The env-var path covers the seed window (before the first cron run writes the row) and any Supabase outage
+
+### Migration application pending
+- The `app_credentials` migration ships in the repo but isn't yet applied to the live database (Supabase PAT rotated mid-session). Either run `supabase db push` against the project once the CLI is logged into the right account, or apply via the Management API with a fresh PAT. Until then, the cron runs and gracefully fails at the Supabase write step — the IG feed continues to work via the env-var fallback
+
 ## [2.6.3] — 2026-04-29 — SMS infra now on the new (604-210-8180) number
 
 ### Changed

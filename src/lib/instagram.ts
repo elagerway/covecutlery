@@ -6,11 +6,15 @@
  * second-level fresh, and cutting the API hits keeps us well within Meta's
  * rate limits.
  *
- * Long-lived tokens last 60 days. Refresh ~50 days in via:
- *   GET https://graph.instagram.com/refresh_access_token
- *     ?grant_type=ig_refresh_token
- *     &access_token={current_long_lived_token}
+ * The long-lived token (60-day expiry) is read from Supabase via lib/credentials.ts
+ * so the cron job at /api/cron/refresh-instagram-token can rotate it without a
+ * redeploy. Falls back to env var INSTAGRAM_ACCESS_TOKEN during the initial
+ * seed window or if Supabase is unreachable.
  */
+
+import { getCredential } from "@/lib/credentials";
+
+export const INSTAGRAM_TOKEN_KEY = "instagram_access_token";
 
 export interface InstagramChild {
   id: string;
@@ -35,8 +39,15 @@ const FIELDS =
   "children{id,media_type,media_url,thumbnail_url}";
 const REVALIDATE_SECONDS = 3600; // 1 hour
 
+/** Returns the current IG access token, preferring Supabase over env. */
+export async function getInstagramToken(): Promise<string | null> {
+  const cred = await getCredential(INSTAGRAM_TOKEN_KEY);
+  if (cred?.value) return cred.value;
+  return process.env.INSTAGRAM_ACCESS_TOKEN ?? null;
+}
+
 export async function getInstagramFeed(limit = 6): Promise<InstagramPost[]> {
-  const token = process.env.INSTAGRAM_ACCESS_TOKEN;
+  const token = await getInstagramToken();
   const userId = process.env.INSTAGRAM_USER_ID;
 
   if (!token || !userId) {
