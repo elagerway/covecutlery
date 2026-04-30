@@ -39,8 +39,7 @@ const steps = [
 ];
 
 const hours = [
-  { label: "Monday – Friday", time: "Noon – 7:00 pm" },
-  { label: "Saturday", time: "Noon – 4:00 pm" },
+  { label: "Monday – Saturday", time: "10:00 am – 7:00 pm" },
   { label: "Sunday", time: "Closed (drop box still available)" },
   { label: "Drop Box Access", time: "24 / 7" },
 ];

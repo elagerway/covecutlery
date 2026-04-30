@@ -72,41 +72,61 @@ export default function AboutSection() {
             </p>
           </div>
 
-          {/* YouTube placeholder */}
+          {/* YouTube — live video thumbnail */}
           <a
-            href="https://www.youtube.com/@coveblades"
+            href="https://www.youtube.com/watch?v=s6PMhZmC2Qk"
             target="_blank"
             rel="noopener noreferrer"
-            className="group relative flex flex-col items-center justify-center rounded-xl border overflow-hidden transition-opacity duration-200 hover:opacity-90 active:scale-[0.99]"
+            className="group relative block rounded-xl border overflow-hidden transition-opacity duration-200 hover:opacity-95 active:scale-[0.99]"
             style={{
               backgroundColor: "#161B22",
               borderColor: "#30363D",
-              minHeight: "260px",
-              background:
-                "linear-gradient(135deg, #161B22 0%, #1a1f2b 50%, #161B22 100%)",
+              aspectRatio: "16 / 9",
             }}
             aria-label="Watch Cove Blades on YouTube"
           >
+            {/* Video thumbnail */}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="https://img.youtube.com/vi/s6PMhZmC2Qk/maxresdefault.jpg"
+              alt="Watch Cove Blades on YouTube"
+              loading="lazy"
+              className="absolute inset-0 w-full h-full object-cover"
+            />
+
+            {/* Dark gradient overlay (for text legibility) */}
+            <div
+              className="absolute inset-0"
+              style={{
+                background:
+                  "linear-gradient(to top, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.25) 45%, rgba(0,0,0,0.15) 100%)",
+              }}
+            />
+
             {/* Play button circle */}
             <div
-              className="relative z-10 w-16 h-16 rounded-full flex items-center justify-center mb-5 transition-transform duration-200 group-hover:scale-110"
-              style={{ backgroundColor: "#FF0000" }}
+              className="absolute inset-0 flex items-center justify-center"
             >
-              <YouTubeIcon className="w-8 h-8 text-white" />
+              <div
+                className="w-16 h-16 rounded-full flex items-center justify-center transition-transform duration-200 group-hover:scale-110 shadow-lg"
+                style={{ backgroundColor: "#FF0000" }}
+              >
+                <YouTubeIcon className="w-8 h-8 text-white" />
+              </div>
             </div>
 
-            <p
-              className="relative z-10 text-base font-semibold mb-1"
-              style={{ color: "#FFFFFF" }}
-            >
-              Watch us on YouTube
-            </p>
-            <p
-              className="relative z-10 text-sm"
-              style={{ color: "#6B7280" }}
-            >
-              @coveblades
-            </p>
+            {/* Caption */}
+            <div className="absolute left-0 right-0 bottom-0 px-5 pb-5">
+              <p
+                className="text-base font-semibold mb-0.5"
+                style={{ color: "#FFFFFF" }}
+              >
+                Watch us on YouTube
+              </p>
+              <p className="text-sm" style={{ color: "#D1D5DB" }}>
+                @coveblades
+              </p>
+            </div>
           </a>
         </div>
 

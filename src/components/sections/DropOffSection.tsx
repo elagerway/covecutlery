@@ -9,8 +9,7 @@ const steps = [
 ];
 
 const hours = [
-  { label: "Mon – Fri", value: "Noon – 7pm" },
-  { label: "Saturday", value: "Noon – 4pm" },
+  { label: "Mon – Sat", value: "10am – 7pm" },
   { label: "Drop Box", value: "24/7" },
 ];
 

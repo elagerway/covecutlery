@@ -38,8 +38,7 @@ const contactDetails = [
 ];
 
 const hours = [
-  { days: "Monday – Friday", time: "Noon – 7:00 pm" },
-  { days: "Saturday", time: "Noon – 4:00 pm" },
+  { days: "Monday – Saturday", time: "10:00 am – 7:00 pm" },
   { days: "Sunday", time: "Closed" },
   { days: "Drop Box", time: "24 / 7" },
 ];

@@ -18,8 +18,7 @@ const quickLinks = [
 ];
 
 const businessHours = [
-  { days: "Monday – Friday", hours: "Noon – 7:00 pm" },
-  { days: "Saturday", hours: "Noon – 4:00 pm" },
+  { days: "Monday – Saturday", hours: "10:00 am – 7:00 pm" },
   { days: "Drop Box", hours: "24 / 7" },
 ];
 

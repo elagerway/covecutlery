@@ -411,8 +411,7 @@ export default function ContactSection() {
                 </p>
                 <ul className="space-y-1">
                   {[
-                    { d: "Mon – Fri", t: "Noon – 7pm" },
-                    { d: "Saturday", t: "Noon – 4pm" },
+                    { d: "Mon – Sat", t: "10am – 7pm" },
                     { d: "Drop Box", t: "24/7" },
                   ].map((h) => (
                     <li key={h.d} className="flex justify-between text-sm">
