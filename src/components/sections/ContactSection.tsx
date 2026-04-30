@@ -277,7 +277,7 @@ export default function ContactSection() {
                 siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY!}
                 onSuccess={setCaptchaToken}
                 onExpire={() => setCaptchaToken(null)}
-                options={{ theme: "dark" }}
+                options={{ theme: "dark", appearance: "interaction-only" }}
               />
 
               {/* Submit */}

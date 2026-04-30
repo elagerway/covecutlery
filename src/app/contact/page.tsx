@@ -311,12 +311,13 @@ export default function ContactPage() {
                       </div>
                     )}
 
-                    {/* CAPTCHA */}
+                    {/* CAPTCHA — hidden unless Cloudflare needs to challenge */}
                     <Turnstile
                       ref={turnstileRef}
                       siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY!}
                       onSuccess={setCaptchaToken}
                       onExpire={() => setCaptchaToken(null)}
+                      options={{ appearance: "interaction-only" }}
                     />
 
                     {/* Submit */}
