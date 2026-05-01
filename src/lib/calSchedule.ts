@@ -60,16 +60,20 @@ function toDateLabel(dateStr: string): string {
   return new Date(y, m - 1, d).toLocaleDateString("en-US", { month: "short", day: "numeric" });
 }
 
-/** Extracts city from the booking. Reads location.address (new) with fallback
- *  to legacy metadata.notes "Address: ..." format for bookings made before the fix.
+/** Extracts city from the booking.
+ *  - String form (attendeeDefined event type): location is the raw address string.
+ *  - Object form (attendeeAddress event type, legacy): location.address holds the address.
+ *  - Legacy fallback: address embedded in metadata.notes as "Address: ...".
  */
 function extractCity(booking: CalBooking): string | null {
-  // New format: location object with address field
+  if (typeof booking.location === "string" && booking.location) {
+    return cityFromAddress(booking.location);
+  }
+
   if (booking.location && typeof booking.location === "object" && booking.location.address) {
     return cityFromAddress(booking.location.address);
   }
 
-  // Legacy fallback: address was stored in metadata.notes
   const notes = booking.metadata?.notes;
   if (typeof notes === "string") {
     const addressLine = notes.split("\n").find((l) => l.startsWith("Address:"));

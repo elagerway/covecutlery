@@ -6,37 +6,35 @@ const CAL_API = "https://api.cal.com/v2";
 
 /** Search Cal.com bookings for the latest date matching email or phone */
 async function searchCalCom(email: string | null, phone: string | null): Promise<string | null> {
-  const keys = [process.env.CAL_API_KEY, process.env.CAL_API_KEY_BLADES].filter(Boolean) as string[];
+  const key = process.env.CAL_API_KEY;
+  if (!key) return null;
   let latestDate: string | null = null;
 
-  for (const key of keys) {
-    try {
-      const res = await fetch(`${CAL_API}/bookings?take=100`, {
-        headers: { Authorization: `Bearer ${key}`, "cal-api-version": "2024-08-13" },
-      });
-      if (!res.ok) continue;
-      const json = await res.json();
+  try {
+    const res = await fetch(`${CAL_API}/bookings?take=100`, {
+      headers: { Authorization: `Bearer ${key}`, "cal-api-version": "2024-08-13" },
+    });
+    if (!res.ok) return null;
+    const json = await res.json();
 
-      for (const b of json.data || []) {
-        if (b.status === "cancelled") continue;
-        const a = (b.attendees || [])[0];
-        if (!a) continue;
-        const bfr = b.bookingFieldsResponses || {};
+    for (const b of json.data || []) {
+      if (b.status === "cancelled") continue;
+      const a = (b.attendees || [])[0];
+      if (!a) continue;
+      const bfr = b.bookingFieldsResponses || {};
 
-        const matchEmail = email && a.email?.toLowerCase() === email;
-        const bookingPhone = normalizePhone(a.phoneNumber || bfr.attendeePhoneNumber || bfr.smsReminderNumber);
-        const matchPhone = phone && bookingPhone === phone;
+      const matchEmail = email && a.email?.toLowerCase() === email;
+      const bookingPhone = normalizePhone(a.phoneNumber || bfr.attendeePhoneNumber || bfr.smsReminderNumber);
+      const matchPhone = phone && bookingPhone === phone;
 
-        if (matchEmail || matchPhone) {
-          const date = new Date(b.start).toLocaleDateString("en-CA", { timeZone: "America/Vancouver" });
-          // Only count dates up to today
-          const today = new Date().toLocaleDateString("en-CA", { timeZone: "America/Vancouver" });
-          if (date <= today && (!latestDate || date > latestDate)) latestDate = date;
-        }
+      if (matchEmail || matchPhone) {
+        const date = new Date(b.start).toLocaleDateString("en-CA", { timeZone: "America/Vancouver" });
+        const today = new Date().toLocaleDateString("en-CA", { timeZone: "America/Vancouver" });
+        if (date <= today && (!latestDate || date > latestDate)) latestDate = date;
       }
-    } catch {
-      continue;
     }
+  } catch {
+    return latestDate;
   }
   return latestDate;
 }

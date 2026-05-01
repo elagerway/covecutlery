@@ -27,7 +27,7 @@ export async function POST(req: NextRequest) {
       "cal-api-version": "2024-08-13",
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ reason: "Cancelled by customer" }),
+    body: JSON.stringify({ cancellationReason: "Cancelled by customer" }),
   });
 
   if (!res.ok) return NextResponse.json({ error: "Failed to cancel" }, { status: 500 });

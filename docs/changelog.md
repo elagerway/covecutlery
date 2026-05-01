@@ -1,5 +1,28 @@
 # Changelog
 
+## [2.8.0] — 2026-05-01 — Cal.com migration to Cove Blades account + three v2-API mismatch fixes
+
+### Changed
+- **`CAL_API_KEY` rotated** from the legacy Cove Cutlery account (`cal_live_19b65a2d…`) to a fresh token on the active Cove Blades account (`cal_live_0e4c84c6…`); updated in `.env.local` and Vercel Production
+- **`CAL_EVENT_TYPE_ID`** changed from `5142178` (Cove Cutlery account, type `attendeeAddress`) to `2520929` (Cove Blades account, type `attendeeDefined`)
+- **Removed `CAL_API_KEY_BLADES`** — the previous "second Cal account" fallback. Verified by querying both keys: identical 55-booking lists, so they were the same Cove Blades account. The dual-key code in `last-booking/route.ts` now uses `CAL_API_KEY` only
+- **Supabase local auth config (`supabase/config.toml`)** — `site_url` and `additional_redirect_urls` switched from `covecutlery.ca` → `coveblades.com` so local magic-link redirects no longer point at the retired domain. Production dashboard URLs must be updated manually at https://supabase.com/dashboard/project/kvatxuhjiinjpvsyably/auth/url-configuration
+
+### Fixed
+- **`/api/cal/book` location payload** — sent `{ type: "attendeeAddress", address }` but the new event type only accepts `attendeeDefined`. Bookings would have 400'd in production. Now sends `{ type: "attendeeDefined", location: address }`
+- **`lib/calSchedule.ts` `extractCity`** — only extracted city from object-shaped `location.address`. Cal v2 returns `location` as a flat string for `attendeeDefined` event types, so the schedule widget was silently rendering "Home Shop" everywhere even when bookings existed. Added a string-form branch ahead of the legacy object-form branch
+- **`/api/cal/cancel` body** — sent `{ reason: "..." }` but Cal v2 requires `{ cancellationReason: "..." }`; cancellations would have 400'd
+
+### Removed
+- **Legacy Cove Cutlery Magpipe agents deactivated** — both "Cove Cutlery — Voice" (UUID `d7e8c398…`) and "Cove Cutlery — SMS" (UUID `3ebd970e…`) set to `is_active: false`. The voice agent's two Cal-direct custom functions (`book_appointment`, `get_availability`) had hardcoded credentials for the old account and were deleted entirely
+- **Cove Blades agent prompt typo** — `coveblade.com` → `coveblades.com` (single-character fix in the active inbound voice agent's system prompt)
+
+### Verified end-to-end (2026-05-01)
+- Slots smoke test against `https://coveblades.com/api/cal/slots` returned 200 with real slot data spanning May 2–9
+- Test booking created via Cal v2 (`UID 4SyHFNwC2RzhVT8N37AUKc`, Sat May 2 @ 2pm PDT, attendee `demo@snapsonic.com`, location "555 Burrard Street, Vancouver, BC")
+- Live `coveblades.com` schedule widget rendered "Sat May 2 — Vancouver" instead of the default Home Shop card → confirms both the booking POST shape and the city-extraction fix
+- Test booking subsequently cancelled via Cal v2 (revealed bug #3, the `cancellationReason` field-name mismatch)
+
 ## [2.7.0] — 2026-04-30 — Auto-rotating Instagram access token
 
 ### Added

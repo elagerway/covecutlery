@@ -175,7 +175,7 @@ User fills form → ContactSection (client)
 User clicks "Book Mobile Service" → BookingProvider.open()
   → BookingModal opens (step: date)
     → GET /api/cal/slots?start=&end= (Next.js proxy)
-      → Cal.com v2 GET /slots?eventTypeId=5142178
+      → Cal.com v2 GET /slots?eventTypeId=2520929
         → Returns available time slots grouped by date
   → User picks date → time → fills details form
     → POST /api/cal/book (Next.js proxy)
@@ -236,7 +236,6 @@ PostTable (client) → DELETE/PATCH /api/admin/posts/[id] → requireAdmin() →
 | Variable | Used In |
 |----------|---------|
 | `CAL_API_KEY` | `/api/cal/slots`, `/api/cal/book`, `lib/calSchedule.ts`, `/api/admin/customers/last-booking` |
-| `CAL_API_KEY_BLADES` | `/api/admin/customers/last-booking` — second Cal.com account (Cove Blades) |
 | `CAL_EVENT_TYPE_ID` | `/api/cal/slots`, `/api/cal/book` |
 | `NEXT_PUBLIC_SUPABASE_URL` | `lib/supabase.ts`, `utils/supabase/server.ts`, `utils/supabase/client.ts`, blog pages |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | `lib/supabase.ts`, `utils/supabase/client.ts`, blog pages |
@@ -429,8 +428,8 @@ Cron auth: Vercel auto-attaches `Authorization: Bearer ${CRON_SECRET}` to cron i
 - Cal.com v2 slots endpoint uses `start`/`end` params (not `startTime`/`endTime`) with `cal-api-version: 2024-09-04`; bookings endpoint uses `cal-api-version: 2024-08-13`
 - `BookingProvider` must wrap `{children}` in `layout.tsx` — it renders `BookingModal` globally so the modal persists across page navigations
 - `WhereWeAreSection` is an **async Server Component** — the first in this codebase. It cannot use hooks; interactive behavior is delegated to child `ScheduleDayCard` (client component)
-- City extraction in `calSchedule.ts` reads `booking.location.address` (new bookings) or falls back to the legacy `booking.metadata.notes` `"Address: ..."` format. Nominatim format: `"Street, City, Province Postal, Country"` — index 1 is city; index 2 if index 1 starts with a digit (unit number edge case)
-- Cal.com booking location: address is passed as `location: { type: "attendeeAddress", address }` to populate the `in_person_attendee_address` field in the Cal.com dashboard
+- City extraction in `calSchedule.ts` reads `booking.location` as a string (current `attendeeDefined` event type returns the address as a flat string), falls back to `booking.location.address` for legacy `attendeeAddress`-shaped bookings, then to `booking.metadata.notes` `"Address: ..."` format. Nominatim format: `"Street, City, Province Postal, Country"` — index 1 is city; index 2 if index 1 starts with a digit (unit number edge case)
+- Cal.com booking location: address is passed as `location: { type: "attendeeDefined", location: address }`. The current event type (`CAL_EVENT_TYPE_ID=2520929` on the Cove Blades account) is configured for `attendeeDefined` only — sending `attendeeAddress` returns 400. The previous Cove Cutlery event type used `attendeeAddress`, hence the fallback path in `extractCity`
 - Cloudflare Turnstile CAPTCHA: site key is public (`NEXT_PUBLIC_`), secret key is server-only. ContactSection and `/contact` page use Turnstile; `BookingModal` and `/api/cal/book` do **not** — CAPTCHA was removed from the booking flow to reduce friction
 - Nominatim geocoding (`/api/geocode`) must stay server-side — browsers cannot set the `User-Agent` header (forbidden), so direct client-side fetch to Nominatim would return 403
 - `lib/calSchedule.ts` uses `vancouverMidnightISO()` — a DST-aware helper that probes noon UTC via `Intl.DateTimeFormat` to determine Vancouver's UTC offset before constructing the midnight timestamp. Raw `new Date("YYYY-MM-DDT00:00:00")` would parse in server-local time (UTC on Vercel), yielding the wrong window

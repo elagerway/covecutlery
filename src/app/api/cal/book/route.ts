@@ -95,7 +95,7 @@ export async function POST(req: NextRequest) {
           language: "en",
           phoneNumber: toE164CA(phone),
         },
-        location: address ? { type: "attendeeAddress", address } : undefined,
+        location: address ? { type: "attendeeDefined", location: address } : undefined,
         metadata: notes ? { notes } : {},
       }),
     });
