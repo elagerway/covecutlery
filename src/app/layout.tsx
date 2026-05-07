@@ -3,7 +3,6 @@ import { Inter } from 'next/font/google'
 import './globals.css'
 import { BookingProvider } from '@/components/BookingProvider'
 import { safeJsonLd } from '@/lib/schema'
-import { cities } from '@/data/cities'
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
 
@@ -59,7 +58,7 @@ export default function RootLayout({
               name: 'Cove Blades',
               description: 'Professional cutlery sharpening service serving Vancouver and the Lower Mainland.',
               url: 'https://coveblades.com',
-              telephone: '604 210 8180',
+              telephone: '604 373 1500',
               email: 'info@coveblades.com',
               foundingDate: '2020',
               address: {
@@ -76,22 +75,22 @@ export default function RootLayout({
                 longitude: -123.0725,
               },
               sameAs: [
-                'https://www.instagram.com/coveblades/',
-                'https://www.facebook.com/coveblades',
-                'https://www.youtube.com/@coveblades',
-                'https://www.google.com/search?q=Cove+Blades+-+Knife+Sharpening&stick=H4sIAAAAAAAA_-NgU1I1qDA1sTAzTzJOSzEyTDYzN06xMqhIM0k0SbKwtEg1MjUwNEsyWcQq55xflqrglJOYklqsoKvgnZeZlqoQnJFYVJCal5mXDgBtJBstSgAAAA',
+                'https://www.instagram.com/covecutlery/',
+                'https://www.facebook.com/covecutlery',
+                'https://www.youtube.com/@covecutlery',
               ],
-              areaServed: cities.map(c => ({
-                '@type': 'City',
-                name: c.name,
-                containedInPlace: { '@type': 'AdministrativeArea', name: 'British Columbia' },
-              })),
               openingHoursSpecification: [
                 {
                   '@type': 'OpeningHoursSpecification',
-                  dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
-                  opens: '10:00',
+                  dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
+                  opens: '12:00',
                   closes: '19:00',
+                },
+                {
+                  '@type': 'OpeningHoursSpecification',
+                  dayOfWeek: ['Saturday'],
+                  opens: '12:00',
+                  closes: '16:00',
                 },
               ],
               priceRange: '$$',

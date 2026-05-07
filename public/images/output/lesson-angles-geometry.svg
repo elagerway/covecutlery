@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 400" width="1200" height="400">
+  <rect width="1200" height="400" fill="#0a0a0a"/>
+
+  <text x="600" y="40" text-anchor="middle" fill="#ffffff" font-family="system-ui, sans-serif" font-size="24" font-weight="bold">Knife Edge Angles — The Sharpness vs. Durability Trade-Off</text>
+
+  <!-- 12° Razor -->
+  <g transform="translate(80, 170)">
+    <line x1="0" y1="0" x2="150" y2="-30" stroke="#10b981" stroke-width="2.5"/>
+    <line x1="0" y1="0" x2="150" y2="30" stroke="#10b981" stroke-width="2.5"/>
+    <line x1="145" y1="-28" x2="145" y2="28" stroke="#10b981" stroke-width="1" stroke-dasharray="4 3" opacity="0.5"/>
+    <path d="M 50 -10 A 50 50 0 0 1 50 10" fill="none" stroke="#10b981" stroke-width="1.5" opacity="0.7"/>
+    <text x="65" y="5" fill="#10b981" font-family="system-ui, sans-serif" font-size="16" font-weight="600">12°</text>
+    <text x="75" y="62" text-anchor="middle" fill="#ffffff" font-family="system-ui, sans-serif" font-size="20" font-weight="600">Razor</text>
+    <text x="75" y="88" text-anchor="middle" fill="#6b7280" font-family="system-ui, sans-serif" font-size="13">10–12° per side</text>
+    <text x="75" y="112" text-anchor="middle" fill="#10b981" font-family="system-ui, sans-serif" font-size="13">Max sharpness</text>
+  </g>
+
+  <!-- 15° Japanese -->
+  <g transform="translate(340, 170)">
+    <line x1="0" y1="0" x2="150" y2="-40" stroke="#3b82f6" stroke-width="2.5"/>
+    <line x1="0" y1="0" x2="150" y2="40" stroke="#3b82f6" stroke-width="2.5"/>
+    <line x1="145" y1="-38" x2="145" y2="38" stroke="#3b82f6" stroke-width="1" stroke-dasharray="4 3" opacity="0.5"/>
+    <path d="M 42 -11 A 42 42 0 0 1 42 11" fill="none" stroke="#3b82f6" stroke-width="1.5" opacity="0.7"/>
+    <text x="58" y="5" fill="#3b82f6" font-family="system-ui, sans-serif" font-size="16" font-weight="600">15°</text>
+    <text x="75" y="70" text-anchor="middle" fill="#ffffff" font-family="system-ui, sans-serif" font-size="20" font-weight="600">Japanese</text>
+    <text x="75" y="96" text-anchor="middle" fill="#6b7280" font-family="system-ui, sans-serif" font-size="13">12–15° per side</text>
+    <text x="75" y="120" text-anchor="middle" fill="#3b82f6" font-family="system-ui, sans-serif" font-size="13">Very sharp, needs care</text>
+  </g>
+
+  <!-- 20° Western -->
+  <g transform="translate(600, 170)">
+    <line x1="0" y1="0" x2="150" y2="-55" stroke="#f59e0b" stroke-width="2.5"/>
+    <line x1="0" y1="0" x2="150" y2="55" stroke="#f59e0b" stroke-width="2.5"/>
+    <line x1="145" y1="-53" x2="145" y2="53" stroke="#f59e0b" stroke-width="1" stroke-dasharray="4 3" opacity="0.5"/>
+    <path d="M 35 -13 A 35 35 0 0 1 35 13" fill="none" stroke="#f59e0b" stroke-width="1.5" opacity="0.7"/>
+    <text x="50" y="6" fill="#f59e0b" font-family="system-ui, sans-serif" font-size="16" font-weight="600">20°</text>
+    <text x="75" y="85" text-anchor="middle" fill="#ffffff" font-family="system-ui, sans-serif" font-size="20" font-weight="600">Western Chef</text>
+    <text x="75" y="111" text-anchor="middle" fill="#6b7280" font-family="system-ui, sans-serif" font-size="13">17–20° per side</text>
+    <text x="75" y="135" text-anchor="middle" fill="#f59e0b" font-family="system-ui, sans-serif" font-size="13">Good balance</text>
+  </g>
+
+  <!-- 25° Cleaver -->
+  <g transform="translate(860, 170)">
+    <line x1="0" y1="0" x2="150" y2="-70" stroke="#ef4444" stroke-width="2.5"/>
+    <line x1="0" y1="0" x2="150" y2="70" stroke="#ef4444" stroke-width="2.5"/>
+    <line x1="145" y1="-68" x2="145" y2="68" stroke="#ef4444" stroke-width="1" stroke-dasharray="4 3" opacity="0.5"/>
+    <path d="M 28 -14 A 28 28 0 0 1 28 14" fill="none" stroke="#ef4444" stroke-width="1.5" opacity="0.7"/>
+    <text x="42" y="6" fill="#ef4444" font-family="system-ui, sans-serif" font-size="16" font-weight="600">25°</text>
+    <text x="75" y="100" text-anchor="middle" fill="#ffffff" font-family="system-ui, sans-serif" font-size="20" font-weight="600">Cleaver</text>
+    <text x="75" y="126" text-anchor="middle" fill="#6b7280" font-family="system-ui, sans-serif" font-size="13">22–25° per side</text>
+    <text x="75" y="150" text-anchor="middle" fill="#ef4444" font-family="system-ui, sans-serif" font-size="13">Max durability</text>
+  </g>
+
+  <!-- Bottom scale -->
+  <line x1="80" y1="375" x2="1120" y2="375" stroke="#374151" stroke-width="1"/>
+  <text x="180" y="393" text-anchor="middle" fill="#10b981" font-family="system-ui, sans-serif" font-size="14">← SHARPER</text>
+  <text x="600" y="393" text-anchor="middle" fill="#6b7280" font-family="system-ui, sans-serif" font-size="14">Angle (per side)</text>
+  <text x="1020" y="393" text-anchor="middle" fill="#ef4444" font-family="system-ui, sans-serif" font-size="14">MORE DURABLE →</text>
+</svg>

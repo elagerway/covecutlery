@@ -1,0 +1,69 @@
+<svg viewBox="0 0 1200 400" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="400" fill="#0d1117"/>
+
+  <!-- Title -->
+  <text x="600" y="38" font-family="system-ui, -apple-system, sans-serif" font-size="26" font-weight="bold" fill="#ffffff" text-anchor="middle">Belt Maintenance</text>
+
+  <!-- Column 1: CLEANING (green) -->
+  <rect x="60" y="70" width="340" height="300" fill="#1e293b" stroke="#10b981" stroke-width="2" rx="8"/>
+  <rect x="60" y="70" width="340" height="50" fill="#10b981" rx="8"/>
+  <rect x="60" y="100" width="340" height="20" fill="#1e293b"/>
+  <text x="230" y="100" font-family="system-ui, -apple-system, sans-serif" font-size="20" font-weight="bold" fill="#0d1117" text-anchor="middle">CLEANING</text>
+
+  <circle cx="95" cy="150" r="5" fill="#10b981"/>
+  <text x="115" y="150" font-family="system-ui, -apple-system, sans-serif" font-size="15" fill="#ffffff">Use a belt cleaning stick</text>
+  <text x="115" y="168" font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#6b7280">Press stick against running belt</text>
+  <text x="115" y="182" font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#6b7280">to remove metal particles</text>
+
+  <circle cx="95" cy="218" r="5" fill="#10b981"/>
+  <text x="115" y="218" font-family="system-ui, -apple-system, sans-serif" font-size="15" fill="#ffffff">Clean after every session</text>
+  <text x="115" y="236" font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#6b7280">Prevents loading (clogged grit)</text>
+  <text x="115" y="250" font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#6b7280">that causes heat buildup</text>
+
+  <circle cx="95" cy="286" r="5" fill="#10b981"/>
+  <text x="115" y="286" font-family="system-ui, -apple-system, sans-serif" font-size="15" fill="#ffffff">Store belts flat or hanging</text>
+  <text x="115" y="304" font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#6b7280">Never fold or crease —</text>
+  <text x="115" y="318" font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#6b7280">creases create dead spots</text>
+
+  <!-- Column 2: MARKING WORN BELTS (amber) -->
+  <rect x="430" y="70" width="340" height="300" fill="#1e293b" stroke="#f59e0b" stroke-width="2" rx="8"/>
+  <rect x="430" y="70" width="340" height="50" fill="#f59e0b" rx="8"/>
+  <rect x="430" y="100" width="340" height="20" fill="#1e293b"/>
+  <text x="600" y="100" font-family="system-ui, -apple-system, sans-serif" font-size="20" font-weight="bold" fill="#0d1117" text-anchor="middle">MARKING WORN</text>
+
+  <circle cx="465" cy="150" r="5" fill="#f59e0b"/>
+  <text x="485" y="150" font-family="system-ui, -apple-system, sans-serif" font-size="15" fill="#ffffff">Mark grit on belt backing</text>
+  <text x="485" y="168" font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#6b7280">Write grit number with marker</text>
+  <text x="485" y="182" font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#6b7280">so you don't mix them up</text>
+
+  <circle cx="465" cy="218" r="5" fill="#f59e0b"/>
+  <text x="485" y="218" font-family="system-ui, -apple-system, sans-serif" font-size="15" fill="#ffffff">Mark wear zones with X</text>
+  <text x="485" y="236" font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#6b7280">Mark worn areas so you</text>
+  <text x="485" y="250" font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#6b7280">know when to replace</text>
+
+  <circle cx="465" cy="286" r="5" fill="#f59e0b"/>
+  <text x="485" y="286" font-family="system-ui, -apple-system, sans-serif" font-size="15" fill="#ffffff">Date new belts</text>
+  <text x="485" y="304" font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#6b7280">Track usage life to budget</text>
+  <text x="485" y="318" font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#6b7280">for replacements</text>
+
+  <!-- Column 3: REPLACE WHEN (red) -->
+  <rect x="800" y="70" width="340" height="300" fill="#1e293b" stroke="#ef4444" stroke-width="2" rx="8"/>
+  <rect x="800" y="70" width="340" height="50" fill="#ef4444" rx="8"/>
+  <rect x="800" y="100" width="340" height="20" fill="#1e293b"/>
+  <text x="970" y="100" font-family="system-ui, -apple-system, sans-serif" font-size="20" font-weight="bold" fill="#ffffff" text-anchor="middle">REPLACE WHEN</text>
+
+  <circle cx="835" cy="150" r="5" fill="#ef4444"/>
+  <text x="855" y="150" font-family="system-ui, -apple-system, sans-serif" font-size="15" fill="#ffffff">Glazed or shiny surface</text>
+  <text x="855" y="168" font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#6b7280">Grit is gone — belt is just</text>
+  <text x="855" y="182" font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#6b7280">fabric creating heat</text>
+
+  <circle cx="835" cy="218" r="5" fill="#ef4444"/>
+  <text x="855" y="218" font-family="system-ui, -apple-system, sans-serif" font-size="15" fill="#ffffff">Belt screeches or squeals</text>
+  <text x="855" y="236" font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#6b7280">Sound change = no cutting</text>
+  <text x="855" y="250" font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#6b7280">ability left</text>
+
+  <circle cx="835" cy="286" r="5" fill="#ef4444"/>
+  <text x="855" y="286" font-family="system-ui, -apple-system, sans-serif" font-size="15" fill="#ffffff">Visible backing showing</text>
+  <text x="855" y="304" font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#6b7280">Worn through the abrasive</text>
+  <text x="855" y="318" font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#6b7280">layer entirely</text>
+</svg>

@@ -1,0 +1,48 @@
+<svg viewBox="0 0 1200 400" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="400" fill="#0d1117"/>
+
+  <!-- Title -->
+  <text x="600" y="38" font-family="system-ui, -apple-system, sans-serif" font-size="26" font-weight="bold" fill="#ffffff" text-anchor="middle">What is a Burr?</text>
+  <text x="600" y="62" font-family="system-ui, -apple-system, sans-serif" font-size="18" fill="#6b7280" text-anchor="middle">A folded-over lip of steel proving bevels have met</text>
+
+  <!-- Large cross-section showing two bevels meeting -->
+  <line x1="120" y1="350" x2="350" y2="140" stroke="#6b7280" stroke-width="3"/>
+  <line x1="520" y1="350" x2="350" y2="140" stroke="#6b7280" stroke-width="3"/>
+  <line x1="120" y1="350" x2="520" y2="350" stroke="#6b7280" stroke-width="1.5" stroke-dasharray="4"/>
+
+  <!-- Bevel labels -->
+  <text x="210" y="230" font-family="system-ui, -apple-system, sans-serif" font-size="16" fill="#6b7280" transform="rotate(-47,210,230)">BEVEL</text>
+  <text x="440" y="230" font-family="system-ui, -apple-system, sans-serif" font-size="16" fill="#6b7280" transform="rotate(47,440,230)">BEVEL</text>
+
+  <!-- Burr curl at apex -->
+  <path d="M 350,140 Q 345,125 355,118 Q 370,110 375,125 Q 378,135 370,140" fill="none" stroke="#10b981" stroke-width="3"/>
+  <circle cx="370" cy="140" r="3" fill="#10b981"/>
+
+  <!-- BURR label with arrow -->
+  <text x="430" y="105" font-family="system-ui, -apple-system, sans-serif" font-size="20" font-weight="bold" fill="#10b981">BURR</text>
+  <line x1="425" y1="108" x2="383" y2="125" stroke="#10b981" stroke-width="1.5"/>
+  <polygon points="383,122 378,128 386,127" fill="#10b981"/>
+
+  <!-- Apex label -->
+  <text x="350" y="160" font-family="system-ui, -apple-system, sans-serif" font-size="14" fill="#f59e0b" text-anchor="middle">APEX</text>
+
+  <!-- Right side: Key facts -->
+  <rect x="620" y="90" width="520" height="280" fill="#1e293b" stroke="#6b7280" stroke-width="1" rx="8"/>
+  <text x="880" y="122" font-family="system-ui, -apple-system, sans-serif" font-size="20" font-weight="bold" fill="#ffffff" text-anchor="middle">Key Facts</text>
+  <line x1="640" y1="135" x2="1120" y2="135" stroke="#6b7280" stroke-width="1" opacity="0.3"/>
+
+  <circle cx="665" cy="170" r="5" fill="#10b981"/>
+  <text x="685" y="175" font-family="system-ui, -apple-system, sans-serif" font-size="16" fill="#ffffff">Confirms both bevels have met at the apex</text>
+
+  <circle cx="665" cy="210" r="5" fill="#10b981"/>
+  <text x="685" y="215" font-family="system-ui, -apple-system, sans-serif" font-size="16" fill="#ffffff">Must run the full length of the edge</text>
+
+  <circle cx="665" cy="250" r="5" fill="#10b981"/>
+  <text x="685" y="255" font-family="system-ui, -apple-system, sans-serif" font-size="16" fill="#ffffff">Feel it by dragging your fingernail across</text>
+
+  <circle cx="665" cy="290" r="5" fill="#10b981"/>
+  <text x="685" y="295" font-family="system-ui, -apple-system, sans-serif" font-size="16" fill="#ffffff">Smaller burr = better (refine, don't grow)</text>
+
+  <circle cx="665" cy="330" r="5" fill="#f59e0b"/>
+  <text x="685" y="335" font-family="system-ui, -apple-system, sans-serif" font-size="16" fill="#f59e0b">A big burr is wasted steel. Stop sooner.</text>
+</svg>

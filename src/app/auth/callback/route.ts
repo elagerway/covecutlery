@@ -4,14 +4,14 @@ import { createClient } from "@/utils/supabase/server";
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get("code");
-  let next = searchParams.get("next") ?? "/admin/invoices";
-  if (!next.startsWith("/")) next = "/admin/invoices";
+  let next = searchParams.get("next") ?? searchParams.get("redirect") ?? "/courses";
+  if (!next.startsWith("/") || next.startsWith("//")) next = "/courses";
 
   if (code) {
     const supabase = await createClient();
     const { error } = await supabase.auth.exchangeCodeForSession(code);
     if (!error) {
-      const allowedHosts = ["coveblades.com", "www.coveblades.com", "staging.coveblades.com", "covecutlery.vercel.app", "localhost:3002"];
+      const allowedHosts = ["coveblades.com", "www.coveblades.com", "localhost:3000", "localhost:3002"];
       const forwardedHost = request.headers.get("x-forwarded-host");
       const base =
         forwardedHost && allowedHosts.includes(forwardedHost)
@@ -21,7 +21,7 @@ export async function GET(request: Request) {
     }
   }
 
-  const url = new URL("/admin/login", origin);
+  const url = new URL("/auth/login", origin);
   url.searchParams.set("error", "auth");
   return NextResponse.redirect(url);
 }

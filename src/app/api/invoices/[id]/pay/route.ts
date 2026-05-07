@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 import { getServiceClient } from "@/lib/admin";
-import { safeOrigin } from "@/lib/origin";
 
 function getStripe() {
   return new Stripe(process.env.STRIPE_SECRET_KEY!);
@@ -31,7 +30,7 @@ export async function POST(
     return NextResponse.json({ error: invoice.status === "paid" ? "Already paid" : "Invoice is not payable" }, { status: 400 });
   }
 
-  const origin = safeOrigin(req);
+  const origin = process.env.NODE_ENV === "development" ? (req.headers.get("origin") ?? "https://coveblades.com") : "https://coveblades.com";
 
   const session = await getStripe().checkout.sessions.create({
     mode: "payment",

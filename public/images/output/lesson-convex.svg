@@ -1,0 +1,45 @@
+<svg viewBox="0 0 1200 400" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="400" fill="#0d1117"/>
+
+  <!-- Title -->
+  <text x="600" y="38" font-family="system-ui, -apple-system, sans-serif" font-size="26" font-weight="bold" fill="#ffffff" text-anchor="middle">Convex Grind</text>
+
+  <!-- Cross-section with outward curved sides -->
+  <path d="M 200,100 Q 150,220 270,350" fill="none" stroke="#ef4444" stroke-width="3"/>
+  <path d="M 340,100 Q 390,220 270,350" fill="none" stroke="#ef4444" stroke-width="3"/>
+  <line x1="200" y1="100" x2="340" y2="100" stroke="#ef4444" stroke-width="2"/>
+
+  <!-- Apex -->
+  <circle cx="270" cy="350" r="4" fill="#ef4444"/>
+  <text x="270" y="378" font-family="system-ui, -apple-system, sans-serif" font-size="14" fill="#ef4444" text-anchor="middle">APEX</text>
+
+  <!-- Convex curve labels -->
+  <text x="145" y="200" font-family="system-ui, -apple-system, sans-serif" font-size="13" fill="#6b7280" text-anchor="end">Outward</text>
+  <text x="145" y="216" font-family="system-ui, -apple-system, sans-serif" font-size="13" fill="#6b7280" text-anchor="end">curve</text>
+  <line x1="150" y1="205" x2="175" y2="205" stroke="#6b7280" stroke-width="1" stroke-dasharray="3"/>
+
+  <text x="395" y="200" font-family="system-ui, -apple-system, sans-serif" font-size="13" fill="#6b7280">Outward</text>
+  <text x="395" y="216" font-family="system-ui, -apple-system, sans-serif" font-size="13" fill="#6b7280">curve</text>
+  <line x1="390" y1="205" x2="365" y2="205" stroke="#6b7280" stroke-width="1" stroke-dasharray="3"/>
+
+  <!-- SLACK BELT note -->
+  <rect x="80" y="85" width="160" height="50" fill="#1e293b" stroke="#f59e0b" stroke-width="1.5" rx="6"/>
+  <text x="160" y="106" font-family="system-ui, -apple-system, sans-serif" font-size="16" font-weight="bold" fill="#f59e0b" text-anchor="middle">SLACK BELT</text>
+  <text x="160" y="125" font-family="system-ui, -apple-system, sans-serif" font-size="13" fill="#ffffff" text-anchor="middle">Unsupported belt area</text>
+
+  <!-- Right side: Technique list -->
+  <rect x="520" y="80" width="6" height="290" fill="#10b981" rx="3"/>
+  <text x="550" y="105" font-family="system-ui, -apple-system, sans-serif" font-size="18" font-weight="bold" fill="#10b981">TECHNIQUE</text>
+
+  <text x="550" y="138" font-family="system-ui, -apple-system, sans-serif" font-size="15" fill="#ffffff">&#x2022; Use the slack (unsupported) part of the belt</text>
+  <text x="550" y="162" font-family="system-ui, -apple-system, sans-serif" font-size="15" fill="#ffffff">&#x2022; Belt wraps around the edge naturally</text>
+  <text x="550" y="186" font-family="system-ui, -apple-system, sans-serif" font-size="15" fill="#ffffff">&#x2022; Rock the blade through the pass</text>
+  <text x="550" y="210" font-family="system-ui, -apple-system, sans-serif" font-size="15" fill="#ffffff">&#x2022; Start at spine angle, roll to edge angle</text>
+  <text x="550" y="234" font-family="system-ui, -apple-system, sans-serif" font-size="15" fill="#ffffff">&#x2022; Very light pressure — let belt conform</text>
+  <text x="550" y="258" font-family="system-ui, -apple-system, sans-serif" font-size="15" fill="#ffffff">&#x2022; Multiple light passes build the curve</text>
+  <text x="550" y="282" font-family="system-ui, -apple-system, sans-serif" font-size="15" fill="#ffffff">&#x2022; Common on axes, choppers, camp knives</text>
+  <text x="550" y="306" font-family="system-ui, -apple-system, sans-serif" font-size="15" fill="#ffffff">&#x2022; Strongest edge geometry</text>
+
+  <!-- Bottom note -->
+  <text x="600" y="390" font-family="system-ui, -apple-system, sans-serif" font-size="14" fill="#6b7280" text-anchor="middle">The slack belt is what makes convex sharpening possible on a belt grinder</text>
+</svg>

@@ -1,0 +1,64 @@
+<svg viewBox="0 0 1200 400" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="400" fill="#0d1117"/>
+
+  <!-- Title -->
+  <text x="600" y="38" font-family="system-ui, -apple-system, sans-serif" font-size="26" font-weight="bold" fill="#ffffff" text-anchor="middle">Edge Log</text>
+  <text x="600" y="62" font-family="system-ui, -apple-system, sans-serif" font-size="18" fill="#6b7280" text-anchor="middle">Your most valuable tool after the grinder</text>
+
+  <!-- Table -->
+  <rect x="60" y="85" width="1080" height="275" fill="#1e293b" stroke="#6b7280" stroke-width="1" rx="8"/>
+
+  <!-- Table header row -->
+  <rect x="60" y="85" width="1080" height="35" fill="#10b981" opacity="0.15" rx="8"/>
+  <rect x="60" y="110" width="1080" height="10" fill="#1e293b"/>
+
+  <text x="120" y="110" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="bold" fill="#10b981" text-anchor="middle">DATE</text>
+  <text x="280" y="110" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="bold" fill="#10b981" text-anchor="middle">KNIFE</text>
+  <text x="440" y="110" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="bold" fill="#10b981" text-anchor="middle">STEEL</text>
+  <text x="590" y="110" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="bold" fill="#10b981" text-anchor="middle">GRITS</text>
+  <text x="770" y="110" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="bold" fill="#10b981" text-anchor="middle">PASSES</text>
+  <text x="990" y="110" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="bold" fill="#10b981" text-anchor="middle">RESULT</text>
+
+  <line x1="80" y1="122" x2="1120" y2="122" stroke="#6b7280" stroke-width="1" opacity="0.3"/>
+
+  <!-- Row 1 -->
+  <text x="120" y="150" font-family="system-ui, -apple-system, sans-serif" font-size="14" fill="#ffffff" text-anchor="middle">2026-05-01</text>
+  <text x="280" y="150" font-family="system-ui, -apple-system, sans-serif" font-size="14" fill="#ffffff" text-anchor="middle">Victorinox 8" Chef</text>
+  <text x="440" y="150" font-family="system-ui, -apple-system, sans-serif" font-size="14" fill="#ffffff" text-anchor="middle">X50CrMoV15</text>
+  <text x="590" y="150" font-family="system-ui, -apple-system, sans-serif" font-size="14" fill="#ffffff" text-anchor="middle">120 &gt; 600 &gt; strop</text>
+  <text x="770" y="150" font-family="system-ui, -apple-system, sans-serif" font-size="14" fill="#ffffff" text-anchor="middle">8/side @120, 5/side @600</text>
+  <text x="990" y="150" font-family="system-ui, -apple-system, sans-serif" font-size="14" fill="#10b981" text-anchor="middle">Tomato test: pass</text>
+
+  <line x1="80" y1="165" x2="1120" y2="165" stroke="#6b7280" stroke-width="1" opacity="0.15"/>
+
+  <!-- Row 2 -->
+  <text x="120" y="193" font-family="system-ui, -apple-system, sans-serif" font-size="14" fill="#ffffff" text-anchor="middle">2026-05-02</text>
+  <text x="280" y="193" font-family="system-ui, -apple-system, sans-serif" font-size="14" fill="#ffffff" text-anchor="middle">Mora Companion</text>
+  <text x="440" y="193" font-family="system-ui, -apple-system, sans-serif" font-size="14" fill="#ffffff" text-anchor="middle">12C27</text>
+  <text x="590" y="193" font-family="system-ui, -apple-system, sans-serif" font-size="14" fill="#ffffff" text-anchor="middle">120 &gt; 600 &gt; strop</text>
+  <text x="770" y="193" font-family="system-ui, -apple-system, sans-serif" font-size="14" fill="#ffffff" text-anchor="middle">6/side @120, 4/side @600</text>
+  <text x="990" y="193" font-family="system-ui, -apple-system, sans-serif" font-size="14" fill="#10b981" text-anchor="middle">Arm hair: pass</text>
+
+  <line x1="80" y1="208" x2="1120" y2="208" stroke="#6b7280" stroke-width="1" opacity="0.15"/>
+
+  <!-- Row 3 -->
+  <text x="120" y="236" font-family="system-ui, -apple-system, sans-serif" font-size="14" fill="#ffffff" text-anchor="middle">2026-05-03</text>
+  <text x="280" y="236" font-family="system-ui, -apple-system, sans-serif" font-size="14" fill="#ffffff" text-anchor="middle">Wusthof Classic 6"</text>
+  <text x="440" y="236" font-family="system-ui, -apple-system, sans-serif" font-size="14" fill="#ffffff" text-anchor="middle">X50CrMoV15</text>
+  <text x="590" y="236" font-family="system-ui, -apple-system, sans-serif" font-size="14" fill="#ffffff" text-anchor="middle">600 &gt; strop only</text>
+  <text x="770" y="236" font-family="system-ui, -apple-system, sans-serif" font-size="14" fill="#ffffff" text-anchor="middle">3/side @600, strop wheel</text>
+  <text x="990" y="236" font-family="system-ui, -apple-system, sans-serif" font-size="14" fill="#10b981" text-anchor="middle">Paper test: clean</text>
+
+  <line x1="80" y1="251" x2="1120" y2="251" stroke="#6b7280" stroke-width="1" opacity="0.15"/>
+
+  <!-- Row 4 -->
+  <text x="120" y="279" font-family="system-ui, -apple-system, sans-serif" font-size="14" fill="#ffffff" text-anchor="middle">2026-05-04</text>
+  <text x="280" y="279" font-family="system-ui, -apple-system, sans-serif" font-size="14" fill="#ffffff" text-anchor="middle">Buck 110</text>
+  <text x="440" y="279" font-family="system-ui, -apple-system, sans-serif" font-size="14" fill="#ffffff" text-anchor="middle">420HC</text>
+  <text x="590" y="279" font-family="system-ui, -apple-system, sans-serif" font-size="14" fill="#ffffff" text-anchor="middle">120 &gt; 600 &gt; strop</text>
+  <text x="770" y="279" font-family="system-ui, -apple-system, sans-serif" font-size="14" fill="#ffffff" text-anchor="middle">10/side @120, 5/side @600</text>
+  <text x="990" y="279" font-family="system-ui, -apple-system, sans-serif" font-size="14" fill="#f59e0b" text-anchor="middle">Overground @120</text>
+
+  <!-- Bottom note -->
+  <text x="600" y="385" font-family="system-ui, -apple-system, sans-serif" font-size="14" fill="#6b7280" text-anchor="middle">Track every knife. Review before sharpening the same knife again. Patterns reveal technique issues.</text>
+</svg>

@@ -1,0 +1,85 @@
+<svg viewBox="0 0 1200 400" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="400" fill="#0d1117"/>
+
+  <!-- Title -->
+  <text x="600" y="38" font-family="system-ui, -apple-system, sans-serif" font-size="26" font-weight="bold" fill="#ffffff" text-anchor="middle">Thickness Behind the Edge</text>
+
+  <!-- Knife taper triangle -->
+  <polygon points="80,90 80,310 500,200" fill="none" stroke="#6b7280" stroke-width="2"/>
+  <line x1="80" y1="90" x2="80" y2="310" stroke="#6b7280" stroke-width="1" stroke-dasharray="4"/>
+
+  <!-- Spine measurement -->
+  <line x1="60" y1="90" x2="60" y2="310" stroke="#ffffff" stroke-width="1"/>
+  <line x1="55" y1="90" x2="65" y2="90" stroke="#ffffff" stroke-width="1"/>
+  <line x1="55" y1="310" x2="65" y2="310" stroke="#ffffff" stroke-width="1"/>
+  <text x="45" y="195" font-family="system-ui, -apple-system, sans-serif" font-size="14" fill="#ffffff" text-anchor="end">Spine</text>
+  <text x="45" y="212" font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#6b7280" text-anchor="end">2.0–3.5 mm</text>
+  <text x="45" y="226" font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#6b7280" text-anchor="end">0.079–0.138"</text>
+
+  <!-- 10mm from edge -->
+  <line x1="350" y1="148" x2="350" y2="252" stroke="#3b82f6" stroke-width="1" stroke-dasharray="3"/>
+  <line x1="345" y1="148" x2="355" y2="148" stroke="#3b82f6" stroke-width="1"/>
+  <line x1="345" y1="252" x2="355" y2="252" stroke="#3b82f6" stroke-width="1"/>
+  <text x="350" y="138" font-family="system-ui, -apple-system, sans-serif" font-size="14" fill="#3b82f6" text-anchor="middle">10mm from edge</text>
+  <text x="350" y="270" font-family="system-ui, -apple-system, sans-serif" font-size="14" fill="#3b82f6" text-anchor="middle">1.0 mm / 0.039"</text>
+
+  <!-- 5mm from edge -->
+  <line x1="410" y1="168" x2="410" y2="232" stroke="#10b981" stroke-width="1" stroke-dasharray="3"/>
+  <line x1="405" y1="168" x2="415" y2="168" stroke="#10b981" stroke-width="1"/>
+  <line x1="405" y1="232" x2="415" y2="232" stroke="#10b981" stroke-width="1"/>
+  <text x="410" y="158" font-family="system-ui, -apple-system, sans-serif" font-size="14" fill="#10b981" text-anchor="middle">5mm from edge</text>
+  <text x="410" y="250" font-family="system-ui, -apple-system, sans-serif" font-size="14" fill="#10b981" text-anchor="middle">0.5 mm / 0.020"</text>
+
+  <!-- 1mm from edge -->
+  <line x1="475" y1="188" x2="475" y2="212" stroke="#f59e0b" stroke-width="1" stroke-dasharray="3"/>
+  <line x1="470" y1="188" x2="480" y2="188" stroke="#f59e0b" stroke-width="1"/>
+  <line x1="470" y1="212" x2="480" y2="212" stroke="#f59e0b" stroke-width="1"/>
+  <text x="475" y="178" font-family="system-ui, -apple-system, sans-serif" font-size="14" fill="#f59e0b" text-anchor="middle">1mm from edge</text>
+  <text x="475" y="228" font-family="system-ui, -apple-system, sans-serif" font-size="14" fill="#f59e0b" text-anchor="middle">0.2 mm / 0.008"</text>
+
+  <!-- Apex -->
+  <circle cx="500" cy="200" r="4" fill="#ef4444"/>
+  <text x="512" y="196" font-family="system-ui, -apple-system, sans-serif" font-size="14" fill="#ef4444">Apex</text>
+  <text x="512" y="212" font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#ef4444">0.0 mm</text>
+
+  <!-- Right side: Reference table -->
+  <text x="640" y="80" font-family="system-ui, -apple-system, sans-serif" font-size="20" font-weight="bold" fill="#ffffff">Reference by Knife Type</text>
+
+  <!-- Headers -->
+  <text x="640" y="110" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="bold" fill="#6b7280">TYPE</text>
+  <text x="830" y="110" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="bold" fill="#6b7280">AT EDGE</text>
+  <text x="1000" y="110" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="bold" fill="#6b7280">IMPERIAL</text>
+  <line x1="640" y1="118" x2="1150" y2="118" stroke="#6b7280" stroke-width="1" opacity="0.3"/>
+
+  <!-- Japanese Chef -->
+  <rect x="632" y="128" width="6" height="24" fill="#10b981" rx="2"/>
+  <text x="648" y="147" font-family="system-ui, -apple-system, sans-serif" font-size="18" fill="#10b981">Japanese Chef</text>
+  <text x="830" y="147" font-family="system-ui, -apple-system, sans-serif" font-size="18" fill="#ffffff">0.15–0.25 mm</text>
+  <text x="1000" y="147" font-family="system-ui, -apple-system, sans-serif" font-size="18" fill="#9ca3af">0.006–0.010"</text>
+
+  <!-- Western Chef -->
+  <rect x="632" y="162" width="6" height="24" fill="#f59e0b" rx="2"/>
+  <text x="648" y="181" font-family="system-ui, -apple-system, sans-serif" font-size="18" fill="#f59e0b">Western Chef</text>
+  <text x="830" y="181" font-family="system-ui, -apple-system, sans-serif" font-size="18" fill="#ffffff">0.30–0.45 mm</text>
+  <text x="1000" y="181" font-family="system-ui, -apple-system, sans-serif" font-size="18" fill="#9ca3af">0.012–0.018"</text>
+
+  <!-- Carving -->
+  <rect x="632" y="196" width="6" height="24" fill="#3b82f6" rx="2"/>
+  <text x="648" y="215" font-family="system-ui, -apple-system, sans-serif" font-size="18" fill="#3b82f6">Carving</text>
+  <text x="830" y="215" font-family="system-ui, -apple-system, sans-serif" font-size="18" fill="#ffffff">0.25–0.35 mm</text>
+  <text x="1000" y="215" font-family="system-ui, -apple-system, sans-serif" font-size="18" fill="#9ca3af">0.010–0.014"</text>
+
+  <!-- Cleaver -->
+  <rect x="632" y="230" width="6" height="24" fill="#ef4444" rx="2"/>
+  <text x="648" y="249" font-family="system-ui, -apple-system, sans-serif" font-size="18" fill="#ef4444">Cleaver</text>
+  <text x="830" y="249" font-family="system-ui, -apple-system, sans-serif" font-size="18" fill="#ffffff">0.50–0.80 mm</text>
+  <text x="1000" y="249" font-family="system-ui, -apple-system, sans-serif" font-size="18" fill="#9ca3af">0.020–0.032"</text>
+
+  <!-- Rule of thumb box -->
+  <rect x="632" y="280" width="530" height="60" rx="8" fill="none" stroke="#f59e0b" stroke-width="1" opacity="0.5"/>
+  <text x="648" y="302" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="bold" fill="#f59e0b">RULE OF THUMB</text>
+  <text x="648" y="325" font-family="system-ui, -apple-system, sans-serif" font-size="15" fill="#ffffff">0.2 mm at 1mm · 0.5 mm at 5mm · 1.0 mm at 10mm from edge</text>
+
+  <!-- Bottom note -->
+  <text x="600" y="380" font-family="system-ui, -apple-system, sans-serif" font-size="14" fill="#6b7280" text-anchor="middle">Thinner = sharper but more fragile · Thicker = tougher but less keen</text>
+</svg>

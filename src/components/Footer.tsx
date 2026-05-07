@@ -4,21 +4,19 @@ import { Phone, Mail, ExternalLink, Clock } from "lucide-react";
 
 const quickLinks = [
   { label: "Home", href: "/" },
-  { label: "How We Sharpen", href: "/how-we-sharpen-your-knives" },
+  { label: "Services", href: "/#services" },
   { label: "Pricing", href: "/#pricing" },
   { label: "Mobile Service", href: "/#mobile-service" },
   { label: "Drop Off", href: "/#drop-off" },
-  { label: "Restaurants", href: "/restaurants" },
-  { label: "Events", href: "/event-sharpening-service" },
-  { label: "Training", href: "/train-to-be-sharp" },
   { label: "Service Areas", href: "/service-area" },
-  { label: "Blog", href: "/blog" },
+  { label: "Restaurants", href: "/restaurants" },
   { label: "About", href: "/#about" },
   { label: "Contact", href: "/#contact" },
 ];
 
 const businessHours = [
-  { days: "Monday – Saturday", hours: "10:00 am – 7:00 pm" },
+  { days: "Monday – Friday", hours: "Noon – 7:00 pm" },
+  { days: "Saturday", hours: "Noon – 4:00 pm" },
   { days: "Drop Box", hours: "24 / 7" },
 ];
 
@@ -80,17 +78,17 @@ const YouTubeIcon = () => (
 const socialLinks = [
   {
     label: "Instagram",
-    href: "https://www.instagram.com/coveblades/",
+    href: "https://www.instagram.com/covecutlery/",
     Icon: InstagramIcon,
   },
   {
     label: "Facebook",
-    href: "https://www.facebook.com/coveblades",
+    href: "https://www.facebook.com/covecutlery",
     Icon: FacebookIcon,
   },
   {
     label: "YouTube",
-    href: "https://www.youtube.com/@coveblades",
+    href: "https://www.youtube.com/@covecutlery",
     Icon: YouTubeIcon,
   },
 ];
@@ -187,14 +185,14 @@ export default function Footer() {
             <ul className="flex flex-col gap-4">
               <li>
                 <a
-                  href="tel:6042108180"
+                  href="tel:6043731500"
                   className="inline-flex items-center gap-2 text-[#6B7280] hover:text-[#D4A017] text-sm transition-colors duration-200 group"
                 >
                   <Phone
                     size={14}
                     className="text-[#D4A017] shrink-0 group-hover:scale-110 transition-transform duration-200"
                   />
-                  604 210 8180
+                  604 373 1500
                 </a>
               </li>
               <li>
@@ -211,7 +209,7 @@ export default function Footer() {
               </li>
               <li className="pt-1">
                 <a
-                  href="https://www.instagram.com/coveblades/"
+                  href="https://www.instagram.com/covecutlery/"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-1.5 text-[#6B7280] hover:text-[#D4A017] text-sm transition-colors duration-200"
@@ -228,27 +226,14 @@ export default function Footer() {
 
       {/* Bottom bar */}
       <div className="border-t border-[#30363D]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 flex flex-col items-center gap-3">
-          <div className="w-full flex flex-col sm:flex-row items-center justify-between gap-3">
-            <p className="text-[#6B7280] text-xs">
-              &copy; {new Date().getFullYear()} Cove Blades. All rights reserved.
-            </p>
-            <div className="flex items-center gap-4">
-              <a href="/privacy" className="text-[#6B7280] text-xs hover:text-white transition-colors">Privacy Policy</a>
-              <a href="/terms" className="text-[#6B7280] text-xs hover:text-white transition-colors">Terms of Service</a>
-            </div>
-          </div>
-          <p className="text-[#6B7280] text-xs text-center">
-            Built with love by{" "}
-            <a
-              href="https://snapsonic.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-[#D4A017] transition-colors"
-            >
-              Snapsonic
-            </a>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 flex flex-col sm:flex-row items-center justify-between gap-3">
+          <p className="text-[#6B7280] text-xs">
+            &copy; {new Date().getFullYear()} Cove Blades. All rights reserved.
           </p>
+          <div className="flex items-center gap-4">
+            <a href="/privacy" className="text-[#6B7280] text-xs hover:text-white transition-colors">Privacy Policy</a>
+            <a href="/terms" className="text-[#6B7280] text-xs hover:text-white transition-colors">Terms of Service</a>
+          </div>
         </div>
       </div>
     </footer>

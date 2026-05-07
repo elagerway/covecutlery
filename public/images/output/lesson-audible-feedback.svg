@@ -1,0 +1,47 @@
+<svg viewBox="0 0 1200 400" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="400" fill="#0d1117"/>
+
+  <!-- Title -->
+  <text x="600" y="40" font-family="system-ui, -apple-system, sans-serif" font-size="26" font-weight="bold" fill="#ffffff" text-anchor="middle">Audible Feedback</text>
+  <text x="600" y="62" font-family="system-ui, -apple-system, sans-serif" font-size="18" fill="#6b7280" text-anchor="middle">The sound tells you everything</text>
+
+  <!-- Headers -->
+  <text x="130" y="100" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="bold" fill="#6b7280">SOUND</text>
+  <text x="350" y="100" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="bold" fill="#6b7280">NAME</text>
+  <text x="560" y="100" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="bold" fill="#6b7280">MEANING</text>
+  <text x="860" y="100" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="bold" fill="#6b7280">ACTION</text>
+  <line x1="80" y1="110" x2="1120" y2="110" stroke="#6b7280" stroke-width="1" opacity="0.3"/>
+
+  <!-- Row 1: HISS -->
+  <!-- Sound wave icon -->
+  <path d="M 100,145 Q 108,135 116,145 Q 124,155 132,145 Q 140,135 148,145" fill="none" stroke="#10b981" stroke-width="2"/>
+  <path d="M 105,155 Q 112,148 119,155 Q 126,162 133,155" fill="none" stroke="#10b981" stroke-width="1.5" opacity="0.6"/>
+  <text x="350" y="150" font-family="system-ui, -apple-system, sans-serif" font-size="18" font-weight="bold" fill="#10b981">HISS</text>
+  <text x="560" y="150" font-family="system-ui, -apple-system, sans-serif" font-size="16" fill="#ffffff">Even contact</text>
+  <text x="860" y="150" font-family="system-ui, -apple-system, sans-serif" font-size="16" fill="#10b981">Keep this sound</text>
+
+  <line x1="80" y1="180" x2="1120" y2="180" stroke="#6b7280" stroke-width="1" opacity="0.15"/>
+
+  <!-- Row 2: GROWL -->
+  <path d="M 98,220 Q 108,200 118,220 Q 128,240 138,220 Q 148,200 158,220" fill="none" stroke="#f59e0b" stroke-width="2.5"/>
+  <path d="M 103,235 Q 113,225 123,235 Q 133,245 143,235" fill="none" stroke="#f59e0b" stroke-width="1.5" opacity="0.6"/>
+  <text x="350" y="225" font-family="system-ui, -apple-system, sans-serif" font-size="18" font-weight="bold" fill="#f59e0b">GROWL</text>
+  <text x="560" y="225" font-family="system-ui, -apple-system, sans-serif" font-size="16" fill="#ffffff">Too much pressure</text>
+  <text x="860" y="225" font-family="system-ui, -apple-system, sans-serif" font-size="16" fill="#f59e0b">Lighten up</text>
+
+  <line x1="80" y1="255" x2="1120" y2="255" stroke="#6b7280" stroke-width="1" opacity="0.15"/>
+
+  <!-- Row 3: SILENCE -->
+  <line x1="100" y1="295" x2="155" y2="295" stroke="#ef4444" stroke-width="2" stroke-dasharray="3,6"/>
+  <text x="350" y="300" font-family="system-ui, -apple-system, sans-serif" font-size="18" font-weight="bold" fill="#ef4444">SILENCE</text>
+  <text x="560" y="300" font-family="system-ui, -apple-system, sans-serif" font-size="16" fill="#ffffff">Off the belt</text>
+  <text x="860" y="300" font-family="system-ui, -apple-system, sans-serif" font-size="16" fill="#ef4444">Check angle</text>
+
+  <line x1="80" y1="330" x2="1120" y2="330" stroke="#6b7280" stroke-width="1" opacity="0.15"/>
+
+  <!-- Row 4: SCREECH -->
+  <path d="M 96,370 L 104,350 L 112,380 L 120,345 L 128,375 L 136,352 L 144,378 L 152,355 L 160,370" fill="none" stroke="#ef4444" stroke-width="2"/>
+  <text x="350" y="370" font-family="system-ui, -apple-system, sans-serif" font-size="18" font-weight="bold" fill="#ef4444">SCREECH</text>
+  <text x="560" y="370" font-family="system-ui, -apple-system, sans-serif" font-size="16" fill="#ffffff">Belt worn through</text>
+  <text x="860" y="370" font-family="system-ui, -apple-system, sans-serif" font-size="16" fill="#ef4444">Replace belt</text>
+</svg>

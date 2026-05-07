@@ -1,0 +1,42 @@
+<svg viewBox="0 0 1200 400" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="400" fill="#0d1117"/>
+
+  <!-- Title -->
+  <text x="600" y="38" font-family="system-ui, -apple-system, sans-serif" font-size="26" font-weight="bold" fill="#ffffff" text-anchor="middle">Strop Wheel</text>
+  <text x="600" y="62" font-family="system-ui, -apple-system, sans-serif" font-size="18" fill="#6b7280" text-anchor="middle">Final polish — the last thing that touches the edge</text>
+
+  <!-- Left: Strop wheel circle -->
+  <circle cx="280" cy="230" r="120" fill="none" stroke="#6b7280" stroke-width="3"/>
+  <circle cx="280" cy="230" r="10" fill="#6b7280"/>
+
+  <!-- Rotation arrow (clockwise) -->
+  <path d="M 340,120 A 130,130 0 0,1 405,200" fill="none" stroke="#10b981" stroke-width="2.5"/>
+  <polygon points="405,194 412,205 399,205" fill="#10b981"/>
+  <text x="390" y="155" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="bold" fill="#10b981">ROTATION</text>
+
+  <!-- Wheel label -->
+  <text x="280" y="225" font-family="system-ui, -apple-system, sans-serif" font-size="16" font-weight="bold" fill="#ffffff" text-anchor="middle">LEATHER</text>
+  <text x="280" y="245" font-family="system-ui, -apple-system, sans-serif" font-size="16" font-weight="bold" fill="#ffffff" text-anchor="middle">WHEEL</text>
+
+  <!-- Knife approaching (edge trailing on wheel) -->
+  <line x1="350" y1="140" x2="410" y2="115" stroke="#ffffff" stroke-width="2"/>
+  <circle cx="350" cy="140" r="3" fill="#f59e0b"/>
+  <text x="420" y="110" font-family="system-ui, -apple-system, sans-serif" font-size="14" fill="#ffffff">spine</text>
+  <text x="335" y="130" font-family="system-ui, -apple-system, sans-serif" font-size="14" fill="#f59e0b">edge</text>
+
+  <!-- Contact point indicator -->
+  <text x="280" y="380" font-family="system-ui, -apple-system, sans-serif" font-size="13" fill="#6b7280" text-anchor="middle">Apply at top of wheel, trailing edge away from rotation</text>
+
+  <!-- Right: Technique list -->
+  <rect x="500" y="90" width="6" height="280" fill="#10b981" rx="3"/>
+  <text x="530" y="115" font-family="system-ui, -apple-system, sans-serif" font-size="18" font-weight="bold" fill="#10b981">TECHNIQUE</text>
+
+  <text x="530" y="148" font-family="system-ui, -apple-system, sans-serif" font-size="15" fill="#ffffff">&#x2022; Edge-trailing direction only</text>
+  <text x="530" y="172" font-family="system-ui, -apple-system, sans-serif" font-size="15" fill="#ffffff">&#x2022; Absolute minimum pressure</text>
+  <text x="530" y="196" font-family="system-ui, -apple-system, sans-serif" font-size="15" fill="#ffffff">&#x2022; Just let the blade kiss the wheel</text>
+  <text x="530" y="220" font-family="system-ui, -apple-system, sans-serif" font-size="15" fill="#ffffff">&#x2022; 2-3 light passes per side</text>
+  <text x="530" y="244" font-family="system-ui, -apple-system, sans-serif" font-size="15" fill="#ffffff">&#x2022; Alternate sides each pass</text>
+  <text x="530" y="268" font-family="system-ui, -apple-system, sans-serif" font-size="15" fill="#ffffff">&#x2022; Sweep heel to tip smoothly</text>
+  <text x="530" y="292" font-family="system-ui, -apple-system, sans-serif" font-size="15" fill="#ffffff">&#x2022; Same angle as previous steps</text>
+  <text x="530" y="316" font-family="system-ui, -apple-system, sans-serif" font-size="15" fill="#ffffff">&#x2022; Use compound if available</text>
+</svg>

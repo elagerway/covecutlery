@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import * as postmark from "postmark";
 import { requireAdmin, getServiceClient } from "@/lib/admin";
 import { formatCAD, escapeHtml, LineItem } from "@/lib/format";
-import { safeOrigin } from "@/lib/origin";
 
 const FROM_EMAIL = "info@coveblades.com";
 const FROM_NAME = "Cove Blades";
@@ -53,7 +52,7 @@ function buildInvoiceHtml(invoice: {
           <img src="https://coveblades.com/logo-icon-512.png" alt="Cove Blades" width="40" height="40" style="display:block;border-radius:6px;" />
         </td>
         <td style="vertical-align:middle;">
-          <p style="margin:0;color:#D4A017;font-size:20px;font-weight:700;letter-spacing:.5px;">COVE BLADES</p>
+          <p style="margin:0;color:#D4A017;font-size:20px;font-weight:700;letter-spacing:.5px;">COVE CUTLERY</p>
           <p style="margin:2px 0 0;color:#6B7280;font-size:13px;">Invoice #${escapeHtml(invoice.invoice_number)}</p>
         </td>
       </tr></table>
@@ -92,7 +91,7 @@ function buildInvoiceHtml(invoice: {
         This invoice has been paid. Thank you!
       </p>`}
       <p style="margin:24px 0 0;font-size:13px;color:#888;text-align:center;">
-        <a href="https://coveblades.com" style="color:#D4A017;">coveblades.com</a> · 604-210-8180
+        <a href="https://coveblades.com" style="color:#D4A017;">coveblades.com</a> · 604-373-1500
       </p>
     </div>
   </div>
@@ -139,7 +138,7 @@ function buildInvoiceText(invoice: {
       : null,
     ``,
     invoice.notes ? `Note: ${invoice.notes}\n` : null,
-    `Cove Blades · coveblades.com · 604-210-8180`,
+    `Cove Blades · coveblades.com · 604-373-1500`,
   ].filter(l => l !== null).join("\n");
 }
 
@@ -167,7 +166,7 @@ export async function POST(
 
   if (!invoice) return NextResponse.json({ error: "Invoice not found" }, { status: 404 });
 
-  const origin = safeOrigin(req);
+  const origin = process.env.NODE_ENV === "development" ? (req.headers.get("origin") ?? "https://coveblades.com") : "https://coveblades.com";
   const errors: string[] = [];
   let sent = 0;
 

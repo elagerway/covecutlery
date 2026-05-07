@@ -1,0 +1,56 @@
+<svg viewBox="0 0 1200 400" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="400" fill="#0d1117"/>
+
+  <!-- Title -->
+  <text x="600" y="38" font-family="system-ui, -apple-system, sans-serif" font-size="26" font-weight="bold" fill="#ffffff" text-anchor="middle">Your Stance</text>
+
+  <!-- Left: Technique list with green accent bar -->
+  <rect x="80" y="70" width="6" height="310" fill="#10b981" rx="3"/>
+
+  <text x="110" y="95" font-family="system-ui, -apple-system, sans-serif" font-size="18" font-weight="bold" fill="#10b981">BODY POSITION</text>
+
+  <circle cx="125" cy="135" r="6" fill="#10b981" opacity="0.3"/>
+  <text x="127" y="140" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="bold" fill="#10b981" text-anchor="middle">1</text>
+  <text x="150" y="132" font-family="system-ui, -apple-system, sans-serif" font-size="16" fill="#ffffff">Feet shoulder-width apart</text>
+  <text x="150" y="150" font-family="system-ui, -apple-system, sans-serif" font-size="13" fill="#6b7280">Stable base, balanced weight on both feet</text>
+
+  <circle cx="125" cy="185" r="6" fill="#10b981" opacity="0.3"/>
+  <text x="127" y="190" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="bold" fill="#10b981" text-anchor="middle">2</text>
+  <text x="150" y="182" font-family="system-ui, -apple-system, sans-serif" font-size="16" fill="#ffffff">Square to the grinder</text>
+  <text x="150" y="200" font-family="system-ui, -apple-system, sans-serif" font-size="13" fill="#6b7280">Face the belt head-on, not at an angle</text>
+
+  <circle cx="125" cy="235" r="6" fill="#10b981" opacity="0.3"/>
+  <text x="127" y="240" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="bold" fill="#10b981" text-anchor="middle">3</text>
+  <text x="150" y="232" font-family="system-ui, -apple-system, sans-serif" font-size="16" fill="#ffffff">Blade hand pushes</text>
+  <text x="150" y="250" font-family="system-ui, -apple-system, sans-serif" font-size="13" fill="#6b7280">Dominant hand holds and guides the blade</text>
+
+  <circle cx="125" cy="285" r="6" fill="#10b981" opacity="0.3"/>
+  <text x="127" y="290" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="bold" fill="#10b981" text-anchor="middle">4</text>
+  <text x="150" y="282" font-family="system-ui, -apple-system, sans-serif" font-size="16" fill="#ffffff">Support hand stabilizes</text>
+  <text x="150" y="300" font-family="system-ui, -apple-system, sans-serif" font-size="13" fill="#6b7280">Off hand controls angle and adds light pressure</text>
+
+  <circle cx="125" cy="335" r="6" fill="#10b981" opacity="0.3"/>
+  <text x="127" y="340" font-family="system-ui, -apple-system, sans-serif" font-size="13" font-weight="bold" fill="#10b981" text-anchor="middle">5</text>
+  <text x="150" y="332" font-family="system-ui, -apple-system, sans-serif" font-size="16" fill="#ffffff">Wrists straight and locked</text>
+  <text x="150" y="350" font-family="system-ui, -apple-system, sans-serif" font-size="13" fill="#6b7280">Movement comes from arms, not wrist flicks</text>
+
+  <!-- Right: Visual stance diagram (simplified) -->
+  <rect x="640" y="70" width="500" height="310" fill="#1e293b" stroke="#6b7280" stroke-width="1" rx="8"/>
+  <text x="890" y="100" font-family="system-ui, -apple-system, sans-serif" font-size="18" font-weight="bold" fill="#ffffff" text-anchor="middle">KEY PRINCIPLES</text>
+  <line x1="660" y1="112" x2="1120" y2="112" stroke="#6b7280" stroke-width="1" opacity="0.3"/>
+
+  <rect x="680" y="130" width="440" height="55" fill="none" stroke="#10b981" stroke-width="1" rx="6" opacity="0.3"/>
+  <text x="700" y="155" font-family="system-ui, -apple-system, sans-serif" font-size="16" font-weight="bold" fill="#10b981">RELAX</text>
+  <text x="700" y="175" font-family="system-ui, -apple-system, sans-serif" font-size="14" fill="#ffffff">Tension causes inconsistency. Breathe. Stay loose.</text>
+
+  <rect x="680" y="200" width="440" height="55" fill="none" stroke="#3b82f6" stroke-width="1" rx="6" opacity="0.3"/>
+  <text x="700" y="225" font-family="system-ui, -apple-system, sans-serif" font-size="16" font-weight="bold" fill="#3b82f6">CONSISTENT</text>
+  <text x="700" y="245" font-family="system-ui, -apple-system, sans-serif" font-size="14" fill="#ffffff">Same stance every time = same results every time.</text>
+
+  <rect x="680" y="270" width="440" height="55" fill="none" stroke="#f59e0b" stroke-width="1" rx="6" opacity="0.3"/>
+  <text x="700" y="295" font-family="system-ui, -apple-system, sans-serif" font-size="16" font-weight="bold" fill="#f59e0b">SAFE DISTANCE</text>
+  <text x="700" y="315" font-family="system-ui, -apple-system, sans-serif" font-size="14" fill="#ffffff">Arms length from belt. Face shield on. No loose clothing.</text>
+
+  <rect x="680" y="340" width="440" height="30" fill="none" stroke="#ef4444" stroke-width="1" rx="6" opacity="0.3"/>
+  <text x="700" y="361" font-family="system-ui, -apple-system, sans-serif" font-size="13" fill="#ef4444">If it feels awkward, stop and reset your position.</text>
+</svg>

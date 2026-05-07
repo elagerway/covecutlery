@@ -14,13 +14,13 @@ export default function TermsPage() {
       <main className="min-h-screen bg-[#0D1117] pt-24 pb-20">
         <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
           <h1 className="text-3xl font-bold text-white mb-2">Terms of Service</h1>
-          <p className="text-[#6B7280] text-sm mb-10">Last updated: April 29, 2026</p>
+          <p className="text-[#6B7280] text-sm mb-10">Last updated: March 25, 2026</p>
 
           <div className="prose prose-invert prose-sm max-w-none space-y-8 text-[#9CA3AF]">
 
             <section>
               <h2 className="text-lg font-semibold text-white mb-3">1. Services</h2>
-              <p>Cove Blades provides professional cutlery and blade sharpening services in Metro Vancouver and the Lower Mainland, BC. Services include mobile sharpening, drop-off sharpening, on-site event sharpening, and sharpening training programs.</p>
+              <p>Cove Blades provides professional cutlery and blade sharpening services in Metro Vancouver and the Lower Mainland, BC. Services include mobile sharpening, drop-off, and special event sharpening.</p>
             </section>
 
             <section>
@@ -42,7 +42,7 @@ export default function TermsPage() {
 
             <section>
               <h2 className="text-lg font-semibold text-white mb-3">5. Cancellations</h2>
-              <p>Please provide at least 24 hours notice to cancel or reschedule a mobile appointment. Repeated no-shows or late cancellations may, at our discretion, result in a requirement for prepayment on future bookings.</p>
+              <p>Please provide at least 24 hours notice to cancel or reschedule a mobile appointment. Deposits may be forfeited for no-shows or late cancellations at our discretion.</p>
             </section>
 
             <section>
@@ -62,7 +62,7 @@ export default function TermsPage() {
                 <strong className="text-white">Cove Blades</strong><br />
                 North Vancouver, BC<br />
                 <a href="mailto:info@coveblades.com" className="text-[#D4A017] hover:underline">info@coveblades.com</a><br />
-                <a href="tel:6042108180" className="text-[#D4A017] hover:underline">604 210 8180</a>
+                <a href="tel:6043731500" className="text-[#D4A017] hover:underline">604 373 1500</a>
               </p>
             </section>
 

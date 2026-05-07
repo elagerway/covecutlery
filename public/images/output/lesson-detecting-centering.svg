@@ -1,0 +1,69 @@
+<svg viewBox="0 0 1200 400" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="400" fill="#0d1117"/>
+
+  <!-- Title -->
+  <text x="600" y="38" font-family="system-ui, -apple-system, sans-serif" font-size="26" font-weight="bold" fill="#ffffff" text-anchor="middle">Detecting &amp; Centering</text>
+
+  <!-- Detection method 1: FINGERNAIL -->
+  <rect x="60" y="70" width="340" height="190" fill="#1e293b" stroke="#10b981" stroke-width="2" rx="8"/>
+  <text x="230" y="100" font-family="system-ui, -apple-system, sans-serif" font-size="20" font-weight="bold" fill="#10b981" text-anchor="middle">FINGERNAIL</text>
+  <line x1="80" y1="112" x2="380" y2="112" stroke="#6b7280" stroke-width="1" opacity="0.3"/>
+  <text x="230" y="138" font-family="system-ui, -apple-system, sans-serif" font-size="15" fill="#ffffff" text-anchor="middle">Drag nail perpendicular</text>
+  <text x="230" y="157" font-family="system-ui, -apple-system, sans-serif" font-size="15" fill="#ffffff" text-anchor="middle">across the edge</text>
+  <text x="230" y="182" font-family="system-ui, -apple-system, sans-serif" font-size="13" fill="#6b7280" text-anchor="middle">Burr catches and drags</text>
+  <text x="230" y="199" font-family="system-ui, -apple-system, sans-serif" font-size="13" fill="#6b7280" text-anchor="middle">your fingernail</text>
+  <text x="230" y="245" font-family="system-ui, -apple-system, sans-serif" font-size="13" fill="#10b981" text-anchor="middle">Most reliable method</text>
+
+  <!-- Detection method 2: CLOTH -->
+  <rect x="430" y="70" width="340" height="190" fill="#1e293b" stroke="#3b82f6" stroke-width="2" rx="8"/>
+  <text x="600" y="100" font-family="system-ui, -apple-system, sans-serif" font-size="20" font-weight="bold" fill="#3b82f6" text-anchor="middle">CLOTH</text>
+  <line x1="450" y1="112" x2="750" y2="112" stroke="#6b7280" stroke-width="1" opacity="0.3"/>
+  <text x="600" y="138" font-family="system-ui, -apple-system, sans-serif" font-size="15" fill="#ffffff" text-anchor="middle">Drag edge across</text>
+  <text x="600" y="157" font-family="system-ui, -apple-system, sans-serif" font-size="15" fill="#ffffff" text-anchor="middle">a piece of cloth</text>
+  <text x="600" y="182" font-family="system-ui, -apple-system, sans-serif" font-size="13" fill="#6b7280" text-anchor="middle">Burr catches fibers</text>
+  <text x="600" y="199" font-family="system-ui, -apple-system, sans-serif" font-size="13" fill="#6b7280" text-anchor="middle">and feels grabby</text>
+  <text x="600" y="245" font-family="system-ui, -apple-system, sans-serif" font-size="13" fill="#3b82f6" text-anchor="middle">Good for large burrs</text>
+
+  <!-- Detection method 3: LIGHT -->
+  <rect x="800" y="70" width="340" height="190" fill="#1e293b" stroke="#f59e0b" stroke-width="2" rx="8"/>
+  <text x="970" y="100" font-family="system-ui, -apple-system, sans-serif" font-size="20" font-weight="bold" fill="#f59e0b" text-anchor="middle">LIGHT</text>
+  <line x1="820" y1="112" x2="1120" y2="112" stroke="#6b7280" stroke-width="1" opacity="0.3"/>
+  <text x="970" y="138" font-family="system-ui, -apple-system, sans-serif" font-size="15" fill="#ffffff" text-anchor="middle">Hold edge under bright</text>
+  <text x="970" y="157" font-family="system-ui, -apple-system, sans-serif" font-size="15" fill="#ffffff" text-anchor="middle">light, look for reflection</text>
+  <text x="970" y="182" font-family="system-ui, -apple-system, sans-serif" font-size="13" fill="#6b7280" text-anchor="middle">Dull spots reflect light</text>
+  <text x="970" y="199" font-family="system-ui, -apple-system, sans-serif" font-size="13" fill="#6b7280" text-anchor="middle">Sharp edge = no glint</text>
+  <text x="970" y="245" font-family="system-ui, -apple-system, sans-serif" font-size="13" fill="#f59e0b" text-anchor="middle">Best for final check</text>
+
+  <!-- Bottom: Centering process -->
+  <text x="600" y="295" font-family="system-ui, -apple-system, sans-serif" font-size="18" font-weight="bold" fill="#ffffff" text-anchor="middle">Centering Process</text>
+  <line x1="200" y1="305" x2="1000" y2="305" stroke="#6b7280" stroke-width="1" opacity="0.3"/>
+
+  <!-- Step 1 -->
+  <rect x="100" y="320" width="200" height="55" fill="#1e293b" stroke="#10b981" stroke-width="1.5" rx="6"/>
+  <text x="200" y="342" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="bold" fill="#10b981" text-anchor="middle">1. DETECT</text>
+  <text x="200" y="362" font-family="system-ui, -apple-system, sans-serif" font-size="14" fill="#ffffff" text-anchor="middle">Find the burr side</text>
+
+  <line x1="305" y1="347" x2="340" y2="347" stroke="#6b7280" stroke-width="1.5"/>
+  <polygon points="340,343 350,347 340,351" fill="#6b7280"/>
+
+  <!-- Step 2 -->
+  <rect x="355" y="320" width="200" height="55" fill="#1e293b" stroke="#3b82f6" stroke-width="1.5" rx="6"/>
+  <text x="455" y="342" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="bold" fill="#3b82f6" text-anchor="middle">2. FLIP</text>
+  <text x="455" y="362" font-family="system-ui, -apple-system, sans-serif" font-size="14" fill="#ffffff" text-anchor="middle">Grind opposite side</text>
+
+  <line x1="560" y1="347" x2="595" y2="347" stroke="#6b7280" stroke-width="1.5"/>
+  <polygon points="595,343 605,347 595,351" fill="#6b7280"/>
+
+  <!-- Step 3 -->
+  <rect x="610" y="320" width="200" height="55" fill="#1e293b" stroke="#f59e0b" stroke-width="1.5" rx="6"/>
+  <text x="710" y="342" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="bold" fill="#f59e0b" text-anchor="middle">3. RECHECK</text>
+  <text x="710" y="362" font-family="system-ui, -apple-system, sans-serif" font-size="14" fill="#ffffff" text-anchor="middle">Equal on both sides?</text>
+
+  <line x1="815" y1="347" x2="850" y2="347" stroke="#6b7280" stroke-width="1.5"/>
+  <polygon points="850,343 860,347 850,351" fill="#6b7280"/>
+
+  <!-- Step 4 -->
+  <rect x="865" y="320" width="200" height="55" fill="#1e293b" stroke="#10b981" stroke-width="1.5" rx="6"/>
+  <text x="965" y="342" font-family="system-ui, -apple-system, sans-serif" font-size="14" font-weight="bold" fill="#10b981" text-anchor="middle">4. REFINE</text>
+  <text x="965" y="362" font-family="system-ui, -apple-system, sans-serif" font-size="14" fill="#ffffff" text-anchor="middle">Move to next grit</text>
+</svg>

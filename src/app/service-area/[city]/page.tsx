@@ -4,7 +4,7 @@ import { notFound } from 'next/navigation'
 import { ChevronRight, MapPin, Phone, Clock, Shield } from 'lucide-react'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
-import { cities, getCityBySlug, getRelatedCities } from '@/data/cities'
+import { cities, getCityBySlug } from '@/data/cities'
 import { safeJsonLd, breadcrumbSchema, faqPageSchema } from '@/lib/schema'
 
 export function generateStaticParams() {
@@ -48,62 +48,23 @@ export default async function CityPage({
     '@context': 'https://schema.org',
     '@type': 'Service',
     name: `Knife Sharpening in ${city.name}`,
-    serviceType: 'Mobile knife sharpening',
     provider: {
       '@type': 'LocalBusiness',
       name: 'Cove Blades',
       url: 'https://coveblades.com',
-      telephone: '+1-604-210-8180',
-      email: 'info@coveblades.com',
-      address: {
-        '@type': 'PostalAddress',
-        streetAddress: '4086 Brockton Crescent',
-        addressLocality: 'North Vancouver',
-        addressRegion: 'BC',
-        postalCode: 'V7G 1E6',
-        addressCountry: 'CA',
+    },
+    areaServed: {
+      '@type': 'City',
+      name: city.name,
+      containedInPlace: {
+        '@type': 'AdministrativeArea',
+        name: 'British Columbia',
       },
     },
-    areaServed: [
-      {
-        '@type': 'City',
-        name: city.name,
-        containedInPlace: { '@type': 'AdministrativeArea', name: 'British Columbia' },
-      },
-      ...city.neighbourhoods.map(n => ({
-        '@type': 'Place',
-        name: `${n}, ${city.name}, BC`,
-      })),
-    ],
-    hasOfferCatalog: {
-      '@type': 'OfferCatalog',
-      name: 'Knife Sharpening Services',
-      itemListElement: [
-        {
-          '@type': 'Offer',
-          itemOffered: { '@type': 'Service', name: 'Standard kitchen knife sharpening' },
-          price: '12.00',
-          priceCurrency: 'CAD',
-        },
-        {
-          '@type': 'Offer',
-          itemOffered: { '@type': 'Service', name: 'Japanese single-bevel or ceramic knife sharpening' },
-          price: '18.00',
-          priceCurrency: 'CAD',
-        },
-        {
-          '@type': 'Offer',
-          itemOffered: { '@type': 'Service', name: 'Kitchen scissors sharpening' },
-          price: '12.00',
-          priceCurrency: 'CAD',
-        },
-      ],
-    },
-    description: `Professional mobile knife sharpening service in ${city.name}, BC. We come to your home or restaurant. ${city.driveTime}.`,
+    description: `Professional mobile knife sharpening service in ${city.name}, BC. We come to your home or restaurant.`,
   }
 
   const paragraphs = city.description.split('\n\n')
-  const relatedCities = getRelatedCities(city, 3)
 
   return (
     <div
@@ -137,15 +98,11 @@ export default async function CityPage({
               className="text-4xl sm:text-5xl font-bold leading-tight tracking-tight mb-6"
               style={{ color: '#FFFFFF' }}
             >
-              {city.dropOffEmphasis
-                ? <>Looking for Knife Sharpening in <span style={{ color: '#D4A017' }}>{city.name}</span>, BC?</>
-                : <>Mobile Knife Sharpening in <span style={{ color: '#D4A017' }}>{city.name}</span>, BC</>}
+              Looking for Knife Sharpening in{' '}
+              <span style={{ color: '#D4A017' }}>{city.name}</span>, BC?
             </h1>
             <p className="text-lg max-w-xl mx-auto leading-relaxed" style={{ color: '#6B7280' }}>
-              {city.driveTime}.{' '}
-              {city.dropOffEmphasis
-                ? 'Mobile service, 24/7 drop-off, and $12/knife with a 30-day edge guarantee.'
-                : 'We come to your home or restaurant. $12/knife with a 30-day edge guarantee.'}
+              {city.driveTime}. Mobile service, 24/7 drop-off, and $12/knife with a 30-day edge guarantee.
             </p>
           </div>
         </section>
@@ -172,8 +129,8 @@ export default async function CityPage({
         >
           <div className="max-w-4xl mx-auto">
             <h2 className="text-2xl sm:text-3xl font-bold mb-10 text-center" style={{ color: '#FFFFFF' }}>
-              How does mobile sharpening work in{' '}
-              <span style={{ color: '#D4A017' }}>{city.name}</span>?
+              How Mobile Sharpening Works in{' '}
+              <span style={{ color: '#D4A017' }}>{city.name}</span>
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               {[
@@ -225,8 +182,8 @@ export default async function CityPage({
         <section className="py-16 px-6" style={{ borderTop: '1px solid #30363D' }}>
           <div className="max-w-4xl mx-auto">
             <h2 className="text-2xl sm:text-3xl font-bold mb-8" style={{ color: '#FFFFFF' }}>
-              Which {city.name} neighbourhoods do we{' '}
-              <span style={{ color: '#D4A017' }}>serve</span>?
+              Neighbourhoods We Serve in{' '}
+              <span style={{ color: '#D4A017' }}>{city.name}</span>
             </h2>
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
               {city.neighbourhoods.map(hood => (
@@ -274,45 +231,6 @@ export default async function CityPage({
           </div>
         </section>
 
-        {/* Related Service Areas */}
-        {relatedCities.length > 0 && (
-          <section className="py-14 px-6" style={{ borderTop: '1px solid #30363D' }}>
-            <div className="max-w-4xl mx-auto">
-              <h2 className="text-xl sm:text-2xl font-bold mb-6 text-center" style={{ color: '#FFFFFF' }}>
-                Also serving{' '}
-                <span style={{ color: '#D4A017' }}>nearby</span>
-              </h2>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                {relatedCities.map(rc => (
-                  <Link
-                    key={rc.slug}
-                    href={`/service-area/${rc.slug}`}
-                    className="group rounded-lg border p-4 transition-all duration-200 hover:border-[#D4A017]/50"
-                    style={{ backgroundColor: '#161B22', borderColor: '#30363D' }}
-                  >
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <MapPin size={14} style={{ color: '#D4A017' }} />
-                        <span className="font-semibold text-sm" style={{ color: '#FFFFFF' }}>
-                          {rc.name}
-                        </span>
-                      </div>
-                      <ChevronRight
-                        size={14}
-                        className="transition-transform duration-200 group-hover:translate-x-1"
-                        style={{ color: '#6B7280' }}
-                      />
-                    </div>
-                    <p className="text-xs mt-2" style={{ color: '#6B7280' }}>
-                      {rc.driveTime}
-                    </p>
-                  </Link>
-                ))}
-              </div>
-            </div>
-          </section>
-        )}
-
         {/* CTA */}
         <section className="py-20 px-6 text-center" style={{ borderTop: '1px solid #30363D' }}>
           <div className="max-w-2xl mx-auto">
@@ -320,9 +238,7 @@ export default async function CityPage({
               Ready to Get Your <span style={{ color: '#D4A017' }}>Knives Sharp?</span>
             </h2>
             <p className="text-base mb-8" style={{ color: '#6B7280' }}>
-              {city.dropOffEmphasis
-                ? `Book a mobile visit to ${city.name} or drop off your knives at our 24/7 secure box in North Vancouver.`
-                : `Book a mobile visit and we'll come to your ${city.name} address — no need to drop off or ship your knives.`}
+              Book a mobile visit to {city.name} or drop off your knives at our 24/7 secure box in North Vancouver.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link
@@ -334,12 +250,12 @@ export default async function CityPage({
                 <ChevronRight size={18} />
               </Link>
               <a
-                href="tel:6042108180"
+                href="tel:6043731500"
                 className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-lg font-semibold text-base border-2 transition-all duration-200 hover:bg-yellow-900/20 active:scale-95"
                 style={{ borderColor: '#D4A017', color: '#D4A017' }}
               >
                 <Phone size={16} />
-                604 210 8180
+                604 373 1500
               </a>
             </div>
 

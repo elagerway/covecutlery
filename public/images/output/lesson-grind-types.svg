@@ -1,0 +1,58 @@
+<svg viewBox="0 0 1200 400" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="400" fill="#0d1117"/>
+
+  <!-- Title -->
+  <text x="600" y="38" font-family="system-ui, -apple-system, sans-serif" font-size="26" font-weight="bold" fill="#ffffff" text-anchor="middle">Grind Types</text>
+
+  <!-- FLAT GRIND -->
+  <text x="175" y="85" font-family="system-ui, -apple-system, sans-serif" font-size="18" font-weight="bold" fill="#10b981" text-anchor="middle">FLAT</text>
+  <!-- Cross-section: straight taper -->
+  <line x1="130" y1="110" x2="175" y2="280" stroke="#10b981" stroke-width="2.5"/>
+  <line x1="220" y1="110" x2="175" y2="280" stroke="#10b981" stroke-width="2.5"/>
+  <line x1="130" y1="110" x2="220" y2="110" stroke="#10b981" stroke-width="1.5"/>
+  <circle cx="175" cy="280" r="3" fill="#10b981"/>
+  <text x="175" y="305" font-family="system-ui, -apple-system, sans-serif" font-size="14" fill="#ffffff" text-anchor="middle">Straight taper from</text>
+  <text x="175" y="322" font-family="system-ui, -apple-system, sans-serif" font-size="14" fill="#ffffff" text-anchor="middle">spine to edge</text>
+  <text x="175" y="350" font-family="system-ui, -apple-system, sans-serif" font-size="13" fill="#6b7280" text-anchor="middle">Most versatile, easy</text>
+  <text x="175" y="367" font-family="system-ui, -apple-system, sans-serif" font-size="13" fill="#6b7280" text-anchor="middle">to sharpen</text>
+
+  <!-- HOLLOW GRIND -->
+  <text x="450" y="85" font-family="system-ui, -apple-system, sans-serif" font-size="18" font-weight="bold" fill="#3b82f6" text-anchor="middle">HOLLOW</text>
+  <!-- Cross-section: concave sides -->
+  <path d="M 405,110 Q 435,200 450,280" fill="none" stroke="#3b82f6" stroke-width="2.5"/>
+  <path d="M 495,110 Q 465,200 450,280" fill="none" stroke="#3b82f6" stroke-width="2.5"/>
+  <line x1="405" y1="110" x2="495" y2="110" stroke="#3b82f6" stroke-width="1.5"/>
+  <circle cx="450" cy="280" r="3" fill="#3b82f6"/>
+  <text x="450" y="305" font-family="system-ui, -apple-system, sans-serif" font-size="14" fill="#ffffff" text-anchor="middle">Concave curved</text>
+  <text x="450" y="322" font-family="system-ui, -apple-system, sans-serif" font-size="14" fill="#ffffff" text-anchor="middle">sides</text>
+  <text x="450" y="350" font-family="system-ui, -apple-system, sans-serif" font-size="13" fill="#6b7280" text-anchor="middle">Very sharp, fragile</text>
+  <text x="450" y="367" font-family="system-ui, -apple-system, sans-serif" font-size="13" fill="#6b7280" text-anchor="middle">edge</text>
+
+  <!-- SCANDI GRIND -->
+  <text x="725" y="85" font-family="system-ui, -apple-system, sans-serif" font-size="18" font-weight="bold" fill="#f59e0b" text-anchor="middle">SCANDI</text>
+  <!-- Cross-section: straight sides then wide bevel -->
+  <line x1="690" y1="110" x2="690" y2="210" stroke="#f59e0b" stroke-width="2.5"/>
+  <line x1="760" y1="110" x2="760" y2="210" stroke="#f59e0b" stroke-width="2.5"/>
+  <line x1="690" y1="110" x2="760" y2="110" stroke="#f59e0b" stroke-width="1.5"/>
+  <line x1="690" y1="210" x2="725" y2="280" stroke="#f59e0b" stroke-width="2.5"/>
+  <line x1="760" y1="210" x2="725" y2="280" stroke="#f59e0b" stroke-width="2.5"/>
+  <circle cx="725" cy="280" r="3" fill="#f59e0b"/>
+  <!-- Shoulder line -->
+  <line x1="680" y1="210" x2="770" y2="210" stroke="#f59e0b" stroke-width="1" stroke-dasharray="3"/>
+  <text x="725" y="305" font-family="system-ui, -apple-system, sans-serif" font-size="14" fill="#ffffff" text-anchor="middle">Flat sides then</text>
+  <text x="725" y="322" font-family="system-ui, -apple-system, sans-serif" font-size="14" fill="#ffffff" text-anchor="middle">wide bevel angle</text>
+  <text x="725" y="350" font-family="system-ui, -apple-system, sans-serif" font-size="13" fill="#6b7280" text-anchor="middle">Bushcraft favorite,</text>
+  <text x="725" y="367" font-family="system-ui, -apple-system, sans-serif" font-size="13" fill="#6b7280" text-anchor="middle">easy field sharpen</text>
+
+  <!-- CONVEX GRIND -->
+  <text x="1000" y="85" font-family="system-ui, -apple-system, sans-serif" font-size="18" font-weight="bold" fill="#ef4444" text-anchor="middle">CONVEX</text>
+  <!-- Cross-section: outward curved sides -->
+  <path d="M 960,110 Q 935,200 1000,280" fill="none" stroke="#ef4444" stroke-width="2.5"/>
+  <path d="M 1040,110 Q 1065,200 1000,280" fill="none" stroke="#ef4444" stroke-width="2.5"/>
+  <line x1="960" y1="110" x2="1040" y2="110" stroke="#ef4444" stroke-width="1.5"/>
+  <circle cx="1000" cy="280" r="3" fill="#ef4444"/>
+  <text x="1000" y="305" font-family="system-ui, -apple-system, sans-serif" font-size="14" fill="#ffffff" text-anchor="middle">Outward curved</text>
+  <text x="1000" y="322" font-family="system-ui, -apple-system, sans-serif" font-size="14" fill="#ffffff" text-anchor="middle">sides (clamshell)</text>
+  <text x="1000" y="350" font-family="system-ui, -apple-system, sans-serif" font-size="13" fill="#6b7280" text-anchor="middle">Strongest edge,</text>
+  <text x="1000" y="367" font-family="system-ui, -apple-system, sans-serif" font-size="13" fill="#6b7280" text-anchor="middle">axes &amp; choppers</text>
+</svg>

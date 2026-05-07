@@ -1,0 +1,59 @@
+<svg viewBox="0 0 1200 400" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="400" fill="#0d1117"/>
+
+  <!-- Title -->
+  <text x="600" y="38" font-family="system-ui, -apple-system, sans-serif" font-size="26" font-weight="bold" fill="#ffffff" text-anchor="middle">Burr Symmetry</text>
+
+  <!-- Left: Symmetric -->
+  <text x="220" y="85" font-family="system-ui, -apple-system, sans-serif" font-size="20" font-weight="bold" fill="#10b981" text-anchor="middle">SYMMETRIC</text>
+
+  <!-- Symmetric blade cross-section -->
+  <line x1="140" y1="300" x2="220" y2="130" stroke="#10b981" stroke-width="3"/>
+  <line x1="300" y1="300" x2="220" y2="130" stroke="#10b981" stroke-width="3"/>
+  <line x1="140" y1="300" x2="300" y2="300" stroke="#10b981" stroke-width="2"/>
+  <!-- Center line -->
+  <line x1="220" y1="100" x2="220" y2="320" stroke="#10b981" stroke-width="1" stroke-dasharray="4"/>
+  <!-- Apex -->
+  <circle cx="220" cy="130" r="4" fill="#10b981"/>
+  <text x="220" y="118" font-family="system-ui, -apple-system, sans-serif" font-size="14" fill="#10b981" text-anchor="middle">APEX</text>
+  <!-- Checkmark -->
+  <text x="220" y="340" font-family="system-ui, -apple-system, sans-serif" font-size="20" fill="#10b981" text-anchor="middle">&#x2713;</text>
+  <text x="220" y="365" font-family="system-ui, -apple-system, sans-serif" font-size="13" fill="#10b981" text-anchor="middle">Equal bevels both sides</text>
+
+  <!-- Right: Asymmetric -->
+  <text x="520" y="85" font-family="system-ui, -apple-system, sans-serif" font-size="20" font-weight="bold" fill="#ef4444" text-anchor="middle">ASYMMETRIC</text>
+
+  <!-- Asymmetric blade cross-section (apex shifted) -->
+  <line x1="430" y1="300" x2="550" y2="130" stroke="#ef4444" stroke-width="3"/>
+  <line x1="610" y1="300" x2="550" y2="130" stroke="#ef4444" stroke-width="3"/>
+  <line x1="430" y1="300" x2="610" y2="300" stroke="#ef4444" stroke-width="2"/>
+  <!-- Off-center line -->
+  <line x1="520" y1="100" x2="520" y2="320" stroke="#ef4444" stroke-width="1" stroke-dasharray="4"/>
+  <!-- Apex shifted -->
+  <circle cx="550" cy="130" r="4" fill="#ef4444"/>
+  <text x="550" y="118" font-family="system-ui, -apple-system, sans-serif" font-size="14" fill="#ef4444" text-anchor="middle">APEX (shifted)</text>
+  <!-- Arrow showing shift -->
+  <line x1="520" y1="135" x2="543" y2="135" stroke="#ef4444" stroke-width="1.5"/>
+  <polygon points="543,132 548,135 543,138" fill="#ef4444"/>
+  <!-- X mark -->
+  <text x="520" y="340" font-family="system-ui, -apple-system, sans-serif" font-size="20" fill="#ef4444" text-anchor="middle">&#x2717;</text>
+  <text x="520" y="365" font-family="system-ui, -apple-system, sans-serif" font-size="13" fill="#ef4444" text-anchor="middle">Uneven bevels, weak edge</text>
+
+  <!-- Right side: Fingernail Test box -->
+  <rect x="700" y="80" width="440" height="290" fill="#1e293b" stroke="#6b7280" stroke-width="1.5" rx="8"/>
+  <text x="920" y="112" font-family="system-ui, -apple-system, sans-serif" font-size="20" font-weight="bold" fill="#ffffff" text-anchor="middle">Fingernail Test</text>
+
+  <rect x="720" y="125" width="400" height="2" fill="#6b7280" opacity="0.3"/>
+
+  <text x="740" y="155" font-family="system-ui, -apple-system, sans-serif" font-size="15" fill="#ffffff">1. Drag fingernail ACROSS the edge</text>
+  <text x="760" y="175" font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#6b7280">(perpendicular, not along it)</text>
+
+  <text x="740" y="205" font-family="system-ui, -apple-system, sans-serif" font-size="15" fill="#ffffff">2. Feel for the burr catching your nail</text>
+
+  <text x="740" y="235" font-family="system-ui, -apple-system, sans-serif" font-size="15" fill="#ffffff">3. Check BOTH sides of the blade</text>
+
+  <text x="740" y="270" font-family="system-ui, -apple-system, sans-serif" font-size="15" fill="#10b981">&#x2713; Equal catch both sides = symmetric</text>
+
+  <text x="740" y="305" font-family="system-ui, -apple-system, sans-serif" font-size="15" fill="#ef4444">&#x2717; One side catches more = asymmetric</text>
+  <text x="760" y="325" font-family="system-ui, -apple-system, sans-serif" font-size="12" fill="#6b7280">Do more passes on the opposite side</text>
+</svg>

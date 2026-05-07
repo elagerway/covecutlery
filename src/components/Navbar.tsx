@@ -20,6 +20,7 @@ const topLevelLinks = [
   { label: "Pricing", href: "/#pricing" },
   { label: "About", href: "/#about" },
   { label: "Blog", href: "/blog" },
+  { label: "Courses", href: "/courses" },
   { label: "Contact", href: "/#contact" },
 ];
 
@@ -28,6 +29,7 @@ export default function Navbar() {
   const [servicesOpen, setServicesOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const pathname = usePathname();
   const isHome = pathname === "/";
   const servicesRef = useRef<HTMLDivElement>(null);
@@ -44,11 +46,12 @@ export default function Navbar() {
     setServicesOpen(false);
   }, [pathname]);
 
-  // Check if user is admin
+  // Check auth state
   useEffect(() => {
     const supabase = createBrowserClient();
     supabase.auth.getUser().then(({ data: { user } }) => {
       setIsAdmin(user?.email === "elagerway@gmail.com");
+      setIsLoggedIn(!!user);
     });
   }, []);
 
@@ -170,6 +173,14 @@ export default function Navbar() {
                 {link.label}
               </Link>
             ))}
+            {isLoggedIn && (
+              <Link
+                href="/dashboard"
+                className="text-sm text-emerald-400 hover:text-white transition-colors duration-200 tracking-wide"
+              >
+                Dashboard
+              </Link>
+            )}
             {isAdmin && (
               <Link
                 href="/admin/invoices"
@@ -235,6 +246,15 @@ export default function Navbar() {
               {link.label}
             </Link>
           ))}
+          {isLoggedIn && (
+            <Link
+              href="/dashboard"
+              onClick={() => setMobileOpen(false)}
+              className="px-3 py-3 rounded-md text-emerald-400 hover:text-white hover:bg-[#161B22] transition-colors duration-200 text-sm tracking-wide"
+            >
+              Dashboard
+            </Link>
+          )}
           {isAdmin && (
             <Link
               href="/admin/invoices"
