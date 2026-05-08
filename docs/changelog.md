@@ -1,5 +1,56 @@
 # Changelog
 
+## [2.9.0] — 2026-05-08 — Invite-only courses, Postmark for all auth emails, voice agent prompt store, Magpipe post-call webhook
+
+### Added
+- **Invite-only course access** — admins send time-limited email invites from `/admin/training`; signup is gated by invite token; auto-enroll on email confirmation; invite row is deleted at the moment of acceptance (no "accepted" state, no cleanup cron). Schema: `course_invites` table; route: `src/app/api/admin/training/invite/route.ts` (POST/GET/DELETE) + `src/app/api/auth/validate-invite/route.ts`. Self-enrollment RLS policy on `user_enrollments` was dropped — only the invite-callback flow can enroll
+- **Customer autocomplete on the invite form** — typing in the email field surfaces matching customers from `/api/admin/customers` (top 8 by name/email), click to fill
+- **Cancel pending invites** — DELETE row + UI button on the training page invite list (with `confirm()` dialog)
+- **Branded transactional emails for ALL auth flows** — `src/app/api/auth/signup/route.ts` and `src/app/api/auth/magic-link/route.ts` use `supabase.auth.admin.generateLink()` to mint the action link without triggering Supabase's built-in mailer, then send a Cove Blades-branded HTML/text email via Postmark. Same template style as the existing invoice + invite + receipt emails
+- **`src/lib/brand.ts`** — single source for `BRAND_NAME`, `BRAND_PHONE_E164`, `BRAND_PHONE_DISPLAY`, `BRAND_SITE_URL`, `BRAND_LOGO_URL`, `BRAND_GOLD`, `BRAND_DARK`. Used in the new signup email; older email templates still inline these values
+- **Voice agent system prompt store** — `app_credentials` row keyed `voice_agent_system_prompt`. Admin UI at `/admin/voice-prompt` (read/edit textarea with save). API: `GET/PUT /api/admin/voice-prompt`. The admin owns the prompt copy locally; updates must be manually pushed to Magpipe to go live on the agent
+- **Magpipe MCP server** registered for the project in `~/.claude.json` (`magpipe-mcp-server` v0.2.1). Working `mcp__magpipe__*` tools for SMS, contacts, calls, etc. Direct curl to `api.magpipe.ai` rejects `mgp_` keys with `UNAUTHORIZED_INVALID_JWT_FORMAT`; only the MCP path works
+- **Magpipe post-call webhook** — `POST /api/webhooks/magpipe/post-call`. Accepts plain unauthenticated JSON; writes the full payload + extracted flat columns (`call_id`, `from`/`to`, `duration_seconds`, `transcript`, `summary`, `recording_url`) into `public.magpipe_call_logs`. Migration: `supabase/migrations/20260508000000_magpipe_call_logs.sql`
+- **Training page rejig** — students table has clickable rows that open a per-student detail view: header card with progress + suspend/unsuspend toggle (uses Supabase `auth.admin.updateUserById({ban_duration})`), wrong-answers table scoped to that student. Replaces the global wrong-answers panel
+- **`/api/admin/training/suspend`** — admin endpoint to ban/unban a student via Supabase Auth's user-ban feature
+
+### Changed
+- **Phone number swept everywhere**: `604-373-1500` → `+1 (604) 210-8180` (display) and `+16043731500` → `+16042108180` (E.164 + `tel:` hrefs). 14 files: `layout.tsx` JSON-LD, footer, terms, privacy, service-area + city pages, pricing, invoice page (printed footer + email), Cal book route's customer SMS, all email templates, llms.txt
+- **`MAGPIPE_SMS_FROM`** updated on Vercel (Production + Development) from `+16043731500` → `+16042108180` (was correctly aligned in `.env.local` from Milestone 4 but the old number had survived on Vercel from a previous rotation)
+- **Booking copy de-phoned** — FAQs and service-area pages no longer say "or call to book"; everything routes to the website. `llms.txt` got an explicit `## Booking` section instructing voice agents/LLMs to direct callers to coveblades.com
+- **Admin email allowlist** consolidated to `ADMIN_EMAILS = ["elagerway@gmail.com", "claude-admin@coveblades.com"]` — single source in `src/lib/admin.ts`, imported by the layout, proxy. The previous split-brain (single string in `requireAdmin()`, two-element array in layout/proxy) had been silently 401'ing the second admin from API routes
+- **`getServiceClient` consolidated** — `src/utils/supabase/admin.ts` now re-exports `getServiceClient as createAdminClient` so there's exactly one service-role client factory across the codebase
+- **Training page perf** — `listUsers({perPage:1000})` moved into the existing `Promise.all` (was a sequential fetch after the seven Supabase queries) — saves ~100-300ms per admin page load
+- **`TrainingRoster.tsx`** — extracted shared `getProgress()` helper (was duplicated in detail/list views); pre-computed `wrongCountByUser` Map via `useMemo` (was an O(N*M) `.filter()` on every render)
+- **`processInvite()` ordering** in the auth callback — enrollment upsert runs before the invite delete, with explicit error check; if enrollment fails, the invite row stays so admins can troubleshoot
+
+### Fixed
+- **Customer search crash on null email** — `c.email.toLowerCase()` blew up the customers admin page on first keystroke for the ~150 imported customers with no email (the partial unique index migration in `20260409000002` cleared placeholder addresses). Search filter now guards `c.email` before calling `.toLowerCase()`
+- **Customer create with empty email** — the existing route's `upsert({onConflict: "email"})` failed when email was provided because the customers table has a *partial* unique index (`WHERE email IS NOT NULL`), not a full UNIQUE constraint, and Postgres won't accept partial indexes for `ON CONFLICT`. Replaced with explicit check-then-insert/update
+- **Auth callback `https://localhost`** — earlier code unconditionally rewrote the redirect to `https://${forwardedHost}` for matched hosts including `localhost:3000`. Localhost dev was getting redirected to the non-existent HTTPS dev server. Now uses `http://` for any forwarded host starting with `localhost`, `https://` for production hosts
+- **Cancel button silent failure** — `handleCancel` swallowed all errors with empty `catch {}`; if the DELETE failed, nothing happened and no error surfaced. Now sets `error` state on non-OK response
+- **Signup confirmation silent email failure** — when Postmark threw, the API returned `{ok:true, warning:...}` but the client only checked `res.ok` and showed the success screen. The user thought "Check your email" and would never get one. Now the warning is surfaced as an error and the signup screen tells them to contact support
+- **Suspend silent failure** — same pattern as Cancel; now shows error feedback in the detail view
+
+### Removed
+- **`accepted` and `expired` invite states** in app code — the schema `CHECK (status in ('pending','accepted','expired'))` is unchanged, but `processInvite` deletes on accept rather than updating status, and `validate-invite` no longer has a dead `if (status === 'accepted')` branch. The `accepted_at` column survives in the DB but is never written
+- **Cleanup cron** — `/api/cron/cleanup-invites` was briefly added to delete accepted invites > 7 days old + expired pending invites; deleted entirely once the design changed to delete-on-accept. `vercel.json` cron entry removed
+- **HMAC signature verification on the post-call webhook** — initial implementation followed Magpipe's documented HMAC-SHA256 / `x-magpipe-signature` flow; the team explicitly rejected it ("It's a Post web Hook why are you giving me signing secrets?"). The endpoint is now plain unauthenticated POST. `MAGPIPE_WEBHOOK_SECRET` was set on Vercel earlier and is no longer read but left in env (harmless)
+- **EnrollButton on the course page** — now invite-only, replaced with an amber notice with a `mailto:info@coveblades.com` "contact us" link
+
+### Verified end-to-end (2026-05-08)
+- Signup confirmation, magic link, and invite emails all confirmed delivered through Postmark with Cove Blades branding
+- Invite send → recipient signup → auto-enrollment → invite row deleted in DB (verified via Supabase API queries)
+- Customer create with brand-new email + with existing email both work (the upsert fix)
+- Customer search on 438+ customers no longer crashes on null email
+- Magpipe SMS to `+16045628647` from `+16042108180` confirmed via `mcp__magpipe__send_sms` after the SMS-from number was correctly rotated on Vercel
+- Vercel rolled back from latest `33e088e` to older `85c3564` mid-session due to a wrong deployment URL passed to `vercel redeploy`; corrected by triggering a fresh deploy from `gitSource.ref=main` via the v13 deployments API. Final production: `5d8845a` aliased to `coveblades.com`
+
+### Notes for next time
+- All transactional email goes through Postmark — never call `supabase.auth.signUp()` or `supabase.auth.signInWithOtp()` directly from a client; route through `/api/auth/signup` / `/api/auth/magic-link`
+- Magpipe's voice agent system prompt update goes: edit at `/admin/voice-prompt` → save → manually paste into Magpipe's agent config UI to push live
+- The Magpipe post-call webhook is at `https://coveblades.com/api/webhooks/magpipe/post-call` and accepts unsigned POSTs — already configured on Magpipe's side
+
 ## [2.8.0] — 2026-05-01 — Cal.com migration to Cove Blades account + three v2-API mismatch fixes
 
 ### Changed

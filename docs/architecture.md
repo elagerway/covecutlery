@@ -271,7 +271,34 @@ PostTable (client) → DELETE/PATCH /api/admin/posts/[id] → requireAdmin() →
 | expires_at | timestamptz | Nullable; used by the rotation cron to decide whether to refresh |
 | updated_at | timestamptz | Auto-set on upsert |
 
-Service-role-only access (RLS policy `service_role_all`). Used for credentials that need runtime mutation without a redeploy — primarily the Instagram Graph API long-lived token, rotated by the weekly cron at `/api/cron/refresh-instagram-token`.
+Service-role-only access (RLS policy `service_role_all`). Used for credentials that need runtime mutation without a redeploy. Current rows:
+- `instagram_access_token` — Meta long-lived token, rotated weekly by `/api/cron/refresh-instagram-token`
+- `voice_agent_system_prompt` — local copy of the Magpipe voice agent system prompt, edited at `/admin/voice-prompt` (changes here are admin-side only; Magpipe owns the runtime prompt)
+
+**`course_invites`** (since 2026-05-08)
+| Column | Type | Notes |
+|--------|------|-------|
+| id | uuid | Primary key |
+| course_id | uuid | FK courses |
+| email | text | Required |
+| token | text | Required, 64-char hex from `crypto.randomUUID()×2` |
+| invited_by | uuid | FK auth.users |
+| expires_at | timestamptz | Default `now() + 30 days` |
+| created_at | timestamptz | Auto |
+
+Schema also has `status` (CHECK `pending|accepted|expired`) and `accepted_at` columns inherited from the original migration, but the runtime never sets them — `processInvite()` deletes the row on accept rather than updating status. Public RLS select (the token is the auth secret).
+
+**`magpipe_call_logs`** (since 2026-05-08)
+| Column | Type | Notes |
+|--------|------|-------|
+| id | uuid | Primary key |
+| event_type | text | `call.completed`, `sms.received`, etc. |
+| call_id, agent_id, from_number, to_number, direction, duration_seconds, status | varies | Extracted flat fields for easy querying |
+| transcript, summary, recording_url | text | When provided by Magpipe |
+| payload | jsonb | Full original payload |
+| created_at | timestamptz | Auto |
+
+Populated by `/api/webhooks/magpipe/post-call`. RLS enabled (service-role-only access).
 
 **`contact_submissions`**
 | Column | Type | Notes |

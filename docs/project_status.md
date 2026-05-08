@@ -1,6 +1,6 @@
 # Project Status
 
-**Last updated:** 2026-04-30
+**Last updated:** 2026-05-08
 
 ## Milestone 4 — Brand rebrand: Cove Cutlery → Cove Blades ✅ Complete
 
@@ -57,6 +57,33 @@ Site fully rebranded and live at the new domain.
 - [x] Blog typography (Tailwind typography plugin)
 - [x] Cloudflare Turnstile in `interaction-only` mode (hidden unless challenged)
 - [x] Hero pt-24 sm:pt-20 so van clears the fixed navbar on mobile
+
+---
+
+## Milestone 9 — Invite-only courses, Postmark email unification, voice agent integration ✅ Complete
+
+Lock down the course platform so only invited people can sign up; standardize all transactional email on Postmark with branded templates; wire up the Magpipe voice agent (with a no-phone-booking rule) and capture call data via webhook.
+
+- [x] `course_invites` table with token-based invitation flow; admin sends invites from `/admin/training`
+- [x] Signup gated by invite token (read-only email, course preview, existing-user redirect)
+- [x] Auto-enroll on email confirmation + invite row deleted in same transaction (no "accepted" state, no cleanup cron)
+- [x] Self-enrollment RLS policy dropped — only the invite-callback flow can create `user_enrollments` rows
+- [x] Customer autocomplete on the invite email field
+- [x] Cancel pending invites from admin UI + DELETE endpoint
+- [x] `POST /api/auth/signup` and `POST /api/auth/magic-link` — branded Postmark emails for new-user confirmation and admin magic link (replaces Supabase's built-in mailer)
+- [x] `src/lib/brand.ts` — central brand constants (phone, email, colors, logo URL)
+- [x] Voice agent system prompt stored in `app_credentials`, edited at `/admin/voice-prompt`
+- [x] Magpipe MCP server registered (`magpipe-mcp-server` v0.2.1) — direct curl rejects `mgp_` keys; only the MCP works for SMS
+- [x] Magpipe post-call webhook at `/api/webhooks/magpipe/post-call` — plain unauthenticated POST, writes to `magpipe_call_logs`
+- [x] Training page rejig — clickable rows open per-student detail with suspend/unsuspend (Supabase user-ban API) + scoped wrong-answers
+- [x] Phone number swept site-wide: `604-373-1500` → `+1 (604) 210-8180` (display) and `+16043731500` → `+16042108180` (E.164 + `tel:`); `MAGPIPE_SMS_FROM` rotated on Vercel
+- [x] "Call to book" copy removed from FAQs and service-area pages — booking is online-only
+- [x] `llms.txt` ## Booking section telling AI agents to direct to website
+- [x] Admin email allowlist consolidated to `ADMIN_EMAILS` array in `src/lib/admin.ts` (was inconsistent across layout/proxy/lib)
+- [x] Customer search no longer crashes on null email (partial unique index leftover)
+- [x] Customer create with email now works (replaced upsert/onConflict with explicit check-then-insert/update — the partial unique index can't be used by ON CONFLICT)
+- [x] Auth callback redirect uses `http://` for localhost (was forcing `https://` for all matched forwarded hosts)
+- [x] Production live at commit `5d8845a` aliased to `coveblades.com`
 
 ---
 
