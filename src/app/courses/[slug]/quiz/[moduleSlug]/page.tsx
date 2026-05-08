@@ -72,7 +72,7 @@ export default async function QuizPage({ params }: QuizPageProps) {
   const alreadyPassed = result?.passed ?? false;
   const questions = (quiz as ModuleQuizType).questions;
   const storedAnswers = result?.answers as number[] | null;
-  const userAnswers = storedAnswers ?? (result?.score === result?.total ? questions.map(q => q.correct) : []);
+  const userAnswers = storedAnswers ?? (result?.score === result?.total ? questions.map(q => Number(q.correct)) : []);
 
   const currentModuleIndex = typedCourse.modules.findIndex((m) => m.id === currentModule.id);
   const nextModule = typedCourse.modules[currentModuleIndex + 1];
@@ -134,7 +134,7 @@ export default async function QuizPage({ params }: QuizPageProps) {
           <div className="space-y-6">
             {questions.map((q, i) => {
               const userAnswer = userAnswers[i] ?? -1;
-              const isCorrect = userAnswer === q.correct;
+              const isCorrect = userAnswer === Number(q.correct);
               return (
                 <div key={i} className="rounded-xl border border-neutral-800 p-5">
                   <div className="mb-3 flex items-start gap-2">
@@ -148,7 +148,7 @@ export default async function QuizPage({ params }: QuizPageProps) {
                   <div className="ml-7 space-y-2">
                     {q.options.map((option, j) => {
                       const isUserChoice = j === userAnswer;
-                      const isCorrectAnswer = j === q.correct;
+                      const isCorrectAnswer = j === Number(q.correct);
                       let classes = "rounded-lg border px-3 py-2 text-sm ";
                       if (isCorrectAnswer) classes += "border-green-500/50 bg-green-500/10 text-green-400";
                       else if (isUserChoice) classes += "border-red-500/50 bg-red-500/10 text-red-400 line-through";

@@ -40,7 +40,8 @@ export function ModuleQuiz({ quiz, moduleTitle, courseSlug, nextLessonUrl }: Mod
 
   const questions = quiz.questions;
   const question = questions[currentQuestion];
-  const isCorrect = selectedAnswer === question?.correct;
+  const correctIndex = Number(question?.correct);
+  const isCorrect = selectedAnswer === correctIndex;
 
   function handleStartQuiz() {
     setState("active");
@@ -198,7 +199,7 @@ export function ModuleQuiz({ quiz, moduleTitle, courseSlug, nextLessonUrl }: Mod
           {question.options.map((option, index) => {
             let classes = "w-full rounded-xl border-2 px-4 py-3 text-left text-sm font-medium transition-all duration-200 ";
             if (state === "feedback") {
-              if (index === question.correct) classes += "border-emerald-500 bg-emerald-500/10 text-emerald-400";
+              if (index === correctIndex) classes += "border-emerald-500 bg-emerald-500/10 text-emerald-400";
               else if (index === selectedAnswer) classes += "border-red-500 bg-red-500/10 text-red-400";
               else classes += "border-neutral-700 bg-neutral-900 opacity-50 text-neutral-400";
             } else {
@@ -227,7 +228,7 @@ export function ModuleQuiz({ quiz, moduleTitle, courseSlug, nextLessonUrl }: Mod
               <p className="text-sm font-medium text-emerald-400">Correct!</p>
             ) : (
               <p className="text-sm font-medium text-red-400">
-                Not quite! The answer is {String.fromCharCode(65 + question.correct)}: {question.options[question.correct]}
+                Not quite! The answer is {String.fromCharCode(65 + correctIndex)}: {question.options[correctIndex]}
               </p>
             )}
           </div>

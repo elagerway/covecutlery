@@ -58,6 +58,18 @@ export interface CourseWithModules extends Course {
   modules: ModuleWithLessons[];
 }
 
+export interface CourseInvite {
+  id: string;
+  course_id: string;
+  email: string;
+  token: string;
+  status: "pending" | "accepted" | "expired";
+  invited_by: string | null;
+  created_at: string;
+  accepted_at: string | null;
+  expires_at: string;
+}
+
 export interface ModuleQuiz {
   id: string;
   module_id: string;

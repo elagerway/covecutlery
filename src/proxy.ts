@@ -1,7 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
-
-const ADMIN_EMAIL = "elagerway@gmail.com";
+import { ADMIN_EMAILS } from "@/lib/admin";
 
 export async function proxy(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request });
@@ -38,7 +37,7 @@ export async function proxy(request: NextRequest) {
 
   // Redirect unauthenticated / non-admin users away from admin
   if (isAdminRoute && !isLoginPage) {
-    if (!user || user.email !== ADMIN_EMAIL) {
+    if (!user || !ADMIN_EMAILS.includes(user.email!)) {
       const url = request.nextUrl.clone();
       url.pathname = "/admin/login";
       return NextResponse.redirect(url);
@@ -46,7 +45,7 @@ export async function proxy(request: NextRequest) {
   }
 
   // Redirect authenticated admin away from login page
-  if (isLoginPage && user?.email === ADMIN_EMAIL) {
+  if (isLoginPage && ADMIN_EMAILS.includes(user?.email ?? "")) {
     const url = request.nextUrl.clone();
     url.pathname = "/admin/blog";
     return NextResponse.redirect(url);

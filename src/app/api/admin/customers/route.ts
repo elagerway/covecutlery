@@ -39,13 +39,35 @@ export async function POST(req: NextRequest) {
   };
   if (email) record.email = email.toLowerCase().trim();
 
-  let query;
+  let data, error;
   if (email) {
-    query = supabase.from("customers").upsert(record, { onConflict: "email" }).select().single();
+    const { data: existing } = await supabase
+      .from("customers")
+      .select("id")
+      .eq("email", email.toLowerCase().trim())
+      .maybeSingle();
+
+    if (existing) {
+      ({ data, error } = await supabase
+        .from("customers")
+        .update(record)
+        .eq("id", existing.id)
+        .select()
+        .single());
+    } else {
+      ({ data, error } = await supabase
+        .from("customers")
+        .insert(record)
+        .select()
+        .single());
+    }
   } else {
-    query = supabase.from("customers").insert(record).select().single();
+    ({ data, error } = await supabase
+      .from("customers")
+      .insert(record)
+      .select()
+      .single());
   }
-  const { data, error } = await query;
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
   return NextResponse.json(data, { status: 201 });

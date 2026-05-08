@@ -50,7 +50,7 @@ export default function Navbar() {
   useEffect(() => {
     const supabase = createBrowserClient();
     supabase.auth.getUser().then(({ data: { user } }) => {
-      setIsAdmin(user?.email === "elagerway@gmail.com");
+      setIsAdmin(["elagerway@gmail.com", "claude-admin@coveblades.com"].includes(user?.email ?? ""));
       setIsLoggedIn(!!user);
     });
   }, []);

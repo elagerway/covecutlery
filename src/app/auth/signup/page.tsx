@@ -17,11 +17,18 @@ export default function SignupPage() {
   );
 }
 
+interface InviteData {
+  email: string;
+  courseTitle: string;
+  courseSlug: string;
+  courseId: string;
+  existingUser: boolean;
+}
+
 function SignupForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const rawRedirect = searchParams.get("redirect") || "/courses";
-  const redirect = rawRedirect.startsWith("/") && !rawRedirect.startsWith("//") ? rawRedirect : "/courses";
+  const inviteToken = searchParams.get("invite");
 
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -31,6 +38,10 @@ function SignupForm() {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
 
+  const [inviteData, setInviteData] = useState<InviteData | null>(null);
+  const [inviteLoading, setInviteLoading] = useState(true);
+  const [inviteError, setInviteError] = useState<string | null>(null);
+
   const supabase = createClient();
 
   useEffect(() => {
@@ -38,6 +49,26 @@ function SignupForm() {
       if (user) router.replace("/courses");
     });
   }, [router, supabase.auth]);
+
+  useEffect(() => {
+    if (!inviteToken) {
+      setInviteLoading(false);
+      return;
+    }
+
+    fetch(`/api/auth/validate-invite?token=${encodeURIComponent(inviteToken)}`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.valid) {
+          setInviteData(data);
+          setEmail(data.email);
+        } else {
+          setInviteError(data.reason || "Invalid invite");
+        }
+      })
+      .catch(() => setInviteError("Failed to validate invite"))
+      .finally(() => setInviteLoading(false));
+  }, [inviteToken]);
 
   async function handleEmailSignup(e: React.FormEvent) {
     e.preventDefault();
@@ -52,12 +83,17 @@ function SignupForm() {
 
     const fullName = `${firstName.trim()} ${lastName.trim()}`;
 
+    const callbackNext = inviteData
+      ? `/courses/${inviteData.courseSlug}`
+      : "/courses";
+    const inviteParam = inviteToken ? `&invite=${encodeURIComponent(inviteToken)}` : "";
+
     const { error } = await supabase.auth.signUp({
       email,
       password,
       options: {
         data: { full_name: fullName },
-        emailRedirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(redirect)}`,
+        emailRedirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(callbackNext)}${inviteParam}`,
       },
     });
 
@@ -75,13 +111,71 @@ function SignupForm() {
     const origin = window.location.hostname === "localhost"
       ? `http://localhost:${window.location.port}`
       : window.location.origin;
+
+    const callbackNext = inviteData
+      ? `/courses/${inviteData.courseSlug}`
+      : "/courses";
+    const inviteParam = inviteToken ? `&invite=${encodeURIComponent(inviteToken)}` : "";
+
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: `${origin}/auth/callback?next=${encodeURIComponent(redirect)}`,
+        redirectTo: `${origin}/auth/callback?next=${encodeURIComponent(callbackNext)}${inviteParam}`,
       },
     });
     if (error) setError(error.message);
+  }
+
+  if (inviteLoading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center px-4 bg-neutral-950">
+        <div className="h-8 w-8 animate-spin rounded-full border-4 border-emerald-500 border-t-transparent" />
+      </div>
+    );
+  }
+
+  if (!inviteToken || inviteError) {
+    return (
+      <div className="flex min-h-screen items-center justify-center px-4 bg-neutral-950">
+        <Card className="w-full max-w-md">
+          <CardHeader className="text-center">
+            <CardTitle className="text-2xl text-white">Invitation Required</CardTitle>
+            <CardDescription>
+              {inviteError || <>Signup is by invitation only. If you&apos;ve received an invite, please use the link from your email, or <a href="mailto:info@coveblades.com" className="text-emerald-400 hover:underline">contact us</a> to request access.</>}
+            </CardDescription>
+          </CardHeader>
+          <CardFooter className="justify-center">
+            <p className="text-sm text-neutral-400">
+              Already have an account?{" "}
+              <Link href="/auth/login" className="text-emerald-400 hover:underline">Sign in</Link>
+            </p>
+          </CardFooter>
+        </Card>
+      </div>
+    );
+  }
+
+  if (inviteData?.existingUser) {
+    return (
+      <div className="flex min-h-screen items-center justify-center px-4 bg-neutral-950">
+        <Card className="w-full max-w-md">
+          <CardHeader className="text-center">
+            <CardTitle className="text-2xl text-white">You already have an account</CardTitle>
+            <CardDescription>
+              Sign in with <strong className="text-white">{inviteData.email}</strong> to access <strong className="text-white">{inviteData.courseTitle}</strong>.
+            </CardDescription>
+          </CardHeader>
+          <CardFooter className="justify-center">
+            <Link
+              href={`/auth/login?redirect=${encodeURIComponent(`/auth/callback?invite=${inviteToken}&next=/courses/${inviteData.courseSlug}`)}`}
+              className="inline-flex h-10 items-center justify-center rounded-md bg-emerald-500 px-6 text-sm font-medium text-white transition-colors hover:bg-emerald-600"
+            >
+              Sign In
+            </Link>
+          </CardFooter>
+        </Card>
+      </div>
+    );
   }
 
   if (success) {
@@ -91,7 +185,7 @@ function SignupForm() {
           <CardHeader className="text-center">
             <CardTitle className="text-2xl text-white">Check your email</CardTitle>
             <CardDescription>
-              We sent a confirmation link to <strong className="text-white">{email}</strong>. Click the link to activate your account.
+              We sent a confirmation link to <strong className="text-white">{email}</strong>. Click the link to activate your account and start <strong className="text-white">{inviteData?.courseTitle}</strong>.
             </CardDescription>
           </CardHeader>
           <CardFooter className="justify-center">
@@ -110,7 +204,9 @@ function SignupForm() {
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl text-white">Create your account</CardTitle>
-          <CardDescription>Start learning knife sharpening skills for free</CardDescription>
+          <CardDescription>
+            You&apos;ve been invited to <strong className="text-white">{inviteData?.courseTitle}</strong>
+          </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <Button variant="outline" size="lg" className="w-full" onClick={handleGoogleLogin}>
@@ -145,7 +241,14 @@ function SignupForm() {
             </div>
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
-              <Input id="email" type="email" autoComplete="email" placeholder="you@example.com" value={email} onChange={(e) => setEmail(e.target.value)} required />
+              <Input
+                id="email"
+                type="email"
+                autoComplete="email"
+                value={email}
+                readOnly
+                className="opacity-70 cursor-not-allowed"
+              />
             </div>
             <div className="space-y-2">
               <Label htmlFor="password">Password</Label>
@@ -162,7 +265,7 @@ function SignupForm() {
         <CardFooter className="justify-center">
           <p className="text-sm text-neutral-400">
             Already have an account?{" "}
-            <Link href={`/auth/login?redirect=${encodeURIComponent(redirect)}`} className="text-emerald-400 hover:underline">
+            <Link href="/auth/login" className="text-emerald-400 hover:underline">
               Sign in
             </Link>
           </p>

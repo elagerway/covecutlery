@@ -42,7 +42,7 @@ export async function POST(request: Request) {
     const total = questions.length;
     let score = 0;
     for (let i = 0; i < total; i++) {
-      if (answers[i] === questions[i].correct) score++;
+      if (answers[i] === Number(questions[i].correct)) score++;
     }
     const passed = score >= Math.ceil(total * 2 / 3);
 

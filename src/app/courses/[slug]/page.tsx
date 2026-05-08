@@ -4,7 +4,6 @@ import { createClient } from "@/utils/supabase/server";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { CourseProgress } from "@/components/courses/course-progress";
-import { EnrollButton } from "@/components/courses/enroll-button";
 import { CourseSidebar } from "@/components/courses/course-sidebar";
 import { getCourseSidebarData } from "@/lib/course-sidebar-data";
 import { BookOpen, CheckCircle2, ChevronRight, Clock, PlayCircle, Zap, Trophy, Lock } from "lucide-react";
@@ -175,10 +174,11 @@ export default async function CoursePage({ params }: CoursePageProps) {
                   )}
                 </div>
               ) : (
-                <EnrollButton
-                  courseId={typedCourse.id}
-                  firstLessonUrl={firstLessonSlug ? `/courses/${slug}/lessons/${firstLessonSlug}` : `/courses/${slug}`}
-                />
+                <div className="rounded-lg border border-amber-500/30 bg-amber-500/10 px-4 py-3">
+                  <p className="text-sm text-amber-200">
+                    This course is invite-only. Check your email for an invitation link, or <a href="mailto:info@coveblades.com" className="underline hover:text-amber-100">contact us</a> to request access.
+                  </p>
+                </div>
               )}
             </div>
           </div>

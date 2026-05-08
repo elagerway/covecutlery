@@ -1,8 +1,7 @@
 import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 import AdminNav from "@/components/admin/AdminNav";
-
-const ADMIN_EMAIL = "elagerway@gmail.com";
+import { ADMIN_EMAILS } from "@/lib/admin";
 
 export default async function ProtectedAdminLayout({
   children,
@@ -14,7 +13,7 @@ export default async function ProtectedAdminLayout({
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (!user || user.email !== ADMIN_EMAIL) {
+  if (!user || !ADMIN_EMAILS.includes(user.email!)) {
     redirect("/admin/login");
   }
 
