@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createClient } from "@/utils/supabase/server";
+import { createAdminClient } from "@/utils/supabase/admin";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { CourseProgress } from "@/components/courses/course-progress";
@@ -66,6 +67,32 @@ export default async function CoursePage({ params }: CoursePageProps) {
       .maybeSingle();
 
     isEnrolled = !!enrollment;
+
+    if (!isEnrolled && user.email) {
+      const admin = createAdminClient();
+      const { data: pendingInvite } = await admin
+        .from("course_invites")
+        .select("id, expires_at")
+        .eq("course_id", typedCourse.id)
+        .eq("email", user.email.toLowerCase())
+        .eq("status", "pending")
+        .maybeSingle();
+
+      if (pendingInvite && new Date(pendingInvite.expires_at) > new Date()) {
+        const { error: enrollErr } = await admin
+          .from("user_enrollments")
+          .upsert(
+            { user_id: user.id, course_id: typedCourse.id },
+            { onConflict: "user_id,course_id" }
+          );
+        if (!enrollErr) {
+          await admin.from("course_invites").delete().eq("id", pendingInvite.id);
+          isEnrolled = true;
+        } else {
+          console.error("[course-page] auto-enroll failed:", enrollErr);
+        }
+      }
+    }
 
     if (isEnrolled) {
       const sidebarData = await getCourseSidebarData(supabase, typedCourse, user.id);

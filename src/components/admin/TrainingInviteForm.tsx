@@ -127,6 +127,28 @@ export function TrainingInviteForm({ courses }: { courses: CourseOption[] }) {
     }
   }
 
+  async function handleActivate(inviteId: string, email: string) {
+    if (!confirm(`Activate ${email} now? They'll be enrolled immediately if they've already created an account.`)) return;
+    setError(null);
+    setSuccess(null);
+    try {
+      const res = await fetch("/api/admin/training/activate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ inviteId }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (res.ok) {
+        setSuccess(`${email} activated.`);
+        loadInvites();
+      } else {
+        setError(data.error || "Failed to activate");
+      }
+    } catch {
+      setError("Failed to activate");
+    }
+  }
+
   function selectCustomer(c: Customer) {
     setEmail(c.email!);
     setShowSuggestions(false);
@@ -223,7 +245,13 @@ export function TrainingInviteForm({ courses }: { courses: CourseOption[] }) {
                     <td className={`px-4 py-3 ${expired ? "text-red-400" : "text-neutral-400"}`}>
                       {expired ? "Expired" : new Date(inv.expires_at).toLocaleDateString()}
                     </td>
-                    <td className="px-4 py-3 text-center">
+                    <td className="px-4 py-3 text-right whitespace-nowrap">
+                      <button
+                        onClick={() => handleActivate(inv.id, inv.email)}
+                        className="text-xs font-medium text-emerald-400 hover:text-emerald-300 transition-colors mr-4"
+                      >
+                        Activate
+                      </button>
                       <button
                         onClick={() => handleCancel(inv.id)}
                         className="text-xs text-neutral-500 hover:text-red-400 transition-colors"
