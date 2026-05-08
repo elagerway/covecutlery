@@ -1,55 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getServiceClient } from "@/lib/admin";
-import crypto from "crypto";
-
-/**
- * Magpipe webhook receiver.
- *
- * URL: https://coveblades.com/api/webhooks/magpipe/post-call
- *
- * Auth: Magpipe signs each delivery with HMAC-SHA256 of the raw body using
- * the webhook signing secret. The signature is sent as
- *   x-magpipe-signature: sha256=<hex digest>
- *
- * Set MAGPIPE_WEBHOOK_SECRET in Vercel env to the same value Magpipe uses.
- *
- * Stores the full payload + commonly-queried flat fields in
- * public.magpipe_call_logs.
- */
 
 export const dynamic = "force-dynamic";
 
-function verifySignature(rawBody: string, header: string | null, secret: string): boolean {
-  if (!header) return false;
-  const expected = "sha256=" + crypto.createHmac("sha256", secret).update(rawBody).digest("hex");
-  const a = Buffer.from(header);
-  const b = Buffer.from(expected);
-  if (a.length !== b.length) return false;
-  return crypto.timingSafeEqual(a, b);
-}
-
 export async function POST(req: NextRequest) {
-  const rawBody = await req.text();
-  const secret = process.env.MAGPIPE_WEBHOOK_SECRET;
-
-  if (secret) {
-    const sig = req.headers.get("x-magpipe-signature");
-    if (!verifySignature(rawBody, sig, secret)) {
-      return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
-    }
-  } else {
-    console.warn("[magpipe/post-call] MAGPIPE_WEBHOOK_SECRET not set — accepting unverified request");
-  }
-
   let payload: Record<string, unknown>;
   try {
-    payload = JSON.parse(rawBody);
+    payload = await req.json();
   } catch {
     return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
   }
 
-  // Magpipe nests the call data under different keys depending on event type;
-  // pull from a few common shapes.
   const data = (payload.data ?? payload.call ?? payload) as Record<string, unknown>;
 
   const supabase = getServiceClient();
@@ -77,9 +38,5 @@ export async function POST(req: NextRequest) {
 }
 
 export async function GET() {
-  return NextResponse.json({
-    ok: true,
-    endpoint: "magpipe-post-call-webhook",
-    auth: "x-magpipe-signature: sha256=<HMAC-SHA256 of raw body using MAGPIPE_WEBHOOK_SECRET>",
-  });
+  return NextResponse.json({ ok: true });
 }
