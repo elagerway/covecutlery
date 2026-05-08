@@ -173,12 +173,19 @@ export default function Navbar() {
                 {link.label}
               </Link>
             ))}
-            {isLoggedIn && (
+            {isLoggedIn ? (
               <Link
                 href="/dashboard"
                 className="text-sm text-emerald-400 hover:text-white transition-colors duration-200 tracking-wide"
               >
                 Dashboard
+              </Link>
+            ) : (
+              <Link
+                href="/auth/login"
+                className="text-sm text-[#6B7280] hover:text-white transition-colors duration-200 tracking-wide"
+              >
+                Sign in
               </Link>
             )}
             {isAdmin && (
@@ -246,13 +253,21 @@ export default function Navbar() {
               {link.label}
             </Link>
           ))}
-          {isLoggedIn && (
+          {isLoggedIn ? (
             <Link
               href="/dashboard"
               onClick={() => setMobileOpen(false)}
               className="px-3 py-3 rounded-md text-emerald-400 hover:text-white hover:bg-[#161B22] transition-colors duration-200 text-sm tracking-wide"
             >
               Dashboard
+            </Link>
+          ) : (
+            <Link
+              href="/auth/login"
+              onClick={() => setMobileOpen(false)}
+              className="px-3 py-3 rounded-md text-[#6B7280] hover:text-white hover:bg-[#161B22] transition-colors duration-200 text-sm tracking-wide"
+            >
+              Sign in
             </Link>
           )}
           {isAdmin && (
