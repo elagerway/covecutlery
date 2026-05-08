@@ -91,7 +91,7 @@ function buildInvoiceHtml(invoice: {
         This invoice has been paid. Thank you!
       </p>`}
       <p style="margin:24px 0 0;font-size:13px;color:#888;text-align:center;">
-        <a href="https://coveblades.com" style="color:#D4A017;">coveblades.com</a> · 604-373-1500
+        <a href="https://coveblades.com" style="color:#D4A017;">coveblades.com</a> · +1 (604) 210-8180
       </p>
     </div>
   </div>
@@ -138,7 +138,7 @@ function buildInvoiceText(invoice: {
       : null,
     ``,
     invoice.notes ? `Note: ${invoice.notes}\n` : null,
-    `Cove Blades · coveblades.com · 604-373-1500`,
+    `Cove Blades · coveblades.com · +1 (604) 210-8180`,
   ].filter(l => l !== null).join("\n");
 }
 

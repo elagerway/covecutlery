@@ -230,7 +230,7 @@ export default function PublicInvoicePage() {
         {/* Footer */}
         <div className="text-center mt-8">
           <p className="text-xs" style={{ color: "#6B7280" }}>
-            Cove Blades · <a href="https://coveblades.com" style={{ color: "#D4A017" }}>coveblades.com</a> · 604-373-1500
+            Cove Blades · <a href="https://coveblades.com" style={{ color: "#D4A017" }}>coveblades.com</a> · +1 (604) 210-8180
           </p>
         </div>
 
@@ -322,7 +322,7 @@ export default function PublicInvoicePage() {
           </div>
 
           <p style={{ textAlign: "center", fontSize: 12, color: "#888", marginTop: 24 }}>
-            Cove Blades · coveblades.com · 604-373-1500
+            Cove Blades · coveblades.com · +1 (604) 210-8180
           </p>
         </div>
       </div>

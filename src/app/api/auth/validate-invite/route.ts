@@ -12,19 +12,15 @@ export async function GET(req: NextRequest) {
 
   const { data: invite } = await supabase
     .from("course_invites")
-    .select("id, email, course_id, status, expires_at, courses(title, slug)")
+    .select("id, email, course_id, expires_at, courses(title, slug)")
     .eq("token", token)
     .single();
 
   if (!invite) {
-    return NextResponse.json({ valid: false, reason: "Invalid invite link" });
+    return NextResponse.json({ valid: false, reason: "Invalid or already-used invite link" });
   }
 
-  if (invite.status === "accepted") {
-    return NextResponse.json({ valid: false, reason: "This invite has already been used" });
-  }
-
-  if (invite.status === "expired" || new Date(invite.expires_at) < new Date()) {
+  if (new Date(invite.expires_at) < new Date()) {
     return NextResponse.json({ valid: false, reason: "This invite has expired" });
   }
 

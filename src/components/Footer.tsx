@@ -185,14 +185,14 @@ export default function Footer() {
             <ul className="flex flex-col gap-4">
               <li>
                 <a
-                  href="tel:6043731500"
+                  href="tel:+16042108180"
                   className="inline-flex items-center gap-2 text-[#6B7280] hover:text-[#D4A017] text-sm transition-colors duration-200 group"
                 >
                   <Phone
                     size={14}
                     className="text-[#D4A017] shrink-0 group-hover:scale-110 transition-transform duration-200"
                   />
-                  604 373 1500
+                  +1 (604) 210-8180
                 </a>
               </li>
               <li>

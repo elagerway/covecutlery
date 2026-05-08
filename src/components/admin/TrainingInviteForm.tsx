@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 
 interface CourseOption {
   id: string;
@@ -10,10 +10,15 @@ interface CourseOption {
 interface Invite {
   id: string;
   email: string;
-  status: string;
+  expires_at: string;
   created_at: string;
-  accepted_at: string | null;
   courses: { title: string } | null;
+}
+
+interface Customer {
+  id: string;
+  name: string;
+  email: string | null;
 }
 
 export function TrainingInviteForm({ courses }: { courses: CourseOption[] }) {
@@ -23,6 +28,9 @@ export function TrainingInviteForm({ courses }: { courses: CourseOption[] }) {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [invites, setInvites] = useState<Invite[]>([]);
+  const [customers, setCustomers] = useState<Customer[]>([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const wrapperRef = useRef<HTMLDivElement>(null);
 
   async function loadInvites() {
     try {
@@ -34,7 +42,37 @@ export function TrainingInviteForm({ courses }: { courses: CourseOption[] }) {
     } catch {}
   }
 
-  useEffect(() => { loadInvites(); }, []);
+  async function loadCustomers() {
+    try {
+      const res = await fetch("/api/admin/customers");
+      if (res.ok) {
+        const data = await res.json();
+        setCustomers(data.filter((c: Customer) => c.email));
+      }
+    } catch {}
+  }
+
+  useEffect(() => {
+    loadInvites();
+    loadCustomers();
+  }, []);
+
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (wrapperRef.current && !wrapperRef.current.contains(e.target as Node)) {
+        setShowSuggestions(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const suggestions = email.trim().length > 0
+    ? customers.filter((c) => {
+        const q = email.toLowerCase();
+        return (c.name.toLowerCase().includes(q) || (c.email && c.email.toLowerCase().includes(q)));
+      }).slice(0, 8)
+    : [];
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -71,23 +109,65 @@ export function TrainingInviteForm({ courses }: { courses: CourseOption[] }) {
     }
   }
 
+  async function handleCancel(inviteId: string) {
+    if (!confirm("Cancel this invite? The recipient will no longer be able to sign up with this link.")) return;
+    setError(null);
+    try {
+      const res = await fetch(`/api/admin/training/invite?id=${encodeURIComponent(inviteId)}`, {
+        method: "DELETE",
+      });
+      if (res.ok) {
+        loadInvites();
+      } else {
+        const data = await res.json().catch(() => ({}));
+        setError(data.error || "Failed to cancel invite");
+      }
+    } catch {
+      setError("Failed to cancel invite");
+    }
+  }
+
+  function selectCustomer(c: Customer) {
+    setEmail(c.email!);
+    setShowSuggestions(false);
+  }
+
   return (
     <div className="mb-8 space-y-6">
-      {/* Invite form */}
       <div className="rounded-lg border p-6" style={{ borderColor: "#30363D", backgroundColor: "#161B22" }}>
         <h2 className="text-lg font-semibold text-white mb-4">Invite Student</h2>
         <form onSubmit={handleSubmit} className="flex items-end gap-3">
-          <div className="flex-1">
-            <label className="block text-xs font-medium mb-1.5" style={{ color: "#6B7280" }}>Email address</label>
+          <div className="flex-1 relative" ref={wrapperRef}>
+            <label className="block text-xs font-medium mb-1.5" style={{ color: "#6B7280" }}>Email address or customer name</label>
             <input
-              type="email"
+              type="text"
               required
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="student@example.com"
+              onChange={(e) => { setEmail(e.target.value); setShowSuggestions(true); }}
+              onFocus={() => { if (email.trim()) setShowSuggestions(true); }}
+              placeholder="Type a name or email..."
+              autoComplete="off"
               className="w-full px-3 py-2 rounded-lg text-sm text-white outline-none focus:ring-2"
               style={{ backgroundColor: "#0D1117", border: "1px solid #30363D", "--tw-ring-color": "#D4A017" } as React.CSSProperties}
             />
+            {showSuggestions && suggestions.length > 0 && (
+              <div
+                className="absolute z-10 mt-1 w-full rounded-lg border overflow-hidden shadow-xl"
+                style={{ backgroundColor: "#161B22", borderColor: "#30363D" }}
+              >
+                {suggestions.map((c) => (
+                  <button
+                    key={c.id}
+                    type="button"
+                    onClick={() => selectCustomer(c)}
+                    className="w-full text-left px-3 py-2 text-sm hover:bg-white/[0.06] transition-colors flex items-center justify-between"
+                  >
+                    <span className="text-white">{c.name}</span>
+                    <span className="text-neutral-500 text-xs">{c.email}</span>
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
           {courses.length > 1 && (
             <div className="w-48">
@@ -117,39 +197,43 @@ export function TrainingInviteForm({ courses }: { courses: CourseOption[] }) {
         {success && <p className="mt-3 text-sm text-emerald-400">{success}</p>}
       </div>
 
-      {/* Invite list */}
       {invites.length > 0 && (
         <div className="rounded-lg border overflow-hidden" style={{ borderColor: "#30363D" }}>
+          <p className="text-xs px-4 py-2 text-neutral-500 border-b" style={{ borderColor: "#30363D", backgroundColor: "#0D1117" }}>
+            Pending invites — accepted invites are removed automatically once the student signs up.
+          </p>
           <table className="w-full text-sm">
             <thead>
               <tr style={{ backgroundColor: "#161B22" }}>
                 <th className="text-left px-4 py-3 text-xs font-semibold text-neutral-400 uppercase tracking-wider">Email</th>
                 <th className="text-left px-4 py-3 text-xs font-semibold text-neutral-400 uppercase tracking-wider">Course</th>
-                <th className="text-left px-4 py-3 text-xs font-semibold text-neutral-400 uppercase tracking-wider">Status</th>
                 <th className="text-left px-4 py-3 text-xs font-semibold text-neutral-400 uppercase tracking-wider">Sent</th>
+                <th className="text-left px-4 py-3 text-xs font-semibold text-neutral-400 uppercase tracking-wider">Expires</th>
+                <th className="px-4 py-3"></th>
               </tr>
             </thead>
             <tbody>
-              {invites.map((inv) => (
-                <tr key={inv.id} className="border-t" style={{ borderColor: "#30363D" }}>
-                  <td className="px-4 py-3 text-white">{inv.email}</td>
-                  <td className="px-4 py-3 text-neutral-400">{(inv.courses as { title: string } | null)?.title ?? "—"}</td>
-                  <td className="px-4 py-3">
-                    <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider ${
-                      inv.status === "accepted"
-                        ? "bg-emerald-500/10 text-emerald-400"
-                        : inv.status === "expired"
-                        ? "bg-red-500/10 text-red-400"
-                        : "bg-amber-500/10 text-amber-400"
-                    }`}>
-                      {inv.status}
-                    </span>
-                  </td>
-                  <td className="px-4 py-3 text-neutral-400">
-                    {new Date(inv.created_at).toLocaleDateString()}
-                  </td>
-                </tr>
-              ))}
+              {invites.map((inv) => {
+                const expired = new Date(inv.expires_at) < new Date();
+                return (
+                  <tr key={inv.id} className="border-t" style={{ borderColor: "#30363D" }}>
+                    <td className="px-4 py-3 text-white">{inv.email}</td>
+                    <td className="px-4 py-3 text-neutral-400">{(inv.courses as { title: string } | null)?.title ?? "—"}</td>
+                    <td className="px-4 py-3 text-neutral-400">{new Date(inv.created_at).toLocaleDateString()}</td>
+                    <td className={`px-4 py-3 ${expired ? "text-red-400" : "text-neutral-400"}`}>
+                      {expired ? "Expired" : new Date(inv.expires_at).toLocaleDateString()}
+                    </td>
+                    <td className="px-4 py-3 text-center">
+                      <button
+                        onClick={() => handleCancel(inv.id)}
+                        className="text-xs text-neutral-500 hover:text-red-400 transition-colors"
+                      >
+                        Cancel
+                      </button>
+                    </td>
+                  </tr>
+                );
+              })}
             </tbody>
           </table>
         </div>

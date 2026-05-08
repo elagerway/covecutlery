@@ -57,6 +57,8 @@ export function TrainingRoster({ students: initial, wrongAnswers, courseSlug }: 
   }, [wrongAnswers]);
 
   async function handleSuspend(userId: string, suspend: boolean) {
+    const action = suspend ? "suspend" : "unsuspend";
+    if (!confirm(`Are you sure you want to ${action} this student? ${suspend ? "They will not be able to log in." : ""}`)) return;
     setSuspending(true);
     setSuspendError(null);
     try {

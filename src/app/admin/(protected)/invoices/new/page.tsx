@@ -596,7 +596,7 @@ export default function NewInvoicePage() {
               {/* Footer */}
               <div className="text-center mt-6">
                 <p className="text-xs" style={{ color: "#6B7280" }}>
-                  Cove Blades · coveblades.com · 604-373-1500
+                  Cove Blades · coveblades.com · +1 (604) 210-8180
                 </p>
               </div>
             </div>

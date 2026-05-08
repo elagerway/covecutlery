@@ -265,7 +265,7 @@ export default function PricingPage() {
               Ready to Get Your <span style={{ color: "#D4A017" }}>Knives Sharp?</span>
             </h2>
             <p className="text-base mb-8" style={{ color: "#6B7280" }}>
-              Book online or call us to schedule a mobile visit, arrange a drop-off, or ask any questions.
+              Book online to schedule a mobile visit, arrange a drop-off, or ask any questions.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link

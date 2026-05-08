@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect, Suspense } from "react";
-import { createClient } from "@/utils/supabase/client";
 import { useSearchParams } from "next/navigation";
 
 function LoginForm() {
@@ -21,15 +20,21 @@ function LoginForm() {
     e.preventDefault();
     setLoading(true);
     setError(null);
-    const supabase = createClient();
-    const { error } = await supabase.auth.signInWithOtp({
-      email,
-      options: {
-        emailRedirectTo: `${location.origin}/auth/callback?next=/admin/invoices`,
-      },
-    });
-    if (error) setError(error.message);
-    else setSent(true);
+    try {
+      const res = await fetch("/api/auth/magic-link", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email,
+          redirectTo: `${location.origin}/auth/callback?next=/admin/invoices`,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) setError(data.error || "Failed to send magic link");
+      else setSent(true);
+    } catch {
+      setError("Failed to send magic link");
+    }
     setLoading(false);
   }
 

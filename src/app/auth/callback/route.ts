@@ -45,27 +45,27 @@ async function processInvite(
 
     const { data: invite } = await admin
       .from("course_invites")
-      .select("id, email, course_id, status, expires_at, courses(slug)")
+      .select("id, email, course_id, expires_at, courses(slug)")
       .eq("token", token)
       .single();
 
     if (!invite) return fallbackNext;
-    if (invite.status !== "pending") return fallbackNext;
     if (new Date(invite.expires_at) < new Date()) return fallbackNext;
 
     if (user.email?.toLowerCase() !== invite.email.toLowerCase()) return fallbackNext;
 
-    await admin
-      .from("course_invites")
-      .update({ status: "accepted", accepted_at: new Date().toISOString() })
-      .eq("id", invite.id);
-
-    await admin
+    const { error: enrollErr } = await admin
       .from("user_enrollments")
       .upsert(
         { user_id: user.id, course_id: invite.course_id },
         { onConflict: "user_id,course_id" }
       );
+    if (enrollErr) {
+      console.error("[processInvite] enrollment failed, leaving invite intact:", enrollErr);
+      return fallbackNext;
+    }
+
+    await admin.from("course_invites").delete().eq("id", invite.id);
 
     const course = invite.courses as unknown as { slug: string };
     if (course?.slug) return `/courses/${course.slug}`;

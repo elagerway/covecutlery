@@ -63,10 +63,8 @@ export interface CourseInvite {
   course_id: string;
   email: string;
   token: string;
-  status: "pending" | "accepted" | "expired";
   invited_by: string | null;
   created_at: string;
-  accepted_at: string | null;
   expires_at: string;
 }
 

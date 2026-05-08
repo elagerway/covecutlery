@@ -100,7 +100,7 @@ Our mobile service is simple: book online, and we arrive at your door with our f
     faqs: [
       {
         question: 'How do I book knife sharpening in Burnaby?',
-        answer: 'Book online through our website or call 604-373-1500. Choose a date and time that works for you, and we will drive to your Burnaby address with our full mobile sharpening setup. The whole process takes about 20 minutes for a typical home collection.',
+        answer: 'Book online through our website at coveblades.com. Choose a date and time that works for you, and we will drive to your Burnaby address with our full mobile sharpening setup. The whole process takes about 20 minutes for a typical home collection.',
       },
       {
         question: 'What is the mobile sharpening minimum for Burnaby?',

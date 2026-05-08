@@ -87,18 +87,27 @@ function SignupForm() {
       ? `/courses/${inviteData.courseSlug}`
       : "/courses";
     const inviteParam = inviteToken ? `&invite=${encodeURIComponent(inviteToken)}` : "";
+    const redirectTo = `${window.location.origin}/auth/callback?next=${encodeURIComponent(callbackNext)}${inviteParam}`;
 
-    const { error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: { full_name: fullName },
-        emailRedirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(callbackNext)}${inviteParam}`,
-      },
-    });
-
-    if (error) {
-      setError(error.message);
+    try {
+      const res = await fetch("/api/auth/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password, fullName, redirectTo }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.error || "Signup failed");
+        setLoading(false);
+        return;
+      }
+      if (data.warning) {
+        setError(`Account created but the confirmation email failed to send. Please contact support.`);
+        setLoading(false);
+        return;
+      }
+    } catch {
+      setError("Signup failed. Please try again.");
       setLoading(false);
       return;
     }

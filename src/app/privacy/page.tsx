@@ -79,7 +79,7 @@ export default function PrivacyPage() {
                 <strong className="text-white">Cove Blades</strong><br />
                 North Vancouver, BC<br />
                 <a href="mailto:info@coveblades.com" className="text-[#D4A017] hover:underline">info@coveblades.com</a><br />
-                <a href="tel:6043731500" className="text-[#D4A017] hover:underline">604 373 1500</a>
+                <a href="tel:+16042108180" className="text-[#D4A017] hover:underline">+1 (604) 210-8180</a>
               </p>
             </section>
 

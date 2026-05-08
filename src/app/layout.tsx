@@ -58,7 +58,7 @@ export default function RootLayout({
               name: 'Cove Blades',
               description: 'Professional cutlery sharpening service serving Vancouver and the Lower Mainland.',
               url: 'https://coveblades.com',
-              telephone: '604 373 1500',
+              telephone: '+1 (604) 210-8180',
               email: 'info@coveblades.com',
               foundingDate: '2020',
               address: {

@@ -33,7 +33,7 @@ function buildInviteHtml(email: string, courseTitle: string, inviteUrl: string) 
       </div>
       <p style="margin:24px 0 0;font-size:12px;color:#888;text-align:center;">This invitation expires in 30 days.</p>
       <p style="margin:16px 0 0;font-size:13px;color:#888;text-align:center;">
-        <a href="https://coveblades.com" style="color:#D4A017;">coveblades.com</a> · 604-373-1500
+        <a href="https://coveblades.com" style="color:#D4A017;">coveblades.com</a> · +1 (604) 210-8180
       </p>
     </div>
   </div>
@@ -52,7 +52,7 @@ function buildInviteText(email: string, courseTitle: string, inviteUrl: string) 
     ``,
     `This invitation expires in 30 days.`,
     ``,
-    `Cove Blades · coveblades.com · 604-373-1500`,
+    `Cove Blades · coveblades.com · +1 (604) 210-8180`,
   ].join("\n");
 }
 
@@ -140,4 +140,26 @@ export async function GET() {
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
   return NextResponse.json({ invites });
+}
+
+export async function DELETE(req: NextRequest) {
+  const admin = await requireAdmin();
+  if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+  const inviteId = req.nextUrl.searchParams.get("id");
+  if (!inviteId) return NextResponse.json({ error: "id param is required" }, { status: 400 });
+
+  const supabase = getServiceClient();
+
+  const { data: deleted, error } = await supabase
+    .from("course_invites")
+    .delete()
+    .eq("id", inviteId)
+    .select("id")
+    .maybeSingle();
+
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (!deleted) return NextResponse.json({ error: "Invite not found" }, { status: 404 });
+
+  return NextResponse.json({ ok: true });
 }
