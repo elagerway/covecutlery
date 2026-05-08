@@ -8,7 +8,7 @@ import { formatPhone } from "@/lib/format";
 interface Customer {
   id: string;
   name: string;
-  email: string;
+  email: string | null;
   phone: string | null;
   address: string | null;
   source: string;
@@ -71,7 +71,7 @@ export default function AdminCustomersPage() {
   const filtered = search.trim()
     ? customers.filter((c) => {
         const q = search.toLowerCase();
-        return c.name.toLowerCase().includes(q) || c.email.toLowerCase().includes(q) || (c.phone && c.phone.includes(q));
+        return c.name.toLowerCase().includes(q) || (c.email && c.email.toLowerCase().includes(q)) || (c.phone && c.phone.includes(q));
       })
     : customers;
 
