@@ -85,6 +85,13 @@ Lock down the course platform so only invited people can sign up; standardize al
 - [x] Auth callback redirect uses `http://` for localhost (was forcing `https://` for all matched forwarded hosts)
 - [x] Production live at commit `5d8845a` aliased to `coveblades.com`
 
+### Milestone 9.1 — Invite-flow safety net + Sign in nav link (2026-05-08)
+- [x] Course-page self-heal — auto-enrolls a logged-in user who has a matching pending invite, so the flow survives a dropped `invite=` param or a `getUser()`-returns-null callback edge case
+- [x] `/api/admin/training/activate` + Activate button — manual enrollment override for customers who signed up but didn't auto-enroll
+- [x] "Sign in" link in the public Navbar (was missing — logged-out students had no entry point back into their courses)
+- [x] Unblocked `jamesmarkalexander@hotmail.com` manually (auth user + enrollment intact; invite deleted)
+- [x] All three paths verified end-to-end on production via Playwright (self-heal, Activate, 409-no-account)
+
 ---
 
 ## Milestone 8 — Auto-rotating Instagram token ✅ Complete

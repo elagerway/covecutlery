@@ -1,5 +1,22 @@
 # Changelog
 
+## [2.9.1] — 2026-05-08 — Invite-flow safety net + Sign in nav link
+
+### Fixed
+- **Customer authenticated but unenrolled after invite signup** — a paying training customer (`jamesmarkalexander@hotmail.com`) signed up via the emailed invite link, completed email confirmation (auth user created at 22:24:37, confirmed at 22:24:46, signed in at 22:25:02), and landed on `/courses/train-to-be-sharp` with the "invite-only" banner instead of the enrolled view. `processInvite()` in the auth callback returned its fallback path before reaching the enrollment upsert — most likely because `getUser()` returned null inside the same Route Handler that just called `exchangeCodeForSession` (an @supabase/ssr cookie-timing quirk). Manually inserted his enrollment row + deleted the consumed invite to unblock him
+
+### Added
+- **Course-page self-heal** — `src/app/courses/[slug]/page.tsx` now auto-enrolls any logged-in user who has a matching pending `course_invites` row (`course_id` + lowercased email + `status='pending'` + not expired). Eliminates the dependency on the `invite=` query param surviving the entire email → Supabase verify → callback redirect chain. End-to-end browser-tested in production
+- **`POST /api/admin/training/activate`** — admin-gated endpoint that finds an auth user by an invite's email, upserts the enrollment, deletes the invite. Returns 409 with `"No account found for this email — the customer needs to create an account first using the invite link."` when no auth user exists yet
+- **"Activate" button on each pending invite row** in `src/components/admin/TrainingInviteForm.tsx` — manual enrollment override for customers who signed up but didn't auto-enroll. Sits next to the existing "Cancel" button with a `confirm()` dialog
+- **"Sign in" link in Navbar** for logged-out visitors (`src/components/Navbar.tsx`) — the navbar showed "Dashboard" for authenticated users but had no entry point for students who already had an account and wanted to sign back in. Now shows "Sign in" → `/auth/login` when logged out, swaps to "Dashboard" → `/dashboard` when logged in. Both desktop and mobile menus
+
+### Verified end-to-end on production
+- ✅ Self-heal flow: created throwaway test user + pending invite, signed in via `/auth/login`, navigated to `/courses/train-to-be-sharp`, page rendered the enrolled view (sidebar + Continue Learning); enrollment row created at exact navigation timestamp; invite row deleted
+- ✅ Activate flow: created second test user + invite, signed in as admin, clicked Activate, accepted confirm dialog; success toast shown, enrollment row created, invite row deleted
+- ✅ 409 path: invite with no matching auth user → red error toast, invite preserved (no destructive side effect)
+- ✅ All test artifacts cleaned up
+
 ## [2.9.0] — 2026-05-08 — Invite-only courses, Postmark for all auth emails, voice agent prompt store, Magpipe post-call webhook
 
 ### Added

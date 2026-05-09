@@ -111,7 +111,7 @@ src/
 │   ├── privacy/page.tsx        # Privacy Policy — data collection, third-party services, cookies, rights
 │   └── terms/page.tsx          # Terms of Service — bookings, payment, 30-day guarantee, service area, cancellations
 ├── components/
-│   ├── Navbar.tsx              # Sticky nav, mobile hamburger; Blog + Admin (auth-gated) links; Book Now opens BookingModal
+│   ├── Navbar.tsx              # Sticky nav, mobile hamburger; Blog + Admin (auth-gated) links; "Sign in" for logged-out / "Dashboard" for logged-in (mutually exclusive); Book Now opens BookingModal
 │   ├── Footer.tsx              # 4-col grid, social SVGs, hours, contact; Privacy Policy + Terms of Service links
 │   ├── BookingProvider.tsx     # React context — exposes open() and openWithDate(date) globally
 │   ├── BookingModal.tsx        # 3-step modal: date picker → time slots → details form; phone required (no CAPTCHA)
@@ -287,6 +287,10 @@ Service-role-only access (RLS policy `service_role_all`). Used for credentials t
 | created_at | timestamptz | Auto |
 
 Schema also has `status` (CHECK `pending|accepted|expired`) and `accepted_at` columns inherited from the original migration, but the runtime never sets them — `processInvite()` deletes the row on accept rather than updating status. Public RLS select (the token is the auth secret).
+
+Two redundant enrollment paths consume invite rows so a customer never gets stranded:
+1. **Auth callback** — `processInvite()` in `src/app/auth/callback/route.ts` runs immediately after `exchangeCodeForSession`. Looks up the invite by `token` from the URL, enrolls, deletes the row.
+2. **Course-page self-heal** — `src/app/courses/[slug]/page.tsx`, when a logged-in user is rendered without an enrollment, looks up any matching pending invite by `(course_id, lowercased email, status='pending', not expired)`. If found, it enrolls + deletes the invite using the service-role client and renders the enrolled view. This is the safety net for the case where the `invite=` query param gets dropped or `getUser()` returns null mid-callback (an @supabase/ssr cookie-timing edge case in Route Handlers). Discovered in production 2026-05-08 when a customer who completed the full email→confirm flow was authenticated but unenrolled.
 
 **`magpipe_call_logs`** (since 2026-05-08)
 | Column | Type | Notes |
