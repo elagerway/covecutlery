@@ -17,6 +17,9 @@
 - iPhone-emulated viewport (390x844, touch, iOS user agent), filled the booking form with a Toronto address (well outside the previous 90km zone) without tapping any autocomplete suggestion, clicked Confirm Booking. `/api/cal/book` was called with the raw address (no coords field). "You're booked!" success screen rendered. The pre-fix flow would have surfaced the "autocomplete suggestions" error and never sent the request
 - `tsc --noEmit` and `eslint` clean
 
+### Customer impact
+- **James (jamesmarkalexander@hotmail.com)** was the reported case — booked manually by the owner before this fix shipped so he wasn't held up
+
 ### Known follow-up
 - `/api/cal/book` now slightly more open to garbage submissions reaching Cal.com (no rate-limit or abuse guard). Not addressed in this change — flag for later if abuse appears in practice
 

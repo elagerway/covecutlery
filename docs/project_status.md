@@ -1,6 +1,6 @@
 # Project Status
 
-**Last updated:** 2026-05-08
+**Last updated:** 2026-05-13
 
 ## Milestone 4 — Brand rebrand: Cove Cutlery → Cove Blades ✅ Complete
 
@@ -91,6 +91,16 @@ Lock down the course platform so only invited people can sign up; standardize al
 - [x] "Sign in" link in the public Navbar (was missing — logged-out students had no entry point back into their courses)
 - [x] Unblocked `jamesmarkalexander@hotmail.com` manually (auth user + enrollment intact; invite deleted)
 - [x] All three paths verified end-to-end on production via Playwright (self-heal, Activate, 409-no-account)
+
+### Milestone 9.2 — Removed service-area gating on mobile booking (2026-05-13)
+- [x] James reported "Please select your address from the autocomplete suggestions…" trying to book mobile sharpening on his phone — `addressCoords` precheck failed because mobile autofill / fast typers / keyboard-dismissed dropdowns never populate it
+- [x] Owner unblocked James manually (booked outside the form) before the fix shipped
+- [x] Removed all service-area gating client- and server-side: `addressCoords` state + precheck + haversine in `BookingModal.tsx`; `geocodeAddress` + 422 service-area block in `/api/cal/book`; `HOME_BASE`/`MAX_KM`/`MAX_LNG` constants from both
+- [x] Terms of Service §6 and Privacy Policy §3 updated to remove now-false "we verify service area eligibility" language
+- [x] Dropped unused `geometry` field from `/api/geocode` place-details fetch (Places API cost reduction)
+- [x] Verified end-to-end on iPhone-emulated viewport (Toronto address, no autocomplete tap → "You're booked!")
+- [x] Shipped as commit `0a1e51c` on `main`
+- [ ] Known follow-up: `/api/cal/book` is now slightly more open to garbage submissions; revisit if abuse appears
 
 ---
 
