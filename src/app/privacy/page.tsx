@@ -50,7 +50,7 @@ export default function PrivacyPage() {
                 <li><strong className="text-white">Stripe</strong> — payment processing</li>
                 <li><strong className="text-white">Cal.com</strong> — appointment scheduling</li>
                 <li><strong className="text-white">Postmark</strong> — transactional email delivery</li>
-                <li><strong className="text-white">Google Maps</strong> — address lookup and service area verification</li>
+                <li><strong className="text-white">Google Maps</strong> — address autocomplete during booking</li>
               </ul>
               <p className="mt-3">Each of these services has its own privacy policy and data practices.</p>
             </section>

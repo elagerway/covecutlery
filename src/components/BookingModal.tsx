@@ -40,22 +40,6 @@ interface BookingModalProps {
 
 const TIMEZONE = "America/Vancouver";
 
-// Home base: 4086 Brockton Crescent, North Vancouver
-const HOME_BASE = { lat: 49.3198, lng: -123.0725 };
-const MAX_KM = 90;
-// Anything west of this longitude requires a ferry (Sunshine Coast, Vancouver Island)
-const MAX_LNG = -123.35;
-
-function haversineKm(lat1: number, lng1: number, lat2: number, lng2: number) {
-  const R = 6371;
-  const dLat = ((lat2 - lat1) * Math.PI) / 180;
-  const dLng = ((lng2 - lng1) * Math.PI) / 180;
-  const a =
-    Math.sin(dLat / 2) ** 2 +
-    Math.cos((lat1 * Math.PI) / 180) * Math.cos((lat2 * Math.PI) / 180) * Math.sin(dLng / 2) ** 2;
-  return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-}
-
 function formatDate(date: Date) {
   return date.toLocaleDateString("en-CA", { timeZone: TIMEZONE }); // YYYY-MM-DD
 }
@@ -98,7 +82,6 @@ export default function BookingModal({ open, onClose, initialDate }: BookingModa
   const [form, setForm] = useState({ name: "", email: "", phone: "", address: "", notes: "" });
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [addressCoords, setAddressCoords] = useState<{ lat: number; lng: number } | null>(null);
   const [addressSuggestions, setAddressSuggestions] = useState<AddressSuggestion[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [addressLoading, setAddressLoading] = useState(false);
@@ -135,7 +118,6 @@ export default function BookingModal({ open, onClose, initialDate }: BookingModa
         setSelectedDate(null);
         setSelectedSlot(null);
         setForm({ name: "", email: "", phone: "", address: "", notes: "" });
-        setAddressCoords(null);
         setError(null);
         setAddressSuggestions([]);
       }, 300);
@@ -160,7 +142,6 @@ export default function BookingModal({ open, onClose, initialDate }: BookingModa
 
   function handleAddressChange(value: string) {
     setForm((f) => ({ ...f, address: value }));
-    setAddressCoords(null); // coords are stale until user picks from autocomplete
     setShowSuggestions(true);
     if (addressDebounce.current) clearTimeout(addressDebounce.current);
     if (value.length < 3) {
@@ -189,18 +170,6 @@ export default function BookingModal({ open, onClose, initialDate }: BookingModa
     setSubmitting(true);
     setError(null);
 
-    // Distance check — require address from autocomplete so we have coords
-    if (!addressCoords) {
-      setError("Please select your address from the autocomplete suggestions so we can verify it's within our service area.");
-      setSubmitting(false);
-      return;
-    }
-    const km = haversineKm(HOME_BASE.lat, HOME_BASE.lng, addressCoords.lat, addressCoords.lng);
-    if (km > MAX_KM || addressCoords.lng < MAX_LNG) {
-      setError("We're very sorry, your address falls outside of our service area. Please contact us to discuss options.");
-      setSubmitting(false);
-      return;
-    }
     const notes = form.notes || undefined;
     try {
       const calRes = await fetch("/api/cal/book", {
@@ -485,12 +454,8 @@ export default function BookingModal({ open, onClose, initialDate }: BookingModa
                                   ? formatAddressComponents(data.address_components)
                                   : s.description;
                                 setForm((f) => ({ ...f, address: formatted }));
-                                if (data.geometry?.location) {
-                                  setAddressCoords(data.geometry.location);
-                                }
                               } catch {
                                 setForm((f) => ({ ...f, address: s.description }));
-                                setError("Address lookup failed — please re-select your address from the suggestions.");
                               }
                             }}
                             className="w-full text-left px-3 py-2.5 text-sm transition-colors hover:bg-white/10"
@@ -522,12 +487,7 @@ export default function BookingModal({ open, onClose, initialDate }: BookingModa
 
                 {error && (
                   <p className="text-sm rounded-lg px-3 py-2.5" style={{ backgroundColor: "#2D1B1B", color: "#F87171", border: "1px solid #7F1D1D" }}>
-                    {error.includes("outside of our service area") ? (
-                      <>
-                        We&apos;re very sorry, your address falls outside of our service area.{" "}
-                        <a href="/contact" className="underline hover:opacity-80">Contact us</a> to discuss options.
-                      </>
-                    ) : error}
+                    {error}
                   </p>
                 )}
 

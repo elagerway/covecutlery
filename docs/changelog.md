@@ -1,5 +1,25 @@
 # Changelog
 
+## [2.9.2] — 2026-05-13 — Removed service-area gating on mobile booking
+
+### Fixed
+- **Mobile customers blocked at "Please select your address from the autocomplete suggestions…"** — a real customer (James) hit this on his phone trying to book mobile sharpening. The client-side check in `BookingModal.tsx` required `addressCoords` to be non-null, which is only set when the user taps an entry in the Google Places autocomplete dropdown. On mobile that breaks for iOS/Android address autofill (fills the field without a dropdown tap), fast typers who submit before the dropdown loads, and cases where the keyboard dismisses the dropdown before the tap registers. Owner decision: drop the 90km / no-ferry service-area restriction entirely rather than try to make the precheck smarter
+
+### Removed
+- **All service-area gating from the mobile-booking flow** — `HOME_BASE`, `MAX_KM`, `MAX_LNG`, `haversineKm` constants/helper, the `addressCoords` state and all its writes, the precheck and haversine block in `handleBook`, and the dead "outside of our service area" JSX branch in the error renderer — all gone from `src/components/BookingModal.tsx`. Same constants + `geocodeAddress` helper + the 422 service-area-rejection block — gone from `src/app/api/cal/book/route.ts`. Cal.com receives any address; out-of-area bookings are triaged manually after the fact
+- **`geometry` field from `/api/geocode` place-details request** — was only consumed by the deleted `setAddressCoords(data.geometry.location)` line. Address-autocomplete-only now; smaller Places API cost
+
+### Changed
+- **Terms of Service §6 (Service Area)** — removed the now-false "We verify service area eligibility at the time of booking" sentence; softened to "may be declined after review"
+- **Privacy Policy §3 (Third-Party Services)** — Google Maps line corrected from "address lookup and service area verification" to "address autocomplete during booking"
+
+### Verified end-to-end (2026-05-13)
+- iPhone-emulated viewport (390x844, touch, iOS user agent), filled the booking form with a Toronto address (well outside the previous 90km zone) without tapping any autocomplete suggestion, clicked Confirm Booking. `/api/cal/book` was called with the raw address (no coords field). "You're booked!" success screen rendered. The pre-fix flow would have surfaced the "autocomplete suggestions" error and never sent the request
+- `tsc --noEmit` and `eslint` clean
+
+### Known follow-up
+- `/api/cal/book` now slightly more open to garbage submissions reaching Cal.com (no rate-limit or abuse guard). Not addressed in this change — flag for later if abuse appears in practice
+
 ## [2.9.1] — 2026-05-08 — Invite-flow safety net + Sign in nav link
 
 ### Fixed

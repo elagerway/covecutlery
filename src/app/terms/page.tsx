@@ -47,7 +47,7 @@ export default function TermsPage() {
 
             <section>
               <h2 className="text-lg font-semibold text-white mb-3">6. Service Area</h2>
-              <p>Mobile service is available within our service area (North Shore to Chilliwack, and surrounding Lower Mainland communities). Addresses outside this area or requiring ferry travel cannot be accommodated. We verify service area eligibility at the time of booking.</p>
+              <p>Mobile service typically covers the North Shore to Chilliwack and surrounding Lower Mainland communities. Bookings well outside our usual area, or requiring ferry travel, may be declined after review — we&apos;ll contact you to discuss options.</p>
             </section>
 
             <section>
