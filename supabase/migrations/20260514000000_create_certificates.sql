@@ -8,7 +8,7 @@ create table public.certificates (
   recipient_name text not null,
   course_title text not null,
   issued_date date not null,
-  issued_by uuid references auth.users(id),
+  issued_by uuid references auth.users(id) on delete set null,
   pdf_path text not null,
   revoked_at timestamptz,
   email_sent_at timestamptz,
@@ -17,7 +17,6 @@ create table public.certificates (
 
 create index idx_certificates_user on public.certificates(user_id);
 create index idx_certificates_course on public.certificates(course_id);
-create index idx_certificates_short_code on public.certificates(short_code);
 
 alter table public.certificates enable row level security;
 
