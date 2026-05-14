@@ -4,7 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
-import { BookOpen, User, LayoutDashboard, LogOut, Flame, Trophy, Star } from "lucide-react";
+import { BookOpen, User, LayoutDashboard, LogOut, Flame, Trophy, Star, Award } from "lucide-react";
 import { cn } from "@/lib/cn";
 
 interface SidebarProps {
@@ -15,6 +15,7 @@ interface SidebarProps {
 const navItems = [
   { label: "Overview", href: "/dashboard", icon: LayoutDashboard },
   { label: "My Courses", href: "/dashboard/courses", icon: BookOpen },
+  { label: "Certificates", href: "/dashboard/certificates", icon: Award },
   { label: "Profile", href: "/dashboard/profile", icon: User },
 ];
 
