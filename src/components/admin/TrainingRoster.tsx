@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import { StudentCertificates } from "./StudentCertificates";
 
 interface StudentRow {
   user_id: string;
@@ -29,6 +30,7 @@ interface Props {
   students: StudentRow[];
   wrongAnswers: WrongAnswer[];
   courseSlug: string;
+  courseOptions: { id: string; title: string }[];
 }
 
 function getProgress(s: StudentRow) {
@@ -39,11 +41,12 @@ function getProgress(s: StudentRow) {
   return { lessonPct, quizPct, overallPct, isComplete };
 }
 
-export function TrainingRoster({ students: initial, wrongAnswers, courseSlug }: Props) {
+export function TrainingRoster({ students: initial, wrongAnswers, courseSlug, courseOptions }: Props) {
   const [students, setStudents] = useState(initial);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [suspending, setSuspending] = useState(false);
   const [suspendError, setSuspendError] = useState<string | null>(null);
+  const [certBadgeByUser, setCertBadgeByUser] = useState<Record<string, boolean>>({});
 
   const selected = selectedId ? students.find((s) => s.user_id === selectedId) : null;
   const selectedWrong = selectedId ? wrongAnswers.filter((w) => w.userId === selectedId) : [];
@@ -164,6 +167,13 @@ export function TrainingRoster({ students: initial, wrongAnswers, courseSlug }: 
           </div>
         </div>
 
+        <StudentCertificates
+          userId={selected.user_id}
+          defaultRecipientName={selected.full_name || ""}
+          courses={courseOptions}
+          onChange={(hasActive) => setCertBadgeByUser((prev) => ({ ...prev, [selected.user_id]: hasActive }))}
+        />
+
         <h3 className="text-lg font-semibold text-white mb-4">
           Wrong Answers
           {selectedWrong.length > 0 && (
@@ -243,6 +253,11 @@ export function TrainingRoster({ students: initial, wrongAnswers, courseSlug }: 
                       {s.banned && (
                         <span className="inline-flex items-center rounded-full px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wider bg-red-500/10 text-red-400">
                           Suspended
+                        </span>
+                      )}
+                      {certBadgeByUser[s.user_id] && (
+                        <span className="inline-flex items-center rounded-full px-1.5 py-0.5 text-[9px] font-semibold uppercase tracking-wider bg-amber-500/10 text-amber-400">
+                          Cert ✓
                         </span>
                       )}
                     </div>

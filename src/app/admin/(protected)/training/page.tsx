@@ -134,7 +134,12 @@ export default async function TrainingAdminPage() {
 
       <TrainingInviteForm courses={(courses ?? []).map((c: any) => ({ id: c.id, title: c.title }))} />
 
-      <TrainingRoster students={students} wrongAnswers={wrongAnswers} courseSlug={courseSlug} />
+      <TrainingRoster
+        students={students}
+        wrongAnswers={wrongAnswers}
+        courseSlug={courseSlug}
+        courseOptions={(courses ?? []).map((c: any) => ({ id: c.id, title: c.title }))}
+      />
     </div>
   );
 }
