@@ -62,7 +62,10 @@ export function StudentCertificates({ userId, defaultRecipientName, courses, onC
     }
   }
 
-  useEffect(() => { load(); /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, [userId]);
+  useEffect(() => {
+    load();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userId]);
 
   async function handleIssue(e: React.FormEvent) {
     e.preventDefault();

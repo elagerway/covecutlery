@@ -27,7 +27,7 @@ export default async function MyCertificatesPage() {
         <Card>
           <CardContent className="py-10 text-center">
             <Award className="mx-auto size-10 text-neutral-600 mb-3" />
-            <p className="text-neutral-400">You don't have any certificates yet.</p>
+            <p className="text-neutral-400">You don&apos;t have any certificates yet.</p>
             <p className="text-sm text-neutral-500 mt-1">Complete a course and your instructor can issue one.</p>
           </CardContent>
         </Card>
