@@ -28,50 +28,58 @@ export interface RenderInput {
   origin: string;
 }
 
+// Coordinates measured from public/certificate-template.pdf (842 × 595 PDF points).
+// Name underline:  x=265–739 (center 502),  y=250 from bottom.
+// Date underline:  x=501–611 (center 556),  y=200 from bottom.
+// Cert content axis is right of page-center because of the gold ribbons on the left.
+const NAME_CENTER_X = 502;
+const NAME_BASELINE_Y = 254;
+const DATE_CENTER_X = 556;
+const DATE_BASELINE_Y = 204;
+const FOOTER_CENTER_X = 502;
+const FOOTER_BASELINE_Y = 18;
+
 /**
- * Loads the bundled certificate template, draws the recipient name on the upper
- * underline, the formatted date on the lower underline (after "Level 1 Training on"),
- * and a small verify-URL footer at the bottom. Returns the rendered PDF bytes.
+ * Loads the bundled certificate template, draws the recipient name centered on
+ * the upper underline, the formatted date centered on the lower underline (after
+ * "Level 1 Training on"), and a small verify-URL footer aligned with the cert's
+ * visual axis at the bottom. Returns the rendered PDF bytes.
  */
 export async function renderCertificate(input: RenderInput): Promise<Uint8Array> {
   const doc = await PDFDocument.load(loadTemplate());
   const page = doc.getPage(0);
-  const { width, height } = page.getSize();
 
   const helv = await doc.embedFont(StandardFonts.Helvetica);
   const helvBold = await doc.embedFont(StandardFonts.HelveticaBold);
 
-  // --- Recipient name: centered on the upper underline.
   const nameSize = 28;
   const nameWidth = helvBold.widthOfTextAtSize(input.recipientName, nameSize);
   page.drawText(input.recipientName, {
-    x: (width - nameWidth) / 2,
-    y: height * 0.46,
+    x: NAME_CENTER_X - nameWidth / 2,
+    y: NAME_BASELINE_Y,
     size: nameSize,
     font: helvBold,
     color: rgb(0.05, 0.05, 0.05),
   });
 
-  // --- Date: drawn after "Level 1 Training on " on the second line.
   const dateStr = formatIssuedDate(input.issuedDate);
   const dateSize = 13;
   const dateWidth = helv.widthOfTextAtSize(dateStr, dateSize);
   page.drawText(dateStr, {
-    x: width * 0.62 - dateWidth / 2,
-    y: height * 0.36,
+    x: DATE_CENTER_X - dateWidth / 2,
+    y: DATE_BASELINE_Y,
     size: dateSize,
     font: helv,
     color: rgb(0.1, 0.1, 0.1),
   });
 
-  // --- Footer verify URL: small, bottom-center.
   const verifyUrl = `${input.origin.replace(/\/$/, "")}/certificates/${input.shortCode}`;
   const footer = `Verify: ${verifyUrl}`;
   const footerSize = 8;
   const footerWidth = helv.widthOfTextAtSize(footer, footerSize);
   page.drawText(footer, {
-    x: (width - footerWidth) / 2,
-    y: 18,
+    x: FOOTER_CENTER_X - footerWidth / 2,
+    y: FOOTER_BASELINE_Y,
     size: footerSize,
     font: helv,
     color: rgb(0.4, 0.4, 0.4),
