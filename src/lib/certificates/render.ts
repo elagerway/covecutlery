@@ -26,6 +26,8 @@ export interface RenderInput {
   shortCode: string;
   /** Origin used to build the verify URL line, e.g. "https://coveblades.com" */
   origin: string;
+  /** When true, replaces the verify URL with a "PREVIEW" banner. */
+  preview?: boolean;
 }
 
 // Coordinates measured from public/certificate-template.pdf (842 × 595 PDF points).
@@ -73,8 +75,9 @@ export async function renderCertificate(input: RenderInput): Promise<Uint8Array>
     color: rgb(0.1, 0.1, 0.1),
   });
 
-  const verifyUrl = `${input.origin.replace(/\/$/, "")}/certificates/${input.shortCode}`;
-  const footer = `Verify: ${verifyUrl}`;
+  const footer = input.preview
+    ? "PREVIEW — Not a valid certificate"
+    : `Verify: ${input.origin.replace(/\/$/, "")}/certificates/${input.shortCode}`;
   const footerSize = 8;
   const footerWidth = helv.widthOfTextAtSize(footer, footerSize);
   page.drawText(footer, {

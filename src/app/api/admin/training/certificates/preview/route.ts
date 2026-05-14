@@ -21,8 +21,9 @@ export async function POST(req: NextRequest) {
   const pdfBytes = await renderCertificate({
     recipientName,
     issuedDate,
-    shortCode: "CB-PREV-IEW0",
+    shortCode: "PREVIEW",
     origin: getOrigin(req),
+    preview: true,
   });
 
   return new NextResponse(pdfBytes as BodyInit, {
