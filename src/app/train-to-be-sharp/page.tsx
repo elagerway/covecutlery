@@ -11,6 +11,7 @@ import {
   TrendingUp,
   Truck,
   MapPin,
+  Sparkles,
 } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -20,7 +21,7 @@ import { safeJsonLd, breadcrumbSchema } from "@/lib/schema";
 export const metadata: Metadata = {
   title: "Train to Be Sharp — Knife Sharpening Training | Cove Blades",
   description:
-    "Two- to three-day knife sharpening practicum with Cove Blades. Three modules: One-Inch Grinder ($600), Two-Inch Grinder ($400), Business Process & Automation ($200). Sharpness-tester verified, microscope-checked, every session recorded.",
+    "Two- to three-day knife sharpening practicum with Cove Blades. Four modules: One-Inch Grinder ($600), Two-Inch Grinder ($400), Business Process & Automation ($200), and Build Your Business with AI Hands-On ($600). Sharpness-tester verified, microscope-checked, every session recorded.",
   alternates: { canonical: "/train-to-be-sharp" },
 };
 
@@ -45,9 +46,17 @@ const modules = [
     icon: Briefcase,
     name: "Business Process & Automation",
     price: "$200",
-    tag: "Two-hour session",
+    tag: "Two-hour session · Introduction",
     description:
-      "How we actually run Cove Blades behind the scenes. AI automation for inbound calls and texts, plus the logistical playbook for drop-off, pickup, and mobile operations. For anyone serious about scaling without drowning in admin.",
+      "Tips, tricks, and insights from how we actually run Cove Blades — AI automation for inbound calls and texts, plus the logistical playbook for drop-off, pickup, and mobile operations. The lay-of-the-land before you build your own.",
+  },
+  {
+    icon: Sparkles,
+    name: "Build Your Business with AI — Hands-On",
+    price: "$600",
+    tag: "Half-day workshop",
+    description:
+      "A 3-4 hour one-on-one build session. Together we set up your website, email marketing, social profiles, business cards, phone number, and AI assistant — all using modern AI tooling. Walk out with a working business toolkit and the playbook to maintain it.",
   },
 ];
 
@@ -135,7 +144,7 @@ export default function TrainingPage() {
               start with the one-inch course — modules can be combined in any configuration
               for full coverage.
             </p>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {modules.map((m) => (
                 <div
                   key={m.name}
