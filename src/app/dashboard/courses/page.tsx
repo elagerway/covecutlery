@@ -10,18 +10,29 @@ export default async function DashboardCoursesPage() {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return null;
 
-  const { data: enrollments } = await supabase
-    .from("user_enrollments")
-    .select("course_id, courses(id, title, slug, description, level, modules(id, title, lessons(id)))")
-    .eq("user_id", user.id);
-
-  const { data: progress } = await supabase
-    .from("user_progress")
-    .select("lesson_id")
-    .eq("user_id", user.id)
-    .eq("completed", true);
+  const [{ data: enrollments }, { data: progress }, { data: certs }] = await Promise.all([
+    supabase
+      .from("user_enrollments")
+      .select("course_id, courses(id, title, slug, description, level, modules(id, title, lessons(id)))")
+      .eq("user_id", user.id),
+    supabase
+      .from("user_progress")
+      .select("lesson_id")
+      .eq("user_id", user.id)
+      .eq("completed", true),
+    supabase
+      .from("certificates")
+      .select("id, short_code, course_id, revoked_at")
+      .eq("user_id", user.id)
+      .is("revoked_at", null),
+  ]);
 
   const completedIds = new Set((progress ?? []).map((p) => p.lesson_id));
+
+  const certByCourse = new Map<string, { id: string; short_code: string }>();
+  for (const c of certs ?? []) {
+    if (!certByCourse.has(c.course_id)) certByCourse.set(c.course_id, { id: c.id, short_code: c.short_code });
+  }
 
   const courses = (enrollments ?? []).map((e: any) => {
     const course = e.courses;
@@ -72,6 +83,20 @@ export default async function DashboardCoursesPage() {
                       }`}>{course.level}</span>
                     </div>
                     <CourseProgress value={percent} label="" display={`${course.completedLessons}/${course.totalLessons} complete · ${percent}%`} />
+                    {certByCourse.has(course.id) && (
+                      <div className="mt-3 flex items-center gap-2 text-xs">
+                        <span className="text-amber-400">🏅 Certificate issued</span>
+                        <a
+                          href={`/api/certificates/${certByCourse.get(course.id)!.id}/download`}
+                          onClick={(e) => e.stopPropagation()}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="text-emerald-400 hover:underline"
+                        >
+                          Download
+                        </a>
+                      </div>
+                    )}
                   </CardContent>
                 </Card>
               </Link>
