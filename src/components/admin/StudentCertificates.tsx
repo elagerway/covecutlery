@@ -193,6 +193,27 @@ export function StudentCertificates({ userId, defaultRecipientName, courses, onC
             </button>
             <button
               type="button"
+              onClick={async () => {
+                const res = await fetch("/api/admin/training/certificates/preview", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({ recipientName, issuedDate }),
+                });
+                if (!res.ok) {
+                  setError("Preview failed");
+                  return;
+                }
+                const blob = await res.blob();
+                const url = URL.createObjectURL(blob);
+                window.open(url, "_blank", "noopener,noreferrer");
+                setTimeout(() => URL.revokeObjectURL(url), 60_000);
+              }}
+              className="px-4 py-2 rounded-lg text-sm font-semibold border border-neutral-600 text-neutral-200 hover:bg-neutral-800"
+            >
+              Preview
+            </button>
+            <button
+              type="button"
               onClick={() => setShowForm(false)}
               className="px-4 py-2 rounded-lg text-sm text-neutral-400 hover:text-white"
             >
