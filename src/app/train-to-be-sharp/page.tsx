@@ -137,7 +137,7 @@ export default function TrainingPage() {
         <section className="py-16 px-6" style={{ borderTop: "1px solid #30363D" }}>
           <div className="max-w-5xl mx-auto">
             <h2 className="text-2xl sm:text-3xl font-bold mb-3 text-center" style={{ color: "#FFFFFF" }}>
-              Three <span style={{ color: "#D4A017" }}>Modules</span>
+              Four <span style={{ color: "#D4A017" }}>Modules</span>
             </h2>
             <p className="text-center text-sm mb-10 max-w-xl mx-auto" style={{ color: "#6B7280" }}>
               Offered separately so you can pick the path that fits your goals. Most students
