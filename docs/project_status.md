@@ -1,6 +1,6 @@
 # Project Status
 
-**Last updated:** 2026-05-13
+**Last updated:** 2026-05-14
 
 ## Milestone 4 — Brand rebrand: Cove Cutlery → Cove Blades ✅ Complete
 
@@ -101,6 +101,26 @@ Lock down the course platform so only invited people can sign up; standardize al
 - [x] Verified end-to-end on iPhone-emulated viewport (Toronto address, no autocomplete tap → "You're booked!")
 - [x] Shipped as commit `0a1e51c` on `main`
 - [ ] Known follow-up: `/api/cal/book` is now slightly more open to garbage submissions; revisit if abuse appears
+
+### Milestone 9.3 — Training certificates (2026-05-14)
+- [x] Admin can issue a "Certificate of Achievement" PDF to any enrolled student from `/admin/training` → student detail → Certificates panel; the cert is delivered by email + available on the student's `/dashboard/certificates` page + downloadable by the admin
+- [x] `certificates` table + private `certificates` Storage bucket (migration `20260514000000_create_certificates.sql`); RLS lets a user read only their own rows
+- [x] `pdf-lib` overlay renderer composites recipient name + issued date + verify-URL footer onto the existing `public/certificate-template.pdf` (842 × 595 PDF points, coordinates measured pixel-accurately from the template — name centered on the upper underline at x=502, date on the "Level 1 Training on" blank at x=556, verify URL on the cert's visual axis at x=502)
+- [x] Short verification code generator (`CB-XXXX-XXXX`, Crockford-ish base32 minus visually ambiguous chars)
+- [x] Public verify page at `/certificates/<short_code>` — shows verified / revoked / 404
+- [x] API: POST/GET issue+list, POST email (re-send), POST revoke, GET signed-URL download (owner-or-admin auth)
+- [x] Preview button in the issue form — admin sees the rendered PDF in a new tab without writing to the DB or sending email; preview footer reads "PREVIEW — Not a valid certificate" instead of a fake verify URL
+- [x] Postmark email matches the existing invite/invoice template style (gold "View Verification Page" CTA, PDF attachment)
+- [x] Spec at `docs/superpowers/specs/2026-05-14-training-certificates-design.md`, plan at `docs/superpowers/plans/2026-05-14-training-certificates.md`
+- [x] Shipped as commits `c102f4a` → `dcdf625` on `main`
+
+### Milestone 9.4 — Training landing course-split (2026-05-14)
+- [x] `/train-to-be-sharp` modules grid expanded from 3 → 4 cards: existing "Business Process & Automation" repositioned as the introductory tier ($200, "Two-hour session · Introduction"); new "Build Your Business with AI — Hands-On" added ($600, "Half-day workshop", Sparkles icon)
+- [x] Page metadata description and "Three Modules" / "Four Modules" heading both updated for consistency
+- [x] Grid layout changed to `md:grid-cols-2 lg:grid-cols-4` for responsive 2×2 / 4-up
+- [x] Marketing copy only — no DB changes (the new course is a landing-page card, not an enrolled-course row)
+- [x] Spec at `docs/superpowers/specs/2026-05-14-training-landing-course-split-design.md`
+- [x] Shipped as commits `3d198d5` and `59ad5d8` on `main`
 
 ---
 

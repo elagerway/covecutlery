@@ -1,5 +1,38 @@
 # Changelog
 
+## [2.9.4] — 2026-05-14 — Training landing course-split
+
+### Changed
+- **Modules grid on `/train-to-be-sharp` expanded from 3 → 4 cards.** Existing "Business Process & Automation" card retitled as the introductory tier ("Two-hour session · Introduction", $200, "Tips, tricks, and insights from how we actually run Cove Blades… The lay-of-the-land before you build your own."). New fourth card added: "Build Your Business with AI — Hands-On" ($600, "Half-day workshop", Sparkles icon, copy mentions website + email marketing + social profiles + business cards + phone number + AI assistant)
+- **Grid layout** flipped from `md:grid-cols-3` to `md:grid-cols-2 lg:grid-cols-4` so 4 cards fit cleanly across desktop and stack 2×2 on tablet
+- **Page metadata `description`** rewritten to list four modules with prices (was "Three modules: …")
+- **Section heading** changed from "Three Modules" to "Four Modules"
+
+### Notes
+- No DB / `courses` table changes — the new card is landing-page marketing only. The new course doesn't have lessons or enrollment yet; the owner will lay out the actual content separately
+- Shipped as commits `3d198d5` and `59ad5d8` on `main`
+
+## [2.9.3] — 2026-05-14 — Training certificates
+
+### Added
+- **Admin-issued PDF certificates of achievement** for training students. From `/admin/training` → student detail → new "Certificates" panel, the admin clicks "Issue Certificate", confirms recipient name + course + date, optionally emails the student. The cert is rendered as a PDF, uploaded to a private Supabase Storage bucket, and recorded in a new `certificates` table. Admin can also Preview before issuing, Revoke, Re-Email, and Download
+- **Student-facing pages**: `/dashboard/certificates` lists own certificates with download / verify links; `Award` icon added to the dashboard sidebar; "🏅 Certificate issued · Download" pill appears on `/dashboard/courses` cards when a non-revoked cert exists
+- **Public verification page** at `/certificates/<short_code>` (no auth) — shows "✓ Verified" + recipient name + course + date OR "⚠ Revoked" OR 404. Short codes look like `CB-XXXX-XXXX` using a Crockford-ish base32 alphabet (no I/L/O/U/0/1)
+- **Postmark email** with the rendered PDF as attachment + "View Verification Page" CTA — matches the existing invite/invoice template style
+- **`pdf-lib`** added as a dependency; `public/certificate-template.pdf` bundled into the repo as the rendering background. Renderer overlays text at coordinates measured pixel-accurately from the template (842 × 595 PDF points)
+
+### Schema
+- New `certificates` table (`short_code` unique, `user_id` / `course_id` FKs cascade, `issued_by` FK ON DELETE SET NULL, `recipient_name` and `course_title` snapshotted at issuance, `pdf_path`, `revoked_at`, `email_sent_at`)
+- Private `certificates` Storage bucket; downloads go through `/api/certificates/[id]/download` which checks owner-or-admin auth and 302s to a 60-second signed URL
+- Migration: `supabase/migrations/20260514000000_create_certificates.sql`
+
+### Spec / Plan
+- `docs/superpowers/specs/2026-05-14-training-certificates-design.md`
+- `docs/superpowers/plans/2026-05-14-training-certificates.md`
+
+### Shipped
+- Commits `c102f4a` → `dcdf625` on `main`
+
 ## [2.9.2] — 2026-05-13 — Removed service-area gating on mobile booking
 
 ### Fixed
