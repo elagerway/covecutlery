@@ -1,8 +1,11 @@
 import type { Metadata, Viewport } from 'next'
 import { Inter } from 'next/font/google'
+import Script from 'next/script'
 import './globals.css'
 import { BookingProvider } from '@/components/BookingProvider'
 import { safeJsonLd } from '@/lib/schema'
+
+const GOOGLE_ADS_ID = 'AW-18180527373'
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })
 
@@ -99,6 +102,16 @@ export default function RootLayout({
         />
       </head>
       <body className={inter.className}><BookingProvider>{children}</BookingProvider></body>
+      <Script
+        src={`https://www.googletagmanager.com/gtag/js?id=${GOOGLE_ADS_ID}`}
+        strategy="afterInteractive"
+      />
+      <Script id="google-ads-gtag" strategy="afterInteractive">
+        {`window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+gtag('config', '${GOOGLE_ADS_ID}');`}
+      </Script>
     </html>
   )
 }
