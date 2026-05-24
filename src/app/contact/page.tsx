@@ -419,7 +419,7 @@ export default function ContactPage() {
                   Find Us
                 </h2>
                 <p className="text-sm mb-4" style={{ color: "#6B7280" }}>
-                  Based in Vancouver, BC. Serving North Shore, Burnaby, Surrey, Langley, and the Fraser Valley.
+                  Based in <Link href="/service-area/north-vancouver" className="underline decoration-dotted underline-offset-2 hover:text-white transition-colors" style={{ color: "#D4A017" }}>North Vancouver</Link>, BC. Serving the North Shore, <Link href="/service-area/burnaby" className="underline decoration-dotted underline-offset-2 hover:text-white transition-colors" style={{ color: "#D4A017" }}>Burnaby</Link>, <Link href="/service-area/surrey" className="underline decoration-dotted underline-offset-2 hover:text-white transition-colors" style={{ color: "#D4A017" }}>Surrey</Link>, <Link href="/service-area/langley" className="underline decoration-dotted underline-offset-2 hover:text-white transition-colors" style={{ color: "#D4A017" }}>Langley</Link>, and the Fraser Valley.
                 </p>
                 <a
                   href="https://maps.google.com/?q=Vancouver+BC+Canada"

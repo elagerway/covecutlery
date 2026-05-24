@@ -1,7 +1,19 @@
 "use client";
 
 import { MapPin } from "lucide-react";
+import Link from "next/link";
 import { useBooking } from "@/components/BookingProvider";
+
+function CityLink({ slug, children }: { slug: string; children: React.ReactNode }) {
+  return (
+    <Link
+      href={`/service-area/${slug}`}
+      className="underline decoration-dotted underline-offset-2 hover:text-[#D4A017] transition-colors"
+    >
+      {children}
+    </Link>
+  );
+}
 
 const InstagramIcon = () => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
@@ -11,13 +23,13 @@ const InstagramIcon = () => (
   </svg>
 );
 
-const serviceAreas = [
+const serviceAreas: { area: React.ReactNode; minimum: string }[] = [
   {
-    area: "North Shore",
+    area: <><CityLink slug="north-vancouver">North Van</CityLink> &amp; <CityLink slug="west-vancouver">West Van</CityLink></>,
     minimum: "Minimum 6 pieces",
   },
   {
-    area: "Burnaby, Vancouver, Port Moody",
+    area: <><CityLink slug="burnaby">Burnaby</CityLink>, <CityLink slug="vancouver">Vancouver</CityLink>, <CityLink slug="port-moody">Port Moody</CityLink></>,
     minimum: "Minimum 8 pieces",
   },
   {
@@ -63,9 +75,9 @@ export default function MobileServiceSection() {
 
         {/* Service Area Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-12">
-          {serviceAreas.map((item) => (
+          {serviceAreas.map((item, i) => (
             <div
-              key={item.area}
+              key={i}
               className="flex flex-col items-center text-center p-6 rounded-xl border"
               style={{
                 backgroundColor: "#161B22",

@@ -56,11 +56,38 @@ const steps = [
   },
 ];
 
-const areas = [
-  { name: "North Shore", detail: "North Van, West Van", min: "$60 minimum (5 knives)" },
-  { name: "Vancouver", detail: "All neighbourhoods", min: "$60 minimum (5 knives)" },
-  { name: "Burnaby / New West", detail: "Including Coquitlam, Port Moody", min: "$60 minimum (5 knives)" },
-  { name: "Surrey / Langley", detail: "Including Delta, White Rock", min: "$72 minimum (6 knives)" },
+function CityLink({ slug, children }: { slug: string; children: React.ReactNode }) {
+  return (
+    <Link
+      href={`/service-area/${slug}`}
+      className="underline decoration-dotted underline-offset-2 hover:text-white transition-colors"
+    >
+      {children}
+    </Link>
+  );
+}
+
+const areas: { name: React.ReactNode; detail: React.ReactNode; min: string }[] = [
+  {
+    name: "North Shore",
+    detail: <><CityLink slug="north-vancouver">North Van</CityLink>, <CityLink slug="west-vancouver">West Van</CityLink></>,
+    min: "$60 minimum (5 knives)",
+  },
+  {
+    name: <CityLink slug="vancouver">Vancouver</CityLink>,
+    detail: "All neighbourhoods",
+    min: "$60 minimum (5 knives)",
+  },
+  {
+    name: <><CityLink slug="burnaby">Burnaby</CityLink> / <CityLink slug="new-westminster">New West</CityLink></>,
+    detail: <>Including <CityLink slug="coquitlam">Coquitlam</CityLink>, <CityLink slug="port-moody">Port Moody</CityLink></>,
+    min: "$60 minimum (5 knives)",
+  },
+  {
+    name: <><CityLink slug="surrey">Surrey</CityLink> / <CityLink slug="langley">Langley</CityLink></>,
+    detail: <>Including <CityLink slug="delta">Delta</CityLink>, <CityLink slug="white-rock">White Rock</CityLink></>,
+    min: "$72 minimum (6 knives)",
+  },
   { name: "Abbotsford / Chilliwack", detail: "Fraser Valley", min: "Call for quote" },
 ];
 
@@ -221,7 +248,7 @@ export default function MobileServicePage() {
                 <tbody>
                   {areas.map(({ name, detail, min }, i) => (
                     <tr
-                      key={name}
+                      key={i}
                       style={{
                         backgroundColor: i % 2 === 0 ? "#161B22" : "#0D1117",
                         borderBottom: i < areas.length - 1 ? "1px solid #30363D" : "none",
