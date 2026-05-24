@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { X, ChevronLeft, ChevronRight, Loader2, CheckCircle, MapPin } from "lucide-react";
+import { track } from "@/lib/analytics-client";
 
 interface AddressSuggestion {
   place_id: string;
@@ -96,6 +97,11 @@ export default function BookingModal({ open, onClose, initialDate }: BookingModa
     }
   }, [open, initialDate]);
 
+  // Track funnel start every time the modal opens
+  useEffect(() => {
+    if (open) track("booking_modal_opened", {});
+  }, [open]);
+
   // Fetch slots for the visible week
   useEffect(() => {
     if (!open) return;
@@ -169,6 +175,7 @@ export default function BookingModal({ open, onClose, initialDate }: BookingModa
     if (!selectedSlot || !form.name || !form.email || !form.phone || !form.address) return;
     setSubmitting(true);
     setError(null);
+    track("booking_submitted", {});
 
     const notes = form.notes || undefined;
     try {
@@ -186,13 +193,17 @@ export default function BookingModal({ open, onClose, initialDate }: BookingModa
       });
       const calData = await calRes.json();
       if (!calRes.ok) {
-        setError(typeof calData?.error === "string" ? calData.error : "Booking failed. Please try again.");
+        const msg = typeof calData?.error === "string" ? calData.error : "Booking failed. Please try again.";
+        track("booking_failed", { error: msg, status: calRes.status });
+        setError(msg);
         setSubmitting(false);
         return;
       }
 
+      track("booking_succeeded", {});
       setStep("done");
     } catch {
+      track("booking_failed", { error: "network" });
       setError("Network error. Please try again.");
       setSubmitting(false);
     }
@@ -342,6 +353,7 @@ export default function BookingModal({ open, onClose, initialDate }: BookingModa
                       onClick={() => {
                         setSelectedSlot(slot.start);
                         setStep("details");
+                        track("booking_slot_picked", { slot: slot.start });
                       }}
                       className="py-2.5 px-3 rounded-lg text-sm font-medium transition-all duration-150 hover:brightness-110 active:scale-95"
                       style={{ backgroundColor: "#161B22", border: "1px solid #30363D", color: "#FFFFFF" }}

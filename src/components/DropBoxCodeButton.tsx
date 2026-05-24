@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { Phone, MessageSquare, Lock } from "lucide-react";
+import { track } from "@/lib/analytics-client";
 
 const PHONE = "6042108180";
 const DISPLAY = "604 210 8180";
@@ -23,7 +24,7 @@ export default function DropBoxCodeButton({ className }: { className?: string })
   return (
     <div ref={ref} className={`relative inline-block ${className ?? ""}`}>
       <button
-        onClick={() => setOpen((v) => !v)}
+        onClick={() => { track("dropbox_code_clicked", {}); setOpen((v) => !v); }}
         className="flex items-center justify-center gap-2 px-8 py-4 rounded-lg font-semibold text-base border-2 transition-all duration-200 hover:bg-yellow-900/20 active:scale-95"
         style={{ borderColor: "#D4A017", color: "#D4A017" }}
       >
@@ -43,7 +44,7 @@ export default function DropBoxCodeButton({ className }: { className?: string })
             href={`tel:${PHONE}`}
             className="flex items-center gap-3 px-4 py-3 text-sm font-medium transition-colors hover:bg-white/10"
             style={{ color: "#FFFFFF" }}
-            onClick={() => setOpen(false)}
+            onClick={() => { track("phone_tapped", { source: "dropbox_code" }); setOpen(false); }}
           >
             <Phone className="w-4 h-4 flex-shrink-0" style={{ color: "#D4A017" }} />
             Call {DISPLAY}
@@ -52,7 +53,7 @@ export default function DropBoxCodeButton({ className }: { className?: string })
             href={`sms:${PHONE}`}
             className="flex items-center gap-3 px-4 py-3 text-sm font-medium transition-colors hover:bg-white/10"
             style={{ color: "#FFFFFF", borderTop: "1px solid #30363D" }}
-            onClick={() => setOpen(false)}
+            onClick={() => { track("sms_tapped", { source: "dropbox_code" }); setOpen(false); }}
           >
             <MessageSquare className="w-4 h-4 flex-shrink-0" style={{ color: "#D4A017" }} />
             Text {DISPLAY}

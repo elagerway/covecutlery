@@ -3,6 +3,7 @@ import { Inter } from 'next/font/google'
 import Script from 'next/script'
 import './globals.css'
 import { BookingProvider } from '@/components/BookingProvider'
+import AnalyticsTracker from '@/components/AnalyticsTracker'
 import { safeJsonLd } from '@/lib/schema'
 
 const GOOGLE_ADS_ID = 'AW-18180527373'
@@ -101,7 +102,10 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className={inter.className}><BookingProvider>{children}</BookingProvider></body>
+      <body className={inter.className}>
+        <BookingProvider>{children}</BookingProvider>
+        <AnalyticsTracker />
+      </body>
       <Script
         src={`https://www.googletagmanager.com/gtag/js?id=${GOOGLE_ADS_ID}`}
         strategy="afterInteractive"

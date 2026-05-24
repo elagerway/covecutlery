@@ -4,6 +4,7 @@ import Link from "next/link";
 import { ChevronDown, CalendarDays } from "lucide-react";
 import { useBooking } from "@/components/BookingProvider";
 import DropBoxCodeButton from "@/components/DropBoxCodeButton";
+import { track } from "@/lib/analytics-client";
 
 export default function HeroSection() {
   const { open: openBooking } = useBooking();
@@ -72,7 +73,7 @@ export default function HeroSection() {
         {/* CTA Buttons */}
         <div className="flex flex-col sm:flex-row gap-4 mb-12 w-full sm:w-auto">
           <button
-            onClick={openBooking}
+            onClick={() => { track("book_clicked", { source: "hero" }); openBooking(); }}
             className="flex items-center justify-center gap-2 px-8 py-4 rounded-lg font-semibold text-base transition-all duration-200 hover:brightness-110 active:scale-95"
             style={{ backgroundColor: "#D4A017", color: "#0D1117" }}
           >
@@ -80,7 +81,7 @@ export default function HeroSection() {
           </button>
 
           <button
-            onClick={scrollToSchedule}
+            onClick={() => { track("schedule_clicked", { source: "hero" }); scrollToSchedule(); }}
             className="flex items-center justify-center gap-2 px-8 py-4 rounded-lg font-semibold text-base border-2 transition-all duration-200 hover:bg-yellow-900/20 active:scale-95"
             style={{ borderColor: "#D4A017", color: "#D4A017" }}
           >
