@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { X, ChevronLeft, ChevronRight, Loader2, CheckCircle, MapPin } from "lucide-react";
 import { track } from "@/lib/analytics-client";
+import { fireBookingConversion } from "@/lib/google-ads";
 
 interface AddressSuggestion {
   place_id: string;
@@ -201,6 +202,7 @@ export default function BookingModal({ open, onClose, initialDate }: BookingModa
       }
 
       track("booking_succeeded", {});
+      fireBookingConversion();
       setStep("done");
     } catch {
       track("booking_failed", { error: "network" });
