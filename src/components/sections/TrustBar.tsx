@@ -1,8 +1,10 @@
+import Link from "next/link";
 import { Star, MapPin, Shield, Award } from "lucide-react";
 
 interface TrustItem {
   icon: React.ReactNode;
   label: string;
+  href?: string;
 }
 
 export default function TrustBar() {
@@ -28,6 +30,7 @@ export default function TrustBar() {
     {
       icon: <MapPin className="w-5 h-5 flex-shrink-0" style={{ color: "#D4A017" }} />,
       label: "North Shore to Chilliwack",
+      href: "/service-area",
     },
     {
       icon: <Shield className="w-5 h-5 flex-shrink-0" style={{ color: "#D4A017" }} />,
@@ -52,12 +55,22 @@ export default function TrustBar() {
               style={{ borderColor: "#30363D" }}
             >
               {item.icon}
-              <span
-                className="text-sm font-medium whitespace-nowrap"
-                style={{ color: "#FFFFFF" }}
-              >
-                {item.label}
-              </span>
+              {item.href ? (
+                <Link
+                  href={item.href}
+                  className="text-sm font-medium whitespace-nowrap underline decoration-dotted underline-offset-4 hover:text-[#D4A017] transition-colors"
+                  style={{ color: "#FFFFFF" }}
+                >
+                  {item.label}
+                </Link>
+              ) : (
+                <span
+                  className="text-sm font-medium whitespace-nowrap"
+                  style={{ color: "#FFFFFF" }}
+                >
+                  {item.label}
+                </span>
+              )}
             </div>
           ))}
         </div>
@@ -71,12 +84,22 @@ export default function TrustBar() {
               style={{ backgroundColor: "#0D1117" }}
             >
               {item.icon}
-              <span
-                className="text-xs font-medium leading-tight"
-                style={{ color: "#FFFFFF" }}
-              >
-                {item.label}
-              </span>
+              {item.href ? (
+                <Link
+                  href={item.href}
+                  className="text-xs font-medium leading-tight underline decoration-dotted underline-offset-4 hover:text-[#D4A017] transition-colors"
+                  style={{ color: "#FFFFFF" }}
+                >
+                  {item.label}
+                </Link>
+              ) : (
+                <span
+                  className="text-xs font-medium leading-tight"
+                  style={{ color: "#FFFFFF" }}
+                >
+                  {item.label}
+                </span>
+              )}
             </div>
           ))}
         </div>

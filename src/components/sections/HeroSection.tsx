@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { ChevronDown, CalendarDays } from "lucide-react";
 import { useBooking } from "@/components/BookingProvider";
 import DropBoxCodeButton from "@/components/DropBoxCodeButton";
@@ -95,17 +96,27 @@ export default function HeroSection() {
           style={{ borderTop: "1px solid #30363D" }}
         >
           {[
-            { label: "5★ Google Rated" },
-            { label: "Since 2020" },
-            { label: "North Shore to Chilliwack" },
+            { label: "5★ Google Rated", href: null },
+            { label: "Since 2020", href: null },
+            { label: "North Shore to Chilliwack", href: "/service-area" },
           ].map((stat, i) => (
             <div key={i} className="flex items-center gap-2">
-              <span
-                className="text-sm font-medium tracking-wide uppercase"
-                style={{ color: "#6B7280" }}
-              >
-                {stat.label}
-              </span>
+              {stat.href ? (
+                <Link
+                  href={stat.href}
+                  className="text-sm font-medium tracking-wide uppercase underline decoration-dotted underline-offset-4 hover:text-[#D4A017] transition-colors"
+                  style={{ color: "#6B7280" }}
+                >
+                  {stat.label}
+                </Link>
+              ) : (
+                <span
+                  className="text-sm font-medium tracking-wide uppercase"
+                  style={{ color: "#6B7280" }}
+                >
+                  {stat.label}
+                </span>
+              )}
             </div>
           ))}
         </div>

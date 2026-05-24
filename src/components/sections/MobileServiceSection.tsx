@@ -25,7 +25,14 @@ const InstagramIcon = () => (
 
 const serviceAreas: { area: React.ReactNode; minimum: string }[] = [
   {
-    area: <><CityLink slug="north-vancouver">North Van</CityLink> &amp; <CityLink slug="west-vancouver">West Van</CityLink></>,
+    area: (
+      <Link
+        href="/service-area"
+        className="underline decoration-dotted underline-offset-4 hover:text-[#D4A017] transition-colors"
+      >
+        North Shore
+      </Link>
+    ),
     minimum: "Minimum 6 pieces",
   },
   {
@@ -33,7 +40,14 @@ const serviceAreas: { area: React.ReactNode; minimum: string }[] = [
     minimum: "Minimum 8 pieces",
   },
   {
-    area: "Whistler, Squamish, Chilliwack & Rest of Lower Mainland",
+    area: (
+      <Link
+        href="/service-area"
+        className="underline decoration-dotted underline-offset-4 hover:text-[#D4A017] transition-colors"
+      >
+        Whistler, Squamish, Chilliwack &amp; Rest of Lower Mainland
+      </Link>
+    ),
     minimum: "Minimum 14 pieces",
   },
 ];

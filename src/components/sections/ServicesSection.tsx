@@ -1,10 +1,11 @@
 "use client";
 
+import Link from "next/link";
 import { Clock, Scissors, Star, Truck, Shield, Lock } from "lucide-react";
 
-const services = [
+const services: { title: string; icon: typeof Clock; desc: React.ReactNode }[] = [
   {
-    title: "1 Hour Turnaround",
+    title: "1 Hour Drop-box Turnaround",
     icon: Clock,
     desc: "Quick drop-off turnaround service. Back in action within an hour by appointment.",
   },
@@ -21,7 +22,17 @@ const services = [
   {
     title: "Mobile Service",
     icon: Truck,
-    desc: "We come to you. Minimum 5 pieces. Servicing North Shore to Chilliwack.",
+    desc: (
+      <>
+        We come to you. Minimum 5 pieces. Servicing{" "}
+        <Link
+          href="/service-area"
+          className="underline decoration-dotted underline-offset-2 hover:text-[#D4A017] transition-colors"
+        >
+          North Shore to Chilliwack
+        </Link>.
+      </>
+    ),
   },
   {
     title: "30 Day Guarantee",
