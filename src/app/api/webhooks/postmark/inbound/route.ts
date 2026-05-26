@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import * as postmark from "postmark";
 import { getServiceClient } from "@/lib/admin";
-import { isKnownMailbox, normaliseAddress, buildTrainingAutoReply } from "@/lib/email";
+import { isKnownMailbox, normaliseAddress, autoReplyFor, type AutoReplyTemplate } from "@/lib/email";
 
 // Postmark Inbound webhook. Postmark POSTs a parsed JSON payload here when
 // any mail forwarded to the configured inbound address arrives. We dedupe
@@ -125,48 +125,55 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: false, error: error.message }, { status: 500 });
   }
 
-  // training@ auto-reply — fire-and-forget, never block the webhook response.
-  if (toEmail === "training@coveblades.com") {
-    fireTrainingAutoReply({
-      to: fromEmail,
-      firstName: body.FromName ?? null,
-      originalSubject: body.Subject ?? null,
-      messageId,
-      references: [messageId, ...references].filter((v): v is string => !!v),
-      storedId: stored?.id,
-    }).catch(e => console.error("[training auto-reply] failed:", e));
+  // Auto-reply (if the inbox has a template configured). Fire-and-forget so
+  // we never block Postmark's webhook callback.
+  const tmpl = autoReplyFor(toEmail, {
+    firstName: body.FromName ?? null,
+    originalSubject: body.Subject ?? null,
+  });
+
+  if (tmpl) {
+    // Don't auto-reply to ourselves or other auto-responders — easy infinite-loop trap.
+    const fromAddrLower = fromEmail.toLowerCase();
+    const isFromOurself = fromAddrLower.endsWith("@coveblades.com");
+    const isAutoSender = /noreply|no-reply|mailer-daemon|postmaster|bounce/i.test(fromAddrLower);
+
+    if (!isFromOurself && !isAutoSender) {
+      fireAutoReply({
+        template: tmpl,
+        to: fromEmail,
+        messageId,
+        references: [messageId, ...references].filter((v): v is string => !!v),
+        storedId: stored?.id,
+      }).catch(e => console.error("[auto-reply] failed:", e));
+    }
   }
 
   return NextResponse.json({ ok: true, id: stored?.id });
 }
 
-async function fireTrainingAutoReply(args: {
+async function fireAutoReply(args: {
+  template: AutoReplyTemplate;
   to: string;
-  firstName: string | null;
-  originalSubject: string | null;
   messageId: string | null;
   references: string[];
   storedId: number | undefined;
 }) {
   const apiKey = process.env.POSTMARK_API_KEY;
   if (!apiKey) {
-    console.error("[training auto-reply] POSTMARK_API_KEY not configured");
+    console.error("[auto-reply] POSTMARK_API_KEY not configured");
     return;
   }
 
-  const tmpl = buildTrainingAutoReply({
-    firstName: args.firstName,
-    originalSubject: args.originalSubject,
-  });
-
+  const { template } = args;
   const client = new postmark.ServerClient(apiKey);
   const res = await client.sendEmail({
-    From: "Cove Blades Training <training@coveblades.com>",
+    From: `${template.fromName} <${template.fromAddress}>`,
     To: args.to,
-    ReplyTo: "training@coveblades.com",
-    Subject: tmpl.subject,
-    TextBody: tmpl.text,
-    HtmlBody: tmpl.html,
+    ReplyTo: template.fromAddress,
+    Subject: template.subject,
+    TextBody: template.text,
+    HtmlBody: template.html,
     Headers: args.messageId
       ? [
           { Name: "In-Reply-To", Value: `<${args.messageId}>` },
@@ -175,18 +182,17 @@ async function fireTrainingAutoReply(args: {
       : undefined,
   });
 
-  // Record the auto-reply as an outbound email so it appears in the thread.
   const supabase = getServiceClient();
   await supabase.from("emails").insert({
     message_id: res.MessageID ? `<${res.MessageID}@postmark.local>` : null,
     in_reply_to: args.messageId,
     email_references: args.references,
-    from_email: "training@coveblades.com",
-    from_name: "Cove Blades Training",
+    from_email: template.fromAddress,
+    from_name: template.fromName,
     to_email: args.to,
-    subject: tmpl.subject,
-    text_body: tmpl.text,
-    html_body: tmpl.html,
+    subject: template.subject,
+    text_body: template.text,
+    html_body: template.html,
     direction: "outbound",
     status: "auto_replied",
     postmark_message_id: res.MessageID ?? null,
