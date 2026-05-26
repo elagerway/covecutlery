@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { ArrowLeft, Send, Loader2, RefreshCw, Mail, AlertCircle } from "lucide-react";
+import { ArrowLeft, Send, Loader2, RefreshCw, Mail, AlertCircle, Search, X } from "lucide-react";
 
 interface ConversationSummary {
   key: string;
@@ -73,11 +73,19 @@ export default function EmailUI() {
   const [sending, setSending] = useState(false);
   const [composer, setComposer] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const threadEndRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const t = setTimeout(() => setDebouncedSearch(search.trim()), 250);
+    return () => clearTimeout(t);
+  }, [search]);
 
   const loadConvos = useCallback(async () => {
     try {
-      const res = await fetch("/api/admin/emails", { cache: "no-store" });
+      const qs = debouncedSearch ? `?q=${encodeURIComponent(debouncedSearch)}` : "";
+      const res = await fetch(`/api/admin/emails${qs}`, { cache: "no-store" });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Failed to load");
       setConversations(data.conversations ?? []);
@@ -87,7 +95,7 @@ export default function EmailUI() {
     } finally {
       setLoadingConvos(false);
     }
-  }, []);
+  }, [debouncedSearch]);
 
   const loadThread = useCallback(async (key: string, silent = false) => {
     if (!silent) setLoadingThread(true);
@@ -193,14 +201,33 @@ export default function EmailUI() {
 
   return (
     <div className="text-white h-[calc(100vh-8rem)] flex flex-col">
-      <div className="flex items-center justify-between mb-4 gap-4">
+      <div className="flex items-center justify-between mb-4 gap-3 flex-wrap">
         <div>
           <h1 className="text-2xl font-bold">Email</h1>
           <p className="text-sm" style={{ color: "#6B7280" }}>
             info@ · erik@ · training@ · {conversations.length} conversation{conversations.length === 1 ? "" : "s"}
           </p>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-1 max-w-md ml-auto">
+          <div className="relative flex-1">
+            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: "#6B7280" }} />
+            <input
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              placeholder="Search subject, body, sender…"
+              className="w-full pl-9 pr-9 py-2 rounded-lg text-sm outline-none"
+              style={{ backgroundColor: "#161B22", color: "#FFFFFF", border: "1px solid #30363D" }}
+            />
+            {search && (
+              <button
+                onClick={() => setSearch("")}
+                className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded hover:bg-[#0D1117]"
+                style={{ color: "#6B7280" }}
+              >
+                <X size={12} />
+              </button>
+            )}
+          </div>
           <select
             value={mailboxFilter}
             onChange={e => setMailboxFilter(e.target.value)}

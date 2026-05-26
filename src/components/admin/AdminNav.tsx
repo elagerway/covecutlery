@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
@@ -9,10 +9,35 @@ interface AdminNavProps {
   email: string;
 }
 
+const UNREAD_POLL_MS = 30_000;
+
 export default function AdminNav({ email }: AdminNavProps) {
   const pathname = usePathname();
   const router = useRouter();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [unread, setUnread] = useState<{ sms: number; email: number }>({ sms: 0, email: 0 });
+
+  useEffect(() => {
+    async function fetchUnread() {
+      try {
+        const res = await fetch("/api/admin/unread-counts", { cache: "no-store" });
+        if (!res.ok) return;
+        const data = await res.json();
+        setUnread({ sms: Number(data.sms) || 0, email: Number(data.email) || 0 });
+      } catch {
+        // silent — sidebar badge is non-critical
+      }
+    }
+    fetchUnread();
+    const t = setInterval(fetchUnread, UNREAD_POLL_MS);
+    return () => clearInterval(t);
+  }, [pathname]);
+
+  function badgeFor(href: string): number | null {
+    if (href === "/admin/messages") return unread.sms > 0 ? unread.sms : null;
+    if (href === "/admin/email") return unread.email > 0 ? unread.email : null;
+    return null;
+  }
 
   async function handleLogout() {
     const supabase = createClient();
@@ -112,6 +137,7 @@ export default function AdminNav({ email }: AdminNavProps) {
       <nav className="flex-1 px-3 py-4 flex flex-col gap-1">
         {links.map(({ label, href, icon }) => {
           const active = pathname.startsWith(href);
+          const badge = badgeFor(href);
           return (
             <Link
               key={href}
@@ -124,7 +150,15 @@ export default function AdminNav({ email }: AdminNavProps) {
               }}
             >
               {icon}
-              {label}
+              <span className="flex-1">{label}</span>
+              {badge !== null && (
+                <span
+                  className="text-[10px] font-bold px-1.5 py-0.5 rounded-full min-w-[18px] text-center"
+                  style={{ backgroundColor: "#D4A017", color: "#0D1117" }}
+                >
+                  {badge > 99 ? "99+" : badge}
+                </span>
+              )}
             </Link>
           );
         })}
@@ -180,14 +214,23 @@ export default function AdminNav({ email }: AdminNavProps) {
       >
         {links.map(({ label, href, icon }) => {
           const active = pathname.startsWith(href);
+          const badge = badgeFor(href);
           return (
             <Link
               key={href}
               href={href}
-              className="flex flex-col items-center gap-1 px-2 py-1"
+              className="relative flex flex-col items-center gap-1 px-2 py-1"
               style={{ color: active ? "#D4A017" : "#6B7280" }}
             >
               <span className="[&>svg]:w-5 [&>svg]:h-5">{icon}</span>
+              {badge !== null && (
+                <span
+                  className="absolute top-0 right-1 text-[9px] font-bold px-1 rounded-full min-w-[14px] text-center"
+                  style={{ backgroundColor: "#D4A017", color: "#0D1117" }}
+                >
+                  {badge > 9 ? "9+" : badge}
+                </span>
+              )}
               <span className="text-[10px] font-medium">{label === "Blog Posts" ? "Blog" : label}</span>
             </Link>
           );

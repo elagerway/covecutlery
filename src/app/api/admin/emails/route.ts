@@ -33,11 +33,24 @@ function conversationKey(e: EmailRow): string {
   return `${otherParty(e)}::${normaliseSubject(e.subject).toLowerCase()}`;
 }
 
+function matchesEmailQuery(r: EmailRow, q: string): boolean {
+  const term = q.toLowerCase();
+  return (
+    (r.subject ?? "").toLowerCase().includes(term) ||
+    (r.from_email ?? "").toLowerCase().includes(term) ||
+    (r.from_name ?? "").toLowerCase().includes(term) ||
+    (r.to_email ?? "").toLowerCase().includes(term) ||
+    (r.text_body ?? "").toLowerCase().includes(term) ||
+    (r.stripped_reply ?? "").toLowerCase().includes(term)
+  );
+}
+
 export async function GET(req: NextRequest) {
   const admin = await requireAdmin();
   if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const conversation = req.nextUrl.searchParams.get("conversation");
+  const q = (req.nextUrl.searchParams.get("q") ?? "").trim();
   const supabase = getServiceClient();
 
   const { data, error } = await supabase
@@ -64,7 +77,7 @@ export async function GET(req: NextRequest) {
     byKey.get(k)!.push(r);
   }
 
-  const conversations = Array.from(byKey.entries()).map(([key, msgs]) => {
+  let conversations = Array.from(byKey.entries()).map(([key, msgs]) => {
     const sorted = msgs.slice().sort((a, b) => b.created_at.localeCompare(a.created_at));
     const last = sorted[0];
     const unreadCount = msgs.filter(m => m.direction === "inbound" && m.status === "new").length;
@@ -80,10 +93,27 @@ export async function GET(req: NextRequest) {
       },
       messageCount: msgs.length,
       unreadCount,
+      msgs,
     };
   });
 
-  conversations.sort((a, b) => b.lastMessage.created_at.localeCompare(a.lastMessage.created_at));
+  if (q) {
+    conversations = conversations.filter(c =>
+      c.msgs.some(m => matchesEmailQuery(m, q)) ||
+      c.otherParty.toLowerCase().includes(q.toLowerCase()) ||
+      c.subject.toLowerCase().includes(q.toLowerCase())
+    );
+  }
 
-  return NextResponse.json({ conversations });
+  conversations.sort((a, b) => b.lastMessage.created_at.localeCompare(a.lastMessage.created_at));
+  const totalUnread = conversations.reduce((s, c) => s + c.unreadCount, 0);
+
+  // Strip the msgs field from the response — it was only needed for search
+  const responseConvos = conversations.map(c => {
+    const { msgs, ...rest } = c;
+    void msgs;
+    return rest;
+  });
+
+  return NextResponse.json({ conversations: responseConvos, totalUnread });
 }

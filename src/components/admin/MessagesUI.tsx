@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { ArrowLeft, Send, Loader2, RefreshCw, MessageSquare } from "lucide-react";
+import { ArrowLeft, Send, Loader2, RefreshCw, MessageSquare, Search, X } from "lucide-react";
 
 interface MagpipeMessage {
   id: string;
@@ -13,6 +13,8 @@ interface MagpipeMessage {
   status: string;
   is_ai_generated: boolean;
   created_at: string;
+  is_read?: boolean;
+  source?: "magpipe" | "historical";
 }
 
 interface Conversation {
@@ -20,6 +22,7 @@ interface Conversation {
   lastMessage: MagpipeMessage;
   messageCount: number;
   hasInbound: boolean;
+  unreadCount: number;
 }
 
 const POLL_MS = 10_000;
@@ -68,11 +71,20 @@ export default function MessagesUI() {
   const [sending, setSending] = useState(false);
   const [composer, setComposer] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const threadEndRef = useRef<HTMLDivElement>(null);
+
+  // Debounce search input
+  useEffect(() => {
+    const t = setTimeout(() => setDebouncedSearch(search.trim()), 250);
+    return () => clearTimeout(t);
+  }, [search]);
 
   const loadConvos = useCallback(async () => {
     try {
-      const res = await fetch("/api/admin/messages", { cache: "no-store" });
+      const qs = debouncedSearch ? `?q=${encodeURIComponent(debouncedSearch)}` : "";
+      const res = await fetch(`/api/admin/messages${qs}`, { cache: "no-store" });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Failed to load conversations");
       setConversations(data.conversations ?? []);
@@ -82,7 +94,7 @@ export default function MessagesUI() {
     } finally {
       setLoadingConvos(false);
     }
-  }, []);
+  }, [debouncedSearch]);
 
   const loadThread = useCallback(async (phone: string, silent = false) => {
     if (!silent) setLoadingThread(true);
@@ -90,14 +102,27 @@ export default function MessagesUI() {
       const res = await fetch(`/api/admin/messages?phone=${encodeURIComponent(phone)}`, { cache: "no-store" });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Failed to load thread");
-      setThread(data.messages ?? []);
+      const messages: MagpipeMessage[] = data.messages ?? [];
+      setThread(messages);
       setError(null);
+
+      // Mark unread inbound messages as read
+      const unreadIds = messages
+        .filter(m => m.direction === "inbound" && !m.is_read)
+        .map(m => m.id);
+      if (unreadIds.length > 0) {
+        fetch("/api/admin/messages/read", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ messageIds: unreadIds }),
+        }).then(() => loadConvos()).catch(() => {});
+      }
     } catch (e) {
       setError(e instanceof Error ? e.message : String(e));
     } finally {
       if (!silent) setLoadingThread(false);
     }
-  }, []);
+  }, [loadConvos]);
 
   // Initial load + polling for conversation list
   useEffect(() => {
@@ -168,21 +193,42 @@ export default function MessagesUI() {
 
   return (
     <div className="text-white h-[calc(100vh-8rem)] flex flex-col">
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center justify-between mb-4 gap-3 flex-wrap">
         <div>
           <h1 className="text-2xl font-bold">Messages</h1>
           <p className="text-sm" style={{ color: "#6B7280" }}>
             SMS to +1 (604) 210-8180 · {conversations.length} conversation{conversations.length === 1 ? "" : "s"}
           </p>
         </div>
-        <button
-          onClick={() => { loadConvos(); if (selectedPhone) loadThread(selectedPhone); }}
-          className="p-2 rounded-lg border transition-colors hover:border-[#D4A017]"
-          style={{ borderColor: "#30363D", color: "#D4A017" }}
-          title="Refresh"
-        >
-          <RefreshCw size={16} />
-        </button>
+        <div className="flex items-center gap-2 flex-1 max-w-md ml-auto">
+          <div className="relative flex-1">
+            <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2" style={{ color: "#6B7280" }} />
+            <input
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              placeholder="Search messages, numbers…"
+              className="w-full pl-9 pr-9 py-2 rounded-lg text-sm outline-none"
+              style={{ backgroundColor: "#161B22", color: "#FFFFFF", border: "1px solid #30363D" }}
+            />
+            {search && (
+              <button
+                onClick={() => setSearch("")}
+                className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded hover:bg-[#0D1117]"
+                style={{ color: "#6B7280" }}
+              >
+                <X size={12} />
+              </button>
+            )}
+          </div>
+          <button
+            onClick={() => { loadConvos(); if (selectedPhone) loadThread(selectedPhone); }}
+            className="p-2 rounded-lg border transition-colors hover:border-[#D4A017]"
+            style={{ borderColor: "#30363D", color: "#D4A017" }}
+            title="Refresh"
+          >
+            <RefreshCw size={16} />
+          </button>
+        </div>
       </div>
 
       {error && (
@@ -225,13 +271,23 @@ export default function MessagesUI() {
                       borderLeft: active ? "3px solid #D4A017" : "3px solid transparent",
                     }}
                   >
-                    <div className="flex justify-between items-baseline mb-1">
-                      <div className="font-medium text-sm">{formatPhone(c.phone)}</div>
-                      <div className="text-xs" style={{ color: "#6B7280" }}>
+                    <div className="flex justify-between items-baseline mb-1 gap-2">
+                      <div className="font-medium text-sm truncate flex-1">
+                        {formatPhone(c.phone)}
+                        {c.unreadCount > 0 && (
+                          <span
+                            className="ml-2 text-[10px] font-bold px-1.5 py-0.5 rounded-full"
+                            style={{ backgroundColor: "#D4A017", color: "#0D1117" }}
+                          >
+                            {c.unreadCount}
+                          </span>
+                        )}
+                      </div>
+                      <div className="text-xs whitespace-nowrap" style={{ color: "#6B7280" }}>
                         {formatTime(c.lastMessage.created_at)}
                       </div>
                     </div>
-                    <div className="text-xs truncate" style={{ color: "#6B7280" }}>
+                    <div className="text-xs truncate" style={{ color: c.unreadCount > 0 ? "#E5E7EB" : "#6B7280" }}>
                       {c.lastMessage.direction === "outbound" ? "You: " : ""}
                       {c.lastMessage.body}
                     </div>
