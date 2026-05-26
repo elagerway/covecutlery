@@ -33,12 +33,22 @@ export async function GET() {
 
     const readIds = new Set<string>((readsRes.data ?? []).map(r => r.message_id));
 
+    // Exclude self-loop messages (from=service AND to=service) — those are
+    // booking-flow admin notifications, not real conversations. The /admin/messages
+    // conversation list applies the same filter, so the badge must match.
     const magpipeUnread = magpipeMessages.filter(
-      m => m.direction === "inbound" && isServiceNumber(m.to_number) && !readIds.has(m.id)
+      m =>
+        m.direction === "inbound" &&
+        isServiceNumber(m.to_number) &&
+        !isServiceNumber(m.from_number) &&
+        !readIds.has(m.id)
     ).length;
 
     const historicalUnread = (historicalRes.data ?? []).filter(
-      h => isServiceNumber(h.to_number as string) && !readIds.has(h.external_id as string)
+      h =>
+        isServiceNumber(h.to_number as string) &&
+        !isServiceNumber(h.from_number as string) &&
+        !readIds.has(h.external_id as string)
     ).length;
 
     smsCount = magpipeUnread + historicalUnread;
