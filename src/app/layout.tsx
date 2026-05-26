@@ -79,9 +79,9 @@ export default function RootLayout({
                 longitude: -123.0725,
               },
               sameAs: [
-                'https://www.instagram.com/covecutlery/',
-                'https://www.facebook.com/covecutlery',
-                'https://www.youtube.com/@covecutlery',
+                'https://www.instagram.com/coveblades/',
+                'https://www.facebook.com/coveblades',
+                'https://www.youtube.com/@coveblades',
               ],
               openingHoursSpecification: [
                 {

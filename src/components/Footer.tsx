@@ -78,17 +78,17 @@ const YouTubeIcon = () => (
 const socialLinks = [
   {
     label: "Instagram",
-    href: "https://www.instagram.com/covecutlery/",
+    href: "https://www.instagram.com/coveblades/",
     Icon: InstagramIcon,
   },
   {
     label: "Facebook",
-    href: "https://www.facebook.com/covecutlery",
+    href: "https://www.facebook.com/coveblades",
     Icon: FacebookIcon,
   },
   {
     label: "YouTube",
-    href: "https://www.youtube.com/@covecutlery",
+    href: "https://www.youtube.com/@coveblades",
     Icon: YouTubeIcon,
   },
 ];
@@ -209,7 +209,7 @@ export default function Footer() {
               </li>
               <li className="pt-1">
                 <a
-                  href="https://www.instagram.com/covecutlery/"
+                  href="https://www.instagram.com/coveblades/"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-1.5 text-[#6B7280] hover:text-[#D4A017] text-sm transition-colors duration-200"
