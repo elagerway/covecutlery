@@ -1,5 +1,93 @@
 # Changelog
 
+## [2.13.1] — 2026-05-26 — Inbox read/unread + badges + search + multi-number SMS
+
+### Added
+- **`sms_message_reads` table** keyed by message ID (works for both Magpipe UUIDs and SignalWire SIDs) — Magpipe doesn't track read state for us so we own it locally
+- **`/api/admin/messages/read`** POST endpoint to mark message IDs as read
+- **`/api/admin/unread-counts`** GET returns `{ sms, email }` totals; AdminNav polls every 30s and renders a gold badge next to `Messages` and `Email` in both desktop sidebar and mobile bottom bar
+- **Per-conversation unread badge** in the inbox conversation list view
+- **Search** on `/admin/messages` and `/admin/email` (debounced 250ms): SMS matches body + from/to numbers, email matches subject + body + sender/recipient — all server-side
+- **`historical_sms_messages` table** + `scripts/backfill-signalwire.mjs` (`npm run backfill:signalwire`) for one-shot SignalWire import. Idempotent, supports `--days N` and `--dry-run`, marks imported messages as already-read
+
+### Fixed
+- **SMS inbox now spans both service numbers.** Magpipe stores history for `+16042108180` (current, since Apr 30) and `+16043731500` (retired, Mar 25–Apr 10). `SERVICE_NUMBERS` array in `src/lib/magpipe.ts` drives a parallel fan-out that merges and dedupes by message ID, so conversations across the number change don't fragment
+- `customerPhone()` now uses `isServiceNumber()` membership rather than the direction flag — handles cross-number threads correctly
+
+### Notes
+- The SignalWire backfill scaffolding was built before realising Magpipe already had everything under the old service number. Left in place as a fallback but not currently needed.
+- Shipped as `e45ebc3` and `6a1758d`
+
+## [2.13.0] — 2026-05-26 — Admin email inbox + auto-replies for info@/erik@/training@
+
+### Added
+- **`/admin/email`** — Postmark Inbound webhook receives forwarded mail from SiteGround, stores in new `emails` table (`emails` migration `20260526000000`), surfaces in a conversation-list + thread-view UI similar to `/admin/messages` but with traditional inline cards (subject + sender + body) rather than chat bubbles
+- **Three auto-reply templates** in `src/lib/email.ts` (`buildInfoAutoReply`, `buildErikAutoReply`, `buildTrainingAutoReply`) dispatched by `autoReplyFor(mailbox)` from the inbound webhook — fire-and-forget so the webhook never blocks
+- **`training@coveblades.com`** as a new inbox (in addition to existing `info@` and `erik@`) — for training inquiries
+- **Loop protection**: auto-reply skipped if sender is `@coveblades.com` or matches `noreply|mailer-daemon|postmaster|bounce`
+- **Setup doc** `docs/marketing/postmark-inbound-setup.md` walks the SiteGround forwarder + Postmark Inbound webhook config (~15 min, one-time)
+- **`/admin/emails` API endpoints**: GET (conversations or thread by `?conversation=`), POST `/send` (Postmark outbound preserving In-Reply-To + References), POST `/[id]/read`
+
+### Notes
+- Outbound replies sent via Postmark with the originating mailbox as From (e.g. `Erik · Cove Blades <erik@coveblades.com>`), so threading on the customer's side works
+- Recorded inbound + auto-reply both as rows in `emails` so the thread view shows the full conversation
+- Shipped as `014d8c8` and `6a304aa`
+
+## [2.12.0] — 2026-05-25 — Admin SMS messages tab (Magpipe-backed)
+
+### Added
+- **`/admin/messages`** — two-pane chat UI (conversation list + thread) for SMS to `604-210-8180`. Outbound replies in gold on the right, inbound dark on the left, AI auto-replies tagged in the bubble header. ⌘↵ to send. Optimistic send with rollback on failure. 10-second polling on both panes.
+- **`src/lib/magpipe.ts`** wraps `list-messages` + `send-user-sms` HTTP endpoints, groups messages into conversations by customer phone
+- **API endpoints**: `/api/admin/messages` (GET conversations / thread), `/api/admin/messages/send` (POST reply with E.164 validation)
+- **Conversation filters**: drops service→service self-loops (booking-flow admin notifications), only includes conversations with at least one inbound message (so one-way outbound blasts don't pollute the list)
+
+### Notes
+- The Magpipe `list-messages` HTTP endpoint was broken at the start — returning hollow rows missing `from_number`/`to_number`/`body` because the formatter referenced DB column names that didn't exist (the DB uses `sender_number`/`recipient_number`/`content`). Magpipe team fixed this on their end with a `_shared/message-dto.ts` mapper + `SMS_MESSAGE_COLUMNS` constant.
+- Shipped as `b64e6a3`, `63fdcd8`, `9e34ef3`
+
+## [2.11.1] — 2026-05-23 — Invoice rebrand + email-or-phone
+
+### Fixed
+- **"COVE CUTLERY" → "COVE BLADES"** in four remaining surfaces: emailed invoice header, admin "new invoice" preview, customer-facing `/invoice/[id]` web view, and the print/PDF version
+- **Invoice POST** no longer hard-requires both `client_email` AND `client_phone`. Now requires `client_name` + line items + at least one of email/phone. Admin form labels updated from `Email *` / `Phone *` to `Email · or phone` / `Phone · or email`. Customer record upsert matches by email when available else by phone, so phone-only repeat customers don't create duplicates.
+
+### Changed
+- Social handles in footer + LocalBusiness JSON-LD: `instagram.com/covecutlery` → `coveblades`, same for Facebook + YouTube.
+
+### Notes
+- Shipped as `dc29034` and `128778f`
+
+## [2.11.0] — 2026-05-23 — Google Ads conversion tracking + launch playbook
+
+### Added
+- **`src/lib/google-ads.ts`** with `fireBookingConversion()` — wired into `BookingModal` `handleBook` success path, fires `conversion` event with $60 CAD default on every `booking_succeeded`. No-op until `NEXT_PUBLIC_GADS_CONVERSION_ID` is set (format: `AW-XXXXXXXXXX/labelhere`)
+- **`docs/marketing/google-ads-launch.md`** — 6-step playbook: paste-ready keyword lists for 5 ad groups (Mobile, Vancouver, North Shore, Japanese, Restaurants), 15 headlines + 4 descriptions per group, sitelinks, callouts, universal negative-keyword list, geographic targeting for the 15 service-area cities, bidding strategy, 30-day monitoring checklist
+- gtag.js base tag (`AW-18180527373`) was added to root layout earlier; this commit makes the conversion event fire
+
+### Notes
+- Shipped as `25f86b8`
+
+## [2.10.0] — 2026-05-21 — Booking-flow rescue, +10 Lower Mainland city pages, self-hosted analytics
+
+### Fixed
+- **Critical: Cal.com booking flow restored.** Code was sending `{ type: "attendeeAddress", address }` to Cal.com which had been silently rejecting it with HTTP 400 for ~16 days (May 7 → May 23) — confirmed by Cal.com booking data showing zero successful bookings since May 2. Fix: `{ type: "attendeeDefined", location: address }` to match the prod event-type config. Originally fixed on May 1 (`de1a2ec`) then reverted by `3d36907` ("Train to Be Sharp LMS") which was committed from a stale working tree.
+- Also corrected stale `CAL_EVENT_TYPE_ID=5142178` in `.env.local` → `2520929` (matches prod).
+
+### Added
+- **`npm run smoke:booking`** (`scripts/smoke-cal-booking.mjs`) — posts a live test booking to Cal.com, asserts 2xx, cancels it. Run before deploying any change to the booking payload. Catches the class of regression that just happened.
+- **10 new Lower Mainland city pages** in `src/data/cities.ts`: Richmond, Surrey, Delta, New Westminster, Langley, Maple Ridge, Pitt Meadows, White Rock, Port Coquitlam, Port Moody. Each gets unique 3-paragraph description, ~10 neighbourhoods, 4 city-specific FAQs, unique meta tags, Service + Breadcrumb + FAQ JSON-LD. Existing Coquitlam entry narrowed (Tri-Cities references removed) to avoid self-competition.
+- **Internal linking**: city mentions in `about`, `contact`, the `mobile-service` table, the `MobileServiceSection` homepage card, the `HeroSection` trust strip, the `TrustBar`, and the `ServicesSection` now link to `/service-area/<city>` (or the hub when no single city fits).
+- **Self-hosted analytics pipeline**: `analytics_events` table + `/api/events` POST endpoint + `src/lib/analytics-client.ts` beacon (sendBeacon, skips `/admin` and `/dashboard`) + `<AnalyticsTracker />` in root layout for pageviews
+- **`/admin/analytics`** dashboard with 4 KPI cards, 30-day pageview bar chart, **booking funnel with per-step conversion** (the canary that would have caught the May 7 outage in hours), recent booking failures with timestamps, top pages, CTA click counts, top referrers, top city pages
+- **Instrumented events**: `pageview`, `book_clicked`, `schedule_clicked`, `dropbox_code_clicked`, `phone_tapped`, `sms_tapped`, `booking_modal_opened`, `booking_slot_picked`, `booking_submitted`, `booking_succeeded`, `booking_failed`
+- **`scripts/smoke-cal-booking.mjs`** smoke test runnable via `npm run smoke:booking`
+
+### Notes
+- The 16-day booking outage almost certainly accounts for the recent business drop. Booking data confirms: 6 bookings in past 60 days, zero since May 2 (matching the bug window).
+- No third-party scripts, no cookies, no consent banner for analytics — all self-hosted in Supabase.
+- Memories added: `cal-booking-location-type`, `feedback-review-diff-before-commit`.
+- Shipped across commits `7b99865`, `5d1b96f`, `e41ce5e`, `c07f234`, `27e0442`, `7e77946`.
+
 ## [2.9.4] — 2026-05-14 — Training landing course-split
 
 ### Changed

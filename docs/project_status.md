@@ -1,6 +1,54 @@
 # Project Status
 
-**Last updated:** 2026-05-14
+**Last updated:** 2026-05-26
+
+## Milestone 10 — Admin inbox (SMS + Email) ✅ Complete
+
+Unified two-channel inbox in `/admin` with read state, search, badge counts, and three auto-replies.
+
+- [x] `/admin/messages` — SMS via Magpipe (`list-messages` + `send-user-sms`). Chat-bubble UI, ⌘↵ send, 10s polling. Outbound gold right, inbound dark left, AI auto-replies tagged.
+- [x] Spans both Cove Blades service numbers (current `+16042108180` + retired `+16043731500`) via `SERVICE_NUMBERS` array
+- [x] Conversation filters: drop service-to-service self-loops, drop one-way outbound blasts
+- [x] `/admin/email` — Postmark Inbound → SiteGround forwarders for `info@` / `erik@` / `training@coveblades.com` → webhook → `emails` table. Conversation-list + thread-view + composer preserving `In-Reply-To` / `References`.
+- [x] `training@coveblades.com` provisioned (new mailbox)
+- [x] Three auto-reply templates dispatched by `autoReplyFor(mailbox)`: `info@` (self-serve links), `erik@` (brief personal), `training@` (Train-to-Be-Sharp pitch)
+- [x] Loop protection (skips `@coveblades.com` senders + `noreply|mailer-daemon|postmaster|bounce`)
+- [x] Read state: `sms_message_reads` table for SMS + reuses `emails.status` for email
+- [x] Per-conversation unread badge + sidebar badge counts on `Messages` and `Email` (polls `/api/admin/unread-counts` every 30s, shows on desktop sidebar and mobile bottom bar)
+- [x] Search on both inboxes (debounced 250ms, server-side filter on body/subject/sender/recipient)
+- [x] Setup doc: `docs/marketing/postmark-inbound-setup.md`
+- [x] Historical SignalWire backfill scaffolding (`historical_sms_messages` + `scripts/backfill-signalwire.mjs`) — not currently needed because Magpipe has all history, kept as fallback
+
+## Milestone 9.6 — Booking-flow rescue + analytics canary ✅ Complete
+
+Restored a 16-day Cal.com booking outage and built the monitoring that prevents recurrence.
+
+- [x] `attendeeDefined` location-type fix restored on `/api/cal/book` (was reverted by an LMS commit committed from a stale working tree)
+- [x] `npm run smoke:booking` script — posts live test booking + cancels, asserts 2xx
+- [x] `.env.local` `CAL_EVENT_TYPE_ID` corrected to prod `2520929`
+- [x] Self-hosted analytics: `analytics_events` table + `/api/events` beacon + `<AnalyticsTracker />` in root layout
+- [x] `/admin/analytics` — KPI cards, 30-day pageview chart, **booking funnel with per-step conversion** (canary for any future booking outage), recent booking failures, top pages / CTAs / referrers / city pages
+- [x] Memories: `cal-booking-location-type`, `feedback-review-diff-before-commit`
+
+## Milestone 9.7 — Lower Mainland SEO expansion (+10 cities) ✅ Complete
+
+Extended Milestone 5 with 10 more full city landing pages (15 total).
+
+- [x] Added: Richmond, Surrey, Delta, New Westminster, Langley, Maple Ridge, Pitt Meadows, White Rock, Port Coquitlam, Port Moody
+- [x] Each: unique 3-paragraph description with concrete local hooks, ~10 neighbourhoods, 4 city-specific FAQs, unique meta tags, Service + Breadcrumb + FAQ JSON-LD
+- [x] Refactored existing Coquitlam entry from "Tri-Cities" bundle → Coquitlam-only (avoids self-competition with new Port Moody / Port Coquitlam pages)
+- [x] Internal linking: prose mentions in `about` / `contact` link to specific city pages; service-area table cells link; homepage `MobileServiceSection` cards link; `HeroSection` trust strip + `TrustBar` + `ServicesSection` regional labels link to the `/service-area` hub
+- [x] `sitemap.ts` picks up all 15 routes automatically (no code change)
+
+## Milestone 9.8 — Google Ads conversion infrastructure ✅ Code complete, awaiting GAds config
+
+Conversion tracking is wired and the launch playbook is paste-ready; campaign creation is pending.
+
+- [x] `gtag.js` (AW-18180527373) installed in root layout
+- [x] `fireBookingConversion()` fires on every `booking_succeeded` — no-op until `NEXT_PUBLIC_GADS_CONVERSION_ID` is populated
+- [x] `docs/marketing/google-ads-launch.md` — 6-step playbook with paste-ready content for 5 ad groups (Mobile, Vancouver, North Shore, Japanese, Restaurants), negative keywords, geographic targeting, bidding strategy, 30-day monitoring checklist
+- [ ] **Owner action**: create conversion action in Google Ads UI → copy `AW-XXXX/label` → set `NEXT_PUBLIC_GADS_CONVERSION_ID` in `.env.local` + Vercel
+- [ ] **Owner action**: create the campaign by pasting from playbook (~30 min)
 
 ## Milestone 4 — Brand rebrand: Cove Cutlery → Cove Blades ✅ Complete
 
