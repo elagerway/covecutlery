@@ -6,10 +6,10 @@
 // Idempotent — uses SignalWire SID as a unique key, re-running will skip
 // already-imported messages.
 //
-// Required env (set in .env.local):
-//   SIGNALWIRE_PROJECT_ID   — UUID-style project ID from SignalWire dashboard
-//   SIGNALWIRE_API_TOKEN    — API token with Messages:Read scope
-//   SIGNALWIRE_SPACE_URL    — e.g. "magpipe.signalwire.com"
+// Required env (set in .env.local). Accepts either of two naming conventions:
+//   SIGNALWIRE_PROJECT_ID  | SIGNALWIRE_PROJECT   — UUID-style project ID from SignalWire dashboard
+//   SIGNALWIRE_API_TOKEN   | SIGNALWIRE_API_KEY   — API token with Messages:Read scope
+//   SIGNALWIRE_SPACE_URL   | SIGNALWIRE_SPACE     — e.g. "magpipe.signalwire.com"
 //   NEXT_PUBLIC_SUPABASE_URL
 //   SUPABASE_SERVICE_ROLE_KEY
 //
@@ -34,9 +34,9 @@ try {
 
 const SERVICE_NUMBER = process.env.MAGPIPE_SMS_FROM || "+16042108180";
 
-const projectId = process.env.SIGNALWIRE_PROJECT_ID;
-const apiToken = process.env.SIGNALWIRE_API_TOKEN;
-const spaceUrl = process.env.SIGNALWIRE_SPACE_URL;
+const projectId = process.env.SIGNALWIRE_PROJECT_ID || process.env.SIGNALWIRE_PROJECT;
+const apiToken = process.env.SIGNALWIRE_API_TOKEN || process.env.SIGNALWIRE_API_KEY;
+const spaceUrl = process.env.SIGNALWIRE_SPACE_URL || process.env.SIGNALWIRE_SPACE;
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 

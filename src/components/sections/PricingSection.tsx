@@ -67,7 +67,7 @@ const additionalServices = [
   { name: "Bone Cleaver or Hatchet", price: "$20" },
   { name: "Axe", price: "$30" },
   { name: "Buffing – rust & tarnish removal", price: "$20" },
-  { name: "Paper Trimmer/Guillotine", price: "$40" },
+  { name: "Paper Trimmer/Guillotine", price: "$20" },
   { name: "Disassembly", price: "$20" },
   { name: "Shawarma/Rotary Blades", price: "$20" },
 ];
