@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import Link from "next/link";
 import { ArrowLeft, Send, Loader2, RefreshCw, MessageSquare, Search, X } from "lucide-react";
 
 interface MagpipeMessage {
@@ -23,6 +24,7 @@ interface Conversation {
   messageCount: number;
   hasInbound: boolean;
   unreadCount: number;
+  customer: { id: string; name: string } | null;
 }
 
 const POLL_MS = 10_000;
@@ -260,32 +262,51 @@ export default function MessagesUI() {
             ) : (
               conversations.map(c => {
                 const active = c.phone === selectedPhone;
+                const customerName = c.customer?.name ?? "Unknown";
                 return (
-                  <button
+                  <div
                     key={c.phone}
+                    role="button"
+                    tabIndex={0}
                     onClick={() => setSelectedPhone(c.phone)}
-                    className="w-full text-left px-4 py-3 border-b transition-colors hover:bg-[#161B22]"
+                    onKeyDown={e => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setSelectedPhone(c.phone); } }}
+                    className="cursor-pointer w-full text-left px-4 py-3 border-b transition-colors hover:bg-[#161B22] outline-none focus-visible:ring-1 focus-visible:ring-[#D4A017]"
                     style={{
                       backgroundColor: active ? "#161B22" : "transparent",
                       borderColor: "#30363D",
                       borderLeft: active ? "3px solid #D4A017" : "3px solid transparent",
                     }}
                   >
-                    <div className="flex justify-between items-baseline mb-1 gap-2">
-                      <div className="font-medium text-sm truncate flex-1">
-                        {formatPhone(c.phone)}
-                        {c.unreadCount > 0 && (
-                          <span
-                            className="ml-2 text-[10px] font-bold px-1.5 py-0.5 rounded-full"
-                            style={{ backgroundColor: "#D4A017", color: "#0D1117" }}
-                          >
-                            {c.unreadCount}
-                          </span>
-                        )}
-                      </div>
+                    <div className="flex justify-between items-baseline mb-0.5 gap-2">
+                      {c.customer ? (
+                        <Link
+                          href={`/admin/customers/${c.customer.id}`}
+                          onClick={e => e.stopPropagation()}
+                          className="font-semibold text-sm truncate flex-1 hover:underline"
+                          style={{ color: customerName === "Unknown" ? "#9CA3AF" : "#FFFFFF" }}
+                          title={`Open customer profile for ${customerName}`}
+                        >
+                          {customerName}
+                        </Link>
+                      ) : (
+                        <span className="font-semibold text-sm truncate flex-1" style={{ color: "#9CA3AF" }}>
+                          {customerName}
+                        </span>
+                      )}
                       <div className="text-xs whitespace-nowrap" style={{ color: "#6B7280" }}>
                         {formatTime(c.lastMessage.created_at)}
                       </div>
+                    </div>
+                    <div className="flex items-baseline gap-2 mb-1">
+                      <span className="text-xs" style={{ color: "#6B7280" }}>{formatPhone(c.phone)}</span>
+                      {c.unreadCount > 0 && (
+                        <span
+                          className="text-[10px] font-bold px-1.5 py-0.5 rounded-full"
+                          style={{ backgroundColor: "#D4A017", color: "#0D1117" }}
+                        >
+                          {c.unreadCount}
+                        </span>
+                      )}
                     </div>
                     <div className="text-xs truncate" style={{ color: c.unreadCount > 0 ? "#E5E7EB" : "#6B7280" }}>
                       {c.lastMessage.direction === "outbound" ? "You: " : ""}
@@ -294,7 +315,7 @@ export default function MessagesUI() {
                     <div className="text-[10px] mt-1" style={{ color: "#6B7280" }}>
                       {c.messageCount} message{c.messageCount === 1 ? "" : "s"}
                     </div>
-                  </button>
+                  </div>
                 );
               })
             )}
@@ -317,12 +338,21 @@ export default function MessagesUI() {
                   <ArrowLeft size={18} />
                 </button>
                 <div>
-                  <div className="font-semibold">{formatPhone(selectedPhone)}</div>
-                  {selectedConvo && (
-                    <div className="text-xs" style={{ color: "#6B7280" }}>
-                      {selectedConvo.messageCount} message{selectedConvo.messageCount === 1 ? "" : "s"}
-                    </div>
+                  {selectedConvo?.customer ? (
+                    <Link
+                      href={`/admin/customers/${selectedConvo.customer.id}`}
+                      className="font-semibold hover:underline"
+                      style={{ color: selectedConvo.customer.name === "Unknown" ? "#9CA3AF" : "#FFFFFF" }}
+                    >
+                      {selectedConvo.customer.name}
+                    </Link>
+                  ) : (
+                    <span className="font-semibold" style={{ color: "#9CA3AF" }}>Unknown</span>
                   )}
+                  <div className="text-xs" style={{ color: "#6B7280" }}>
+                    {formatPhone(selectedPhone)}
+                    {selectedConvo && ` · ${selectedConvo.messageCount} message${selectedConvo.messageCount === 1 ? "" : "s"}`}
+                  </div>
                 </div>
               </div>
 

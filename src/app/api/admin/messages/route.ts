@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAdmin, getServiceClient } from "@/lib/admin";
 import { listAllServiceMessages, type MagpipeMessage, type Conversation, isServiceNumber, customerPhone } from "@/lib/magpipe";
+import { extractNameFromMessages } from "@/lib/sms-name";
 
 // GET /api/admin/messages              → conversations + unread counts
 // GET /api/admin/messages?phone=X      → thread for that phone
@@ -116,9 +117,13 @@ export async function GET(req: NextRequest) {
 
     // Group into conversations + apply search + compute unread
     const conversations = groupAndFilter(merged, q);
-    const totalUnread = conversations.reduce((s, c) => s + c.unreadCount, 0);
 
-    return NextResponse.json({ conversations, totalUnread });
+    // Auto-add any customer phones missing from the customers table.
+    // Idempotent — does nothing for phones we've already seen.
+    const enrichedConvos = await ensureCustomers(supabase, conversations, merged);
+    const totalUnread = enrichedConvos.reduce((s, c) => s + c.unreadCount, 0);
+
+    return NextResponse.json({ conversations: enrichedConvos, totalUnread });
   } catch (e) {
     const msg = e instanceof Error ? e.message : String(e);
     console.error("[/api/admin/messages] error:", msg);
@@ -169,3 +174,56 @@ function groupAndFilter(messages: UnifiedMessage[], q: string): ConversationWith
 // Keep the customerPhone import marker so unused-import linter doesn't flag it
 // if we later remove its only callsite.
 void customerPhone;
+
+interface ConversationWithCustomer extends ConversationWithUnread {
+  customer: { id: string; name: string } | null;
+}
+
+type SupabaseClient = ReturnType<typeof getServiceClient>;
+
+async function ensureCustomers(
+  supabase: SupabaseClient,
+  conversations: ConversationWithUnread[],
+  allMessages: UnifiedMessage[]
+): Promise<ConversationWithCustomer[]> {
+  const phones = conversations.map(c => c.phone);
+  if (phones.length === 0) return conversations.map(c => ({ ...c, customer: null }));
+
+  // Fetch any existing customers matching these phones
+  const { data: existing } = await supabase
+    .from("customers")
+    .select("id, name, phone")
+    .in("phone", phones);
+
+  const byPhone = new Map<string, { id: string; name: string }>();
+  for (const c of (existing ?? []) as { id: string; name: string; phone: string }[]) {
+    byPhone.set(c.phone, { id: c.id, name: c.name });
+  }
+
+  // Build inserts for any phones we don't already have a customer for
+  const missingPhones = phones.filter(p => !byPhone.has(p));
+  if (missingPhones.length > 0) {
+    const newRows = missingPhones.map(phone => {
+      // Gather all inbound message bodies from this customer for name extraction
+      const bodies = allMessages
+        .filter(m => m.direction === "inbound" && m.from_number === phone)
+        .map(m => m.body);
+      const name = extractNameFromMessages(bodies) ?? "Unknown";
+      return { name, phone, source: "sms" as const };
+    });
+
+    const { data: inserted } = await supabase
+      .from("customers")
+      .insert(newRows)
+      .select("id, name, phone");
+
+    for (const c of (inserted ?? []) as { id: string; name: string; phone: string }[]) {
+      byPhone.set(c.phone, { id: c.id, name: c.name });
+    }
+  }
+
+  return conversations.map(c => ({
+    ...c,
+    customer: byPhone.get(c.phone) ?? null,
+  }));
+}
