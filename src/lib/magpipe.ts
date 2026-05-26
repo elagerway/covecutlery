@@ -2,6 +2,19 @@ const MAGPIPE_BASE = "https://api.magpipe.ai/functions/v1";
 
 export const SERVICE_NUMBER = process.env.MAGPIPE_SMS_FROM ?? "+16042108180";
 
+// All Cove Blades service numbers, current and historic. Magpipe stores
+// messages for each. The inbox queries every one of these and merges the
+// results so conversations span the number-change boundary cleanly.
+export const SERVICE_NUMBERS: string[] = [
+  SERVICE_NUMBER,
+  "+16043731500", // previous number, active until ~mid-April 2026
+];
+
+export function isServiceNumber(phone: string | null | undefined): boolean {
+  if (!phone) return false;
+  return SERVICE_NUMBERS.includes(phone);
+}
+
 export interface MagpipeMessage {
   id: string;
   thread_id: string | null;
@@ -78,7 +91,29 @@ export async function sendSms(args: { to: string; message: string }): Promise<vo
 
 /** Identify the customer phone in a message (the non-service-number side). */
 export function customerPhone(msg: MagpipeMessage): string {
+  // Prefer the explicit non-service side over the direction flag — handles
+  // edge cases where direction might be miscoded but the phone numbers are right.
+  if (isServiceNumber(msg.from_number)) return msg.to_number;
+  if (isServiceNumber(msg.to_number)) return msg.from_number;
   return msg.direction === "inbound" ? msg.from_number : msg.to_number;
+}
+
+/** Fetch all messages across every Cove Blades service number, deduped. */
+export async function listAllServiceMessages(limit = 500): Promise<MagpipeMessage[]> {
+  const results = await Promise.all(
+    SERVICE_NUMBERS.map(num => listMessages({ phoneNumber: num, limit }))
+  );
+  const seen = new Set<string>();
+  const merged: MagpipeMessage[] = [];
+  for (const r of results) {
+    for (const m of r.messages) {
+      if (seen.has(m.id)) continue;
+      seen.add(m.id);
+      merged.push(m);
+    }
+  }
+  merged.sort((a, b) => b.created_at.localeCompare(a.created_at));
+  return merged;
 }
 
 export interface Conversation {
@@ -91,11 +126,10 @@ export interface Conversation {
 export function groupIntoConversations(messages: MagpipeMessage[]): Conversation[] {
   const byPhone = new Map<string, MagpipeMessage[]>();
   for (const m of messages) {
-    // Drop self-loops (service → service). These are the booking flow's admin
-    // notification SMS we send to our own number — they're not real conversations.
-    if (m.from_number === SERVICE_NUMBER && m.to_number === SERVICE_NUMBER) continue;
+    // Drop service-to-service self-loops (booking-flow admin notifications).
+    if (isServiceNumber(m.from_number) && isServiceNumber(m.to_number)) continue;
     const phone = customerPhone(m);
-    if (!phone || phone === SERVICE_NUMBER) continue;
+    if (!phone || isServiceNumber(phone)) continue;
     if (!byPhone.has(phone)) byPhone.set(phone, []);
     byPhone.get(phone)!.push(m);
   }

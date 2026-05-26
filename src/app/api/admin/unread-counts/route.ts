@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { requireAdmin, getServiceClient } from "@/lib/admin";
-import { listMessages, SERVICE_NUMBER } from "@/lib/magpipe";
+import { listAllServiceMessages, isServiceNumber } from "@/lib/magpipe";
 
 // GET /api/admin/unread-counts
 // → { sms: <count>, email: <count> }
@@ -19,11 +19,11 @@ export async function GET() {
     .eq("direction", "inbound")
     .eq("status", "new");
 
-  // SMS unread = inbound messages (Magpipe + historical) whose ID is NOT in sms_message_reads
+  // SMS unread = inbound messages (any service number) whose ID is NOT in sms_message_reads
   let smsCount = 0;
   try {
-    const [magpipeData, historicalRes, readsRes] = await Promise.all([
-      listMessages({ phoneNumber: SERVICE_NUMBER, limit: 500 }),
+    const [magpipeMessages, historicalRes, readsRes] = await Promise.all([
+      listAllServiceMessages(500),
       supabase
         .from("historical_sms_messages")
         .select("external_id, direction, from_number, to_number")
@@ -33,12 +33,12 @@ export async function GET() {
 
     const readIds = new Set<string>((readsRes.data ?? []).map(r => r.message_id));
 
-    const magpipeUnread = magpipeData.messages.filter(
-      m => m.direction === "inbound" && m.to_number === SERVICE_NUMBER && !readIds.has(m.id)
+    const magpipeUnread = magpipeMessages.filter(
+      m => m.direction === "inbound" && isServiceNumber(m.to_number) && !readIds.has(m.id)
     ).length;
 
     const historicalUnread = (historicalRes.data ?? []).filter(
-      h => h.to_number === SERVICE_NUMBER && !readIds.has(h.external_id as string)
+      h => isServiceNumber(h.to_number as string) && !readIds.has(h.external_id as string)
     ).length;
 
     smsCount = magpipeUnread + historicalUnread;

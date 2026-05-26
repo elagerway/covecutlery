@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAdmin, getServiceClient } from "@/lib/admin";
-import { listMessages, type MagpipeMessage, type Conversation, SERVICE_NUMBER, customerPhone } from "@/lib/magpipe";
+import { listAllServiceMessages, type MagpipeMessage, type Conversation, isServiceNumber, customerPhone } from "@/lib/magpipe";
 
 // GET /api/admin/messages              → conversations + unread counts
 // GET /api/admin/messages?phone=X      → thread for that phone
@@ -81,9 +81,9 @@ export async function GET(req: NextRequest) {
   try {
     const supabase = getServiceClient();
 
-    // Fetch Magpipe + historical + reads in parallel
-    const [magpipeData, historicalRes, readsRes] = await Promise.all([
-      listMessages({ phoneNumber: SERVICE_NUMBER, limit: 500 }),
+    // Fetch Magpipe (across all service numbers) + historical + reads in parallel
+    const [magpipeMessages, historicalRes, readsRes] = await Promise.all([
+      listAllServiceMessages(500),
       supabase
         .from("historical_sms_messages")
         .select("external_id, from_number, to_number, body, direction, status, date_sent")
@@ -93,7 +93,7 @@ export async function GET(req: NextRequest) {
     ]);
 
     const readIds = new Set<string>((readsRes.data ?? []).map(r => r.message_id));
-    const magpipeUnified = magpipeData.messages.map(m => magpipeToUnified(m, readIds));
+    const magpipeUnified = magpipeMessages.map(m => magpipeToUnified(m, readIds));
     const historicalUnified = (historicalRes.data ?? []).map(h => historicalToUnified(h as HistoricalRow, readIds));
 
     // Dedup: prefer Magpipe over historical when external_id collides (unlikely but defensive)
@@ -103,10 +103,13 @@ export async function GET(req: NextRequest) {
       ...historicalUnified.filter(h => !seenIds.has(h.id)),
     ];
 
-    // Thread view
+    // Thread view: any message between us (any service number) and the requested phone
     if (phone) {
       const messages = merged
-        .filter(m => m.from_number === phone || m.to_number === phone)
+        .filter(m =>
+          (m.from_number === phone && isServiceNumber(m.to_number)) ||
+          (m.to_number === phone && isServiceNumber(m.from_number))
+        )
         .sort((a, b) => a.created_at.localeCompare(b.created_at));
       return NextResponse.json({ messages });
     }
@@ -130,9 +133,11 @@ interface ConversationWithUnread extends Conversation {
 function groupAndFilter(messages: UnifiedMessage[], q: string): ConversationWithUnread[] {
   const byPhone = new Map<string, UnifiedMessage[]>();
   for (const m of messages) {
-    if (m.from_number === SERVICE_NUMBER && m.to_number === SERVICE_NUMBER) continue;
-    const phone = m.direction === "inbound" ? m.from_number : m.to_number;
-    if (!phone || phone === SERVICE_NUMBER) continue;
+    if (isServiceNumber(m.from_number) && isServiceNumber(m.to_number)) continue;
+    // Use customerPhone helper so messages from the old service number also
+    // attribute correctly to the customer side.
+    const phone = customerPhone(m as unknown as MagpipeMessage);
+    if (!phone || isServiceNumber(phone)) continue;
     if (!byPhone.has(phone)) byPhone.set(phone, []);
     byPhone.get(phone)!.push(m);
   }
