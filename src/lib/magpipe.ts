@@ -91,18 +91,27 @@ export interface Conversation {
 export function groupIntoConversations(messages: MagpipeMessage[]): Conversation[] {
   const byPhone = new Map<string, MagpipeMessage[]>();
   for (const m of messages) {
+    // Drop self-loops (service → service). These are the booking flow's admin
+    // notification SMS we send to our own number — they're not real conversations.
+    if (m.from_number === SERVICE_NUMBER && m.to_number === SERVICE_NUMBER) continue;
     const phone = customerPhone(m);
+    if (!phone || phone === SERVICE_NUMBER) continue;
     if (!byPhone.has(phone)) byPhone.set(phone, []);
     byPhone.get(phone)!.push(m);
   }
   const convos: Conversation[] = [];
   for (const [phone, msgs] of byPhone) {
+    const hasInbound = msgs.some(m => m.direction === "inbound");
+    // Only show conversations where the customer has actually texted in.
+    // One-way outbound blasts (e.g. booking confirmations that never got a reply)
+    // aren't "messages sent to 604-210-8180" — skip them.
+    if (!hasInbound) continue;
     msgs.sort((a, b) => b.created_at.localeCompare(a.created_at));
     convos.push({
       phone,
       lastMessage: msgs[0],
       messageCount: msgs.length,
-      hasInbound: msgs.some(m => m.direction === "inbound"),
+      hasInbound,
     });
   }
   convos.sort((a, b) => b.lastMessage.created_at.localeCompare(a.lastMessage.created_at));
