@@ -96,7 +96,7 @@ export default function PublicInvoicePage() {
         {/* Header */}
         <div className="flex flex-col items-center mb-8">
           <img src="/logo-icon-512.png" alt="Cove Blades" width={48} height={48} className="rounded-lg mb-3" />
-          <p className="text-xl font-bold tracking-wide" style={{ color: "#D4A017" }}>COVE CUTLERY</p>
+          <p className="text-xl font-bold tracking-wide" style={{ color: "#D4A017" }}>COVE BLADES</p>
           <p className="text-sm mt-1" style={{ color: "#6B7280" }}>Mobile Knife Sharpening</p>
         </div>
 
@@ -252,7 +252,7 @@ export default function PublicInvoicePage() {
         <div style={{ maxWidth: 560, margin: "0 auto", fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif", color: "#111" }}>
           <div style={{ textAlign: "center", marginBottom: 24 }}>
             <img src="/logo-icon-512.png" alt="Cove Blades" width={40} height={40} style={{ borderRadius: 6, marginBottom: 8 }} />
-            <p style={{ fontSize: 20, fontWeight: 700, color: "#B8860B", letterSpacing: 0.5, margin: 0 }}>COVE CUTLERY</p>
+            <p style={{ fontSize: 20, fontWeight: 700, color: "#B8860B", letterSpacing: 0.5, margin: 0 }}>COVE BLADES</p>
             <p style={{ fontSize: 13, color: "#666", margin: "4px 0 0" }}>Mobile Knife Sharpening</p>
           </div>
 

@@ -52,8 +52,11 @@ export async function POST(req: NextRequest) {
     line_items, notes, due_date, work_completed_date, status: invoiceStatus,
   } = body;
 
-  if (!client_name || !client_email || !client_phone || !line_items?.length) {
-    return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
+  if (!client_name || !line_items?.length) {
+    return NextResponse.json({ error: "Client name and at least one line item are required" }, { status: 400 });
+  }
+  if (!client_email && !client_phone) {
+    return NextResponse.json({ error: "Provide either an email or a phone number so the customer can be reached" }, { status: 400 });
   }
 
   // Validate line items
@@ -82,8 +85,8 @@ export async function POST(req: NextRequest) {
     .insert({
       invoice_number,
       client_name,
-      client_email,
-      client_phone,
+      client_email: client_email || null,
+      client_phone: client_phone || null,
       client_address: client_address || null,
       line_items,
       subtotal,
@@ -98,20 +101,39 @@ export async function POST(req: NextRequest) {
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
-  // Upsert customer record
-  await supabase
-    .from("customers")
-    .upsert(
-      {
-        name: client_name,
-        email: client_email.toLowerCase().trim(),
-        phone: client_phone || null,
-        address: client_address || null,
-        source: "invoice",
-        updated_at: new Date().toISOString(),
-      },
-      { onConflict: "email" }
-    );
+  // Upsert customer record — match by email if we have one, otherwise by phone
+  let existingCustomerId: string | null = null;
+  if (client_email) {
+    const { data } = await supabase
+      .from("customers")
+      .select("id")
+      .eq("email", client_email.toLowerCase().trim())
+      .maybeSingle();
+    existingCustomerId = data?.id ?? null;
+  } else if (client_phone) {
+    const { data } = await supabase
+      .from("customers")
+      .select("id")
+      .eq("phone", client_phone)
+      .limit(1)
+      .maybeSingle();
+    existingCustomerId = data?.id ?? null;
+  }
+
+  const customerData = {
+    name: client_name,
+    email: client_email ? client_email.toLowerCase().trim() : null,
+    phone: client_phone || null,
+    address: client_address || null,
+    source: "invoice" as const,
+    updated_at: new Date().toISOString(),
+  };
+
+  if (existingCustomerId) {
+    await supabase.from("customers").update(customerData).eq("id", existingCustomerId);
+  } else {
+    await supabase.from("customers").insert(customerData);
+  }
 
   return NextResponse.json(data, { status: 201 });
 }

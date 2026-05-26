@@ -152,6 +152,10 @@ export default function NewInvoicePage() {
       setError("Fill in client name and at least one line item.");
       return;
     }
+    if (!form.client_email && !form.client_phone) {
+      setError("Provide either an email or a phone number so the invoice can be sent.");
+      return;
+    }
     setSaving(true);
     setError(null);
 
@@ -246,7 +250,7 @@ export default function NewInvoicePage() {
           </div>
           <div>
             <label className="block text-xs font-medium mb-1.5" style={{ color: "#6B7280" }}>
-              Email <span style={{ color: "#D4A017" }}>*</span>
+              Email <span className="font-normal" style={{ color: "#6B7280" }}>· or phone</span>
             </label>
             <input
               type="email"
@@ -258,7 +262,7 @@ export default function NewInvoicePage() {
           </div>
           <div>
             <label className="block text-xs font-medium mb-1.5" style={{ color: "#6B7280" }}>
-              Phone <span style={{ color: "#D4A017" }}>*</span>
+              Phone <span className="font-normal" style={{ color: "#6B7280" }}>· or email</span>
             </label>
             <input
               type="tel"
@@ -507,7 +511,7 @@ export default function NewInvoicePage() {
               {/* Header */}
               <div className="flex flex-col items-center mb-6">
                 <img src="/logo-icon-512.png" alt="Cove Blades" width={40} height={40} className="rounded-lg mb-2" />
-                <p className="text-xl font-bold tracking-wide" style={{ color: "#D4A017" }}>COVE CUTLERY</p>
+                <p className="text-xl font-bold tracking-wide" style={{ color: "#D4A017" }}>COVE BLADES</p>
                 <p className="text-sm mt-1" style={{ color: "#6B7280" }}>Mobile Knife Sharpening</p>
               </div>
 
