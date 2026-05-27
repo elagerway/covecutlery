@@ -16,6 +16,7 @@ export async function GET(request: Request) {
       if (inviteToken) {
         next = await processInvite(supabase, inviteToken, next);
       }
+      await enrollFromPaidCourses(supabase);
 
       const allowedHosts = ["coveblades.com", "www.coveblades.com", "localhost:3000", "localhost:3002"];
       const forwardedHost = request.headers.get("x-forwarded-host");
@@ -73,4 +74,41 @@ async function processInvite(
     console.error("[processInvite] error:", e);
   }
   return fallbackNext;
+}
+
+async function enrollFromPaidCourses(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+): Promise<void> {
+  try {
+    const admin = createAdminClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user?.email) return;
+
+    const { data: paidEnrollments } = await admin
+      .from("course_enrollments")
+      .select("course_slug")
+      .eq("customer_email", user.email.toLowerCase())
+      .eq("status", "paid");
+
+    if (!paidEnrollments?.length) return;
+
+    const slugs = paidEnrollments.map((e) => e.course_slug);
+    const { data: courses } = await admin
+      .from("courses")
+      .select("id")
+      .in("slug", slugs);
+
+    if (!courses?.length) return;
+
+    for (const course of courses) {
+      await admin
+        .from("user_enrollments")
+        .upsert(
+          { user_id: user.id, course_id: course.id },
+          { onConflict: "user_id,course_id" },
+        );
+    }
+  } catch (e) {
+    console.error("[enrollFromPaidCourses] error:", e);
+  }
 }

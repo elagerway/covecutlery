@@ -46,7 +46,7 @@ export async function POST(req: NextRequest) {
         })
         .eq("id", session.metadata.invoice_id);
     } else if (session.metadata?.course_enrollment_id) {
-      await supabase
+      const { data: enrollment } = await supabase
         .from("course_enrollments")
         .update({
           status: "paid",
@@ -54,7 +54,32 @@ export async function POST(req: NextRequest) {
           paid_at: new Date().toISOString(),
           stripe_payment_intent_id: session.payment_intent as string,
         })
-        .eq("id", session.metadata.course_enrollment_id);
+        .eq("id", session.metadata.course_enrollment_id)
+        .select("course_slug, customer_email")
+        .single();
+
+      if (enrollment) {
+        const { data: course } = await supabase
+          .from("courses")
+          .select("id")
+          .eq("slug", enrollment.course_slug)
+          .single();
+
+        if (course) {
+          const { data: users } = await supabase.auth.admin.listUsers();
+          const user = users?.users?.find(
+            (u) => u.email?.toLowerCase() === enrollment.customer_email.toLowerCase(),
+          );
+          if (user) {
+            await supabase
+              .from("user_enrollments")
+              .upsert(
+                { user_id: user.id, course_id: course.id },
+                { onConflict: "user_id,course_id" },
+              );
+          }
+        }
+      }
     } else {
       // Booking deposit payment
       await supabase

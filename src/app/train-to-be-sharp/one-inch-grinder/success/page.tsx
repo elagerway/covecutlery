@@ -38,17 +38,28 @@ export default function EnrollmentSuccessPage() {
             className="text-base leading-relaxed mb-8"
             style={{ color: "#9CA3AF" }}
           >
-            Payment received. We&rsquo;ll be in touch shortly with access to
-            the online course and details for booking your hands-on practicum.
+            Payment received. Create your account with the same email you
+            used to pay and you&rsquo;ll get instant access to the online
+            course. We&rsquo;ll also be in touch with details for booking
+            your hands-on practicum.
           </p>
-          <Link
-            href="/train-to-be-sharp/one-inch-grinder"
-            className="inline-flex items-center gap-2 text-sm font-medium transition-colors hover:text-white"
-            style={{ color: "#D4A017" }}
-          >
-            Back to course details
-            <ChevronRight size={14} />
-          </Link>
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
+            <Link
+              href="/auth/signup"
+              className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-lg font-semibold text-sm transition-all hover:brightness-110 active:scale-[0.98]"
+              style={{ backgroundColor: "#D4A017", color: "#0D1117" }}
+            >
+              Create Account &amp; Start Learning
+              <ChevronRight size={14} />
+            </Link>
+            <Link
+              href="/train-to-be-sharp/one-inch-grinder"
+              className="inline-flex items-center gap-2 text-sm font-medium transition-colors hover:text-white"
+              style={{ color: "#6B7280" }}
+            >
+              Back to course details
+            </Link>
+          </div>
         </div>
       </main>
 

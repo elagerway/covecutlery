@@ -16,7 +16,6 @@ import {
 } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import CourseSignUp from "@/components/courses/CourseSignUp";
 import { safeJsonLd, breadcrumbSchema } from "@/lib/schema";
 
 export const metadata: Metadata = {
@@ -496,46 +495,41 @@ export default function BuildYourBusinessPage() {
           </div>
         </section>
 
-        {/* Sign Up & Pay */}
+        {/* Coming Soon */}
         <section
           className="py-20 px-6"
           style={{ borderTop: "1px solid #30363D" }}
         >
-          <div className="max-w-md mx-auto">
-            <div className="text-center mb-10">
-              <div
-                className="inline-flex items-center gap-2 mb-4 px-4 py-2 rounded-full text-xs uppercase tracking-wider"
-                style={{
-                  backgroundColor: "rgba(212,160,23,0.1)",
-                  color: "#D4A017",
-                  border: "1px solid rgba(212,160,23,0.3)",
-                }}
-              >
-                <DollarSign size={14} />
-                $600
-              </div>
-              <h2
-                className="text-2xl sm:text-3xl font-bold mb-3"
-                style={{ color: "#FFFFFF" }}
-              >
-                Sign Up &{" "}
-                <span style={{ color: "#D4A017" }}>Get Started</span>
-              </h2>
-              <p className="text-sm" style={{ color: "#6B7280" }}>
-                Reserve your one-on-one build session.
-              </p>
-            </div>
+          <div className="max-w-md mx-auto text-center">
             <div
-              className="rounded-xl border p-5 sm:p-8"
-              style={{ backgroundColor: "#161B22", borderColor: "#30363D" }}
+              className="inline-flex items-center gap-2 mb-4 px-4 py-2 rounded-full text-xs uppercase tracking-wider"
+              style={{
+                backgroundColor: "rgba(212,160,23,0.1)",
+                color: "#D4A017",
+                border: "1px solid rgba(212,160,23,0.3)",
+              }}
             >
-              <CourseSignUp
-                courseSlug="build-your-business"
-                courseName="Build Your Business with AI — Hands-On"
-                price="$600"
-                priceNote="Tuition is non-refundable."
-              />
+              <DollarSign size={14} />
+              $600
             </div>
+            <h2
+              className="text-2xl sm:text-3xl font-bold mb-3"
+              style={{ color: "#FFFFFF" }}
+            >
+              Coming <span style={{ color: "#D4A017" }}>Soon</span>
+            </h2>
+            <p className="text-sm mb-6" style={{ color: "#6B7280" }}>
+              This workshop is currently being finalized. Reach out if
+              you&rsquo;d like to be notified when enrollment opens.
+            </p>
+            <a
+              href="tel:6042108180"
+              className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-lg font-semibold text-sm border-2 transition-all duration-200 hover:bg-yellow-900/20 active:scale-95"
+              style={{ borderColor: "#D4A017", color: "#D4A017" }}
+            >
+              <Phone size={16} />
+              604 210 8180
+            </a>
           </div>
         </section>
 
