@@ -31,6 +31,7 @@ const modules = [
     name: "One-Inch Grinder",
     price: "$600",
     tag: "Core offering",
+    href: "/train-to-be-sharp/one-inch-grinder",
     description:
       "Our flagship module, focused on small-machine sharpening — the workhorse of a residential and small-commercial practice. Most students start here.",
   },
@@ -39,6 +40,7 @@ const modules = [
     name: "Two-Inch Grinder",
     price: "$400",
     tag: "Expand your range",
+    href: "/train-to-be-sharp/two-inch-grinder",
     description:
       "For students who want to handle larger blades and higher volume on a bigger belt platform. Pairs naturally with the one-inch course.",
   },
@@ -47,6 +49,7 @@ const modules = [
     name: "Business Process & Automation",
     price: "$200",
     tag: "Two-hour session · Introduction",
+    href: "/train-to-be-sharp/business-process",
     description:
       "Tips, tricks, and insights from how we actually run Cove Blades — AI automation for inbound calls and texts, plus the logistical playbook for drop-off, pickup, and mobile operations. The lay-of-the-land before you build your own.",
   },
@@ -55,6 +58,7 @@ const modules = [
     name: "Build Your Business with AI — Hands-On",
     price: "$600",
     tag: "Half-day workshop",
+    href: "/train-to-be-sharp/build-your-business",
     description:
       "A 3-4 hour one-on-one build session. Together we set up your website, email marketing, social profiles, business cards, phone number, and AI assistant — all using modern AI tooling. Walk out with a working business toolkit and the playbook to maintain it.",
   },
@@ -75,9 +79,9 @@ const overviewPoints = [
   },
   {
     icon: TrendingUp,
-    title: "Recorded for life",
+    title: "A billable skill",
     description:
-      "Every session is recorded and yours to revisit any time. The muscle memory builds in the practicum; the reference material never goes away.",
+      "You leave with the foundation to offer sharpening as a paid service. Most students recoup tuition within one to two months and build from there.",
   },
 ];
 
@@ -146,32 +150,40 @@ export default function TrainingPage() {
             </p>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {modules.map((m) => (
-                <div
-                  key={m.name}
-                  className="rounded-xl border p-7 flex flex-col"
-                  style={{ backgroundColor: "#161B22", borderColor: "#30363D" }}
-                >
-                  <div className="flex items-center gap-3 mb-3">
-                    <div
-                      className="w-10 h-10 rounded-lg flex items-center justify-center"
-                      style={{ backgroundColor: "rgba(212,160,23,0.1)" }}
-                    >
-                      <m.icon size={20} style={{ color: "#D4A017" }} />
+                <Link key={m.name} href={m.href} className="block">
+                  <div
+                    className="rounded-xl border p-7 flex flex-col h-full transition-all duration-200 hover:border-[#D4A017]/50 hover:shadow-lg hover:shadow-yellow-900/10"
+                    style={{ backgroundColor: "#161B22", borderColor: "#30363D" }}
+                  >
+                    <div className="flex items-center gap-3 mb-3">
+                      <div
+                        className="w-10 h-10 rounded-lg flex items-center justify-center"
+                        style={{ backgroundColor: "rgba(212,160,23,0.1)" }}
+                      >
+                        <m.icon size={20} style={{ color: "#D4A017" }} />
+                      </div>
+                      <span className="text-xs uppercase tracking-wider" style={{ color: "#D4A017" }}>
+                        {m.tag}
+                      </span>
                     </div>
-                    <span className="text-xs uppercase tracking-wider" style={{ color: "#D4A017" }}>
-                      {m.tag}
+                    <h3 className="font-bold text-lg mb-1" style={{ color: "#FFFFFF" }}>
+                      {m.name}
+                    </h3>
+                    <p className="text-2xl font-bold mb-4" style={{ color: "#D4A017" }}>
+                      {m.price}
+                    </p>
+                    <p className="text-sm leading-relaxed flex-1" style={{ color: "#9CA3AF" }}>
+                      {m.description}
+                    </p>
+                    <span
+                      className="inline-flex items-center gap-1 text-xs font-medium mt-4"
+                      style={{ color: "#D4A017" }}
+                    >
+                      Learn more
+                      <ChevronRight size={12} />
                     </span>
                   </div>
-                  <h3 className="font-bold text-lg mb-1" style={{ color: "#FFFFFF" }}>
-                    {m.name}
-                  </h3>
-                  <p className="text-2xl font-bold mb-4" style={{ color: "#D4A017" }}>
-                    {m.price}
-                  </p>
-                  <p className="text-sm leading-relaxed" style={{ color: "#9CA3AF" }}>
-                    {m.description}
-                  </p>
-                </div>
+                </Link>
               ))}
             </div>
             <p className="text-center text-xs mt-8" style={{ color: "#6B7280" }}>

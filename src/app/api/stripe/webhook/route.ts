@@ -45,6 +45,16 @@ export async function POST(req: NextRequest) {
           stripe_payment_intent_id: session.payment_intent as string,
         })
         .eq("id", session.metadata.invoice_id);
+    } else if (session.metadata?.course_enrollment_id) {
+      await supabase
+        .from("course_enrollments")
+        .update({
+          status: "paid",
+          payment_method: "stripe",
+          paid_at: new Date().toISOString(),
+          stripe_payment_intent_id: session.payment_intent as string,
+        })
+        .eq("id", session.metadata.course_enrollment_id);
     } else {
       // Booking deposit payment
       await supabase
@@ -60,30 +70,38 @@ export async function POST(req: NextRequest) {
 
   if (event.type === "checkout.session.expired") {
     const session = event.data.object as Stripe.Checkout.Session;
-    const { data: booking } = await supabase
-      .from("bookings")
-      .select("cal_booking_uid, status")
-      .eq("stripe_session_id", session.id)
-      .single();
 
-    // Only cancel if still pending — guard against out-of-order webhook delivery
-    if (booking && booking.status === "pending_payment") {
-      // Cancel the Cal.com booking — only mark cancelled in Supabase if Cal.com succeeds
-      const cancelRes = await fetch(`https://api.cal.com/v2/bookings/${booking.cal_booking_uid}/cancel`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${process.env.CAL_API_KEY}`,
-          "cal-api-version": "2024-08-13",
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ reason: "Payment not completed" }),
-      });
+    if (session.metadata?.course_enrollment_id) {
+      await supabase
+        .from("course_enrollments")
+        .update({ status: "cancelled" })
+        .eq("id", session.metadata.course_enrollment_id)
+        .eq("status", "pending_payment");
+    } else {
+      const { data: booking } = await supabase
+        .from("bookings")
+        .select("cal_booking_uid, status")
+        .eq("stripe_session_id", session.id)
+        .single();
 
-      if (cancelRes.ok) {
-        await supabase
-          .from("bookings")
-          .update({ status: "cancelled" })
-          .eq("stripe_session_id", session.id);
+      // Only cancel if still pending — guard against out-of-order webhook delivery
+      if (booking && booking.status === "pending_payment") {
+        const cancelRes = await fetch(`https://api.cal.com/v2/bookings/${booking.cal_booking_uid}/cancel`, {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${process.env.CAL_API_KEY}`,
+            "cal-api-version": "2024-08-13",
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ reason: "Payment not completed" }),
+        });
+
+        if (cancelRes.ok) {
+          await supabase
+            .from("bookings")
+            .update({ status: "cancelled" })
+            .eq("stripe_session_id", session.id);
+        }
       }
     }
   }
