@@ -16,7 +16,9 @@ import {
 } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import CourseSignUp from "@/components/courses/CourseSignUp";
 import { safeJsonLd, breadcrumbSchema } from "@/lib/schema";
+import { isEnrollmentOpen } from "@/lib/course-enrollment-status";
 
 export const metadata: Metadata = {
   title: "Build Your Business with AI — Hands-On Workshop | Cove Blades",
@@ -72,7 +74,8 @@ const toolStack = [
   { name: "GitHub", role: "Your code lives here — version-controlled and yours" },
 ];
 
-export default function BuildYourBusinessPage() {
+export default async function BuildYourBusinessPage() {
+  const enrollOpen = await isEnrollmentOpen("build-your-business");
   const breadcrumbJsonLd = breadcrumbSchema([
     { name: "Home", url: "https://coveblades.com" },
     { name: "Training", url: "https://coveblades.com/train-to-be-sharp" },
@@ -495,7 +498,7 @@ export default function BuildYourBusinessPage() {
           </div>
         </section>
 
-        {/* Coming Soon */}
+        {/* Sign Up / Coming Soon */}
         <section
           className="py-20 px-6"
           style={{ borderTop: "1px solid #30363D" }}
@@ -512,24 +515,52 @@ export default function BuildYourBusinessPage() {
               <DollarSign size={14} />
               $600
             </div>
-            <h2
-              className="text-2xl sm:text-3xl font-bold mb-3"
-              style={{ color: "#FFFFFF" }}
-            >
-              Coming <span style={{ color: "#D4A017" }}>Soon</span>
-            </h2>
-            <p className="text-sm mb-6" style={{ color: "#6B7280" }}>
-              This workshop is currently being finalized. Reach out if
-              you&rsquo;d like to be notified when enrollment opens.
-            </p>
-            <a
-              href="tel:6042108180"
-              className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-lg font-semibold text-sm border-2 transition-all duration-200 hover:bg-yellow-900/20 active:scale-95"
-              style={{ borderColor: "#D4A017", color: "#D4A017" }}
-            >
-              <Phone size={16} />
-              604 210 8180
-            </a>
+            {enrollOpen ? (
+              <>
+                <h2
+                  className="text-2xl sm:text-3xl font-bold mb-3"
+                  style={{ color: "#FFFFFF" }}
+                >
+                  Sign Up &{" "}
+                  <span style={{ color: "#D4A017" }}>Get Started</span>
+                </h2>
+                <p className="text-sm mb-10" style={{ color: "#6B7280" }}>
+                  Reserve your one-on-one build session.
+                </p>
+                <div
+                  className="rounded-xl border p-5 sm:p-8 text-left"
+                  style={{ backgroundColor: "#161B22", borderColor: "#30363D" }}
+                >
+                  <CourseSignUp
+                    courseSlug="build-your-business"
+                    courseName="Build Your Business with AI — Hands-On"
+                    price="$600"
+                    priceNote="Tuition is non-refundable."
+                  />
+                </div>
+              </>
+            ) : (
+              <>
+                <h2
+                  className="text-2xl sm:text-3xl font-bold mb-3"
+                  style={{ color: "#FFFFFF" }}
+                >
+                  Coming <span style={{ color: "#D4A017" }}>Soon</span>
+                </h2>
+                <p className="text-sm mb-6" style={{ color: "#6B7280" }}>
+                  This workshop is currently being finalized. Reach out if
+                  you&rsquo;d like to be notified when enrollment opens.
+                </p>
+                <a
+                  href="tel:6042108180"
+                  className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-lg font-semibold text-sm border-2 transition-all duration-200 hover:bg-yellow-900/20 active:scale-95"
+                  style={{ borderColor: "#D4A017", color: "#D4A017" }}
+                >
+                  <Phone size={16} />
+                  604 210 8180
+                </a>
+              </>
+            )}
           </div>
         </section>
 
