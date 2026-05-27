@@ -90,12 +90,6 @@ export default function AdminNav({ email }: AdminNavProps) {
         <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
       </svg>
     )},
-    { label: "Courses", href: "/admin/courses", icon: (
-      <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
-        <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
-        <path d="M6 12v5c0 1.657 2.686 3 6 3s6-1.343 6-3v-5" />
-      </svg>
-    )},
     { label: "Voice Agent", href: "/admin/voice-prompt", icon: (
       <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
         <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z" />

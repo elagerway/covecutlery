@@ -1,6 +1,7 @@
 import { createAdminClient } from "@/utils/supabase/admin";
 import { TrainingInviteForm } from "@/components/admin/TrainingInviteForm";
 import { TrainingRoster } from "@/components/admin/TrainingRoster";
+import { EnrollmentToggles } from "@/components/admin/EnrollmentToggles";
 
 export default async function TrainingAdminPage() {
   const supabase = createAdminClient();
@@ -21,7 +22,7 @@ export default async function TrainingAdminPage() {
     supabase.from("module_quiz_results").select("user_id, module_quiz_id, score, total, passed, answers, completed_at"),
     supabase.from("module_quizzes").select("id, module_id, questions"),
     supabase.from("modules").select("id, title, slug, course_id").order("order"),
-    supabase.from("courses").select("id, title, slug, modules(id, lessons(id))"),
+    supabase.from("courses").select("id, title, slug, price, enrollment_open, modules(id, lessons(id))").order("order"),
     supabase.auth.admin.listUsers({ perPage: 1000 }),
   ]);
   const emailMap = new Map<string, string>();
@@ -131,6 +132,16 @@ export default async function TrainingAdminPage() {
           <p className="text-xs text-neutral-400">Wrong Answers</p>
         </div>
       </div>
+
+      <EnrollmentToggles
+        initial={(courses ?? []).map((c: any) => ({
+          id: c.id,
+          title: c.title,
+          slug: c.slug,
+          price: c.price,
+          enrollment_open: c.enrollment_open,
+        }))}
+      />
 
       <TrainingInviteForm courses={(courses ?? []).map((c: any) => ({ id: c.id, title: c.title }))} />
 
