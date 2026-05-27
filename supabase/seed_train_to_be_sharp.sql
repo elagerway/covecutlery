@@ -2,14 +2,15 @@
 -- Cove Blades Training Course
 
 -- Course
-INSERT INTO public.courses (id, title, slug, description, thumbnail_url, is_free, "order", active, level)
+INSERT INTO public.courses (id, title, slug, description, thumbnail_url, is_free, price, "order", active, level)
 VALUES (
   'a1b2c3d4-0001-4000-8000-000000000001',
   'Train To Be Sharp — Level 1',
   'train-to-be-sharp',
   'A hands-on course designed to give you practical, repeatable sharpening skills using a belt grinder. Learn to sharpen faster and more consistently, understand how steel behaves, form and remove burrs, and polish edges to a mirror finish.',
   NULL,
-  true,
+  false,
+  600.00,
   1,
   true,
   'entry'
