@@ -1,6 +1,24 @@
 # Project Status
 
-**Last updated:** 2026-05-27
+**Last updated:** 2026-05-28
+
+## Milestone 12 — Supabase cross-org migration + auth overhaul ✅ Complete
+
+Moved the production Supabase project to a new org under a separate billing account and rebuilt the auth flow around real passwords + Google OAuth.
+
+- [x] **Migrated** Cove Blades Supabase from old project `kvatxuhjiinjpvsyably` (Cove Cutlery org, free tier) to new `dbrphymgtnkkythvunyf` (snapsonic org, Pro). 17 MB of data total. Triggered by a compute-exhaustion outage on the Nano free tier
+- [x] **Migrator** `scripts/migrate-supabase.py` — Management API + PostgREST only, no `pg_dump`/`psql` required; handles FK dependency order, sequence resets, generated-column exclusion, and post-`drop schema` grant restoration
+- [x] **Row-count verification** across all 26 public tables + `auth.users` + `auth.identities` — every count matched at cutover; no writes leaked to OLD between snapshot and Vercel env-var swap
+- [x] **Vercel prod env swap** + redeploy + smoke test on `/api/events` confirming writes land on new project
+- [x] **Old project paused** for rollback insurance (decision: pause now, delete in ~1 week)
+- [x] **Killed the magic link.** Replaced `/admin/login` magic-link form with a server-side redirect to `/auth/login?redirect=/admin`; deleted `/api/auth/magic-link`. All admin sign-in flows through the shared `/auth/login` (email+password or Google), admin status from `ADMIN_EMAILS.includes(user.email)`
+- [x] **Password reset flow** — `/auth/forgot-password` + `/auth/reset-password` + `POST /api/auth/forgot-password` (Postmark + `generateLink(type=recovery)`); "Forgot password?" link on `/auth/login`
+- [x] **`/auth/confirm` intermediate page** that defeats Gmail's link-scanner pre-fetch. Token only consumed when user clicks the button, not when scanners HEAD/GET the URL. Applied to recovery, magic-link-style, and signup confirmation emails
+- [x] **Google OAuth** re-configured on new project — plaintext secret pasted from Google Cloud Console (per-project encryption means it can't be copied via Management API); new redirect URI added in Google Console
+- [x] **Sign In** promoted to gold-outlined button on home page Navbar (was easy-to-miss muted gray text)
+- [x] **Contact page** got a Text contact option alongside Call (same number, `sms:` href)
+- [x] Memories updated: `email_scanner_prefetch` (with the `/auth/confirm` fix), `supabase_mcp_wrong_project` (new project ref), new `supabase_cross_org_migration`
+- [x] Shipped as commits `6eeff0d` → `216612e` on `main`
 
 ## Milestone 11 — Training course pages, online content, and Stripe enrollment ✅ Complete
 

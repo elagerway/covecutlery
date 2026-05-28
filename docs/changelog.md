@@ -1,5 +1,35 @@
 # Changelog
 
+## [2.15.0] — 2026-05-28 — Supabase project migration to snapsonic org + auth overhaul
+
+### Migrated
+- **Cove Blades Supabase project moved cross-org** — old `kvatxuhjiinjpvsyably` under the Cove Cutlery org (free tier) → new `dbrphymgtnkkythvunyf` under the snapsonic org (Pro). Triggered by a compute-exhaustion outage on the Nano-tier free project (Postmark inbound webhook hammering DB connections, all services UNHEALTHY). 17 MB of data total — phantom-table DDL + 19 migrations + auth.users (UUIDs preserved) + 26 public tables, all row-counts verified equal post-migration
+- **One-shot migrator** `scripts/migrate-supabase.py` — uses only the Supabase Management API + PostgREST, no `pg_dump`/`psql` required. Handles FK dependency order, sequence resets, generated-column exclusion, schema-reset grant restoration
+- **Vercel production env swap** (`NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`) + redeploy — cutover verified by hitting `/api/events` and confirming writes land on new project
+- Old project kept paused (downgrade to free pending) for one-week rollback insurance
+
+### Added
+- **`/auth/forgot-password`** + **`/auth/reset-password`** pages with full password reset flow
+- **`POST /api/auth/forgot-password`** — calls `supabase.auth.admin.generateLink(type=recovery)` and sends a branded Postmark email
+- **`/auth/confirm` intermediate page** that defeats Gmail's link-scanner pre-fetch. Reads `hashed_token` + type from URL and calls `supabase.auth.verifyOtp` only on user button click — single-use token is consumed at click time, not when scanners crawl the inbox. Applied to all three email-link auth flows (`forgot-password`, `magic-link`-equivalent, `signup`)
+- **"Forgot password?"** link on `/auth/login`
+- **Sign In button on home page** — Navbar Sign In promoted from muted gray text to a gold-outlined button next to Book Now
+- **Google OAuth re-configured** on new Supabase project — secret pasted in from Google Cloud Console (encrypted-at-rest per-project, can't be copied from old via API)
+
+### Changed
+- **`/admin/login`** no longer hosts a magic-link form — it's now a server-side redirect to `/auth/login?redirect=/admin`. All admin sign-in goes through the same shared `/auth/login` page students use (email+password or Google). Admin status is purely an `ADMIN_EMAILS.includes(user.email)` check
+- **`src/proxy.ts`** sends unauthed admin visitors to `/auth/login?redirect=<original-path>` instead of `/admin/login`
+- **`src/components/Navbar.tsx`** — Sign In is now an outlined button; Sign in / Dashboard / Admin links separated cleanly
+- **Contact page** (`src/app/contact/page.tsx`) — added a "Text" contact option (`sms:6042108180`) alongside the existing Call link/button; bottom CTAs split into a Call/Text grid
+
+### Removed
+- `src/app/api/auth/magic-link/route.ts` — no longer referenced after the `/admin/login` redirect
+
+### Notes
+- Pre-fetch bug specifically observed against `elagerway@gmail.com`: reset emails delivered by Postmark (SMTP 250 OK from `gmail-smtp-in.l.google.com`) but the link returned "auth error" on click. Fix: `/auth/confirm` page (commit `1b3be2c`)
+- Cloudflare in front of the Supabase Management API blocks default urllib UA with error 1010 — always include a `User-Agent` header from scripts
+- Shipped as commits `6eeff0d` → `216612e` on `main`
+
 ## [2.14.0] — 2026-05-27 — Training course detail pages, online LMS content, Stripe enrollment
 
 ### Added

@@ -2,7 +2,7 @@
 
 ## Overview
 
-Multi-page marketing website for Cove Blades cutlery sharpening service. Built with Next.js 16 App Router, deployed on Vercel. Supabase handles contact form submissions and blog content; Cal.com handles mobile appointment scheduling via server-side proxy API routes. An admin-only section at `/admin` allows the owner to manage blog posts behind Supabase magic-link authentication.
+Multi-page marketing website for Cove Blades cutlery sharpening service. Built with Next.js 16 App Router, deployed on Vercel. Supabase handles contact form submissions and blog content; Cal.com handles mobile appointment scheduling via server-side proxy API routes. An admin-only section at `/admin` allows the owner to manage blog posts behind email-password / Google OAuth authentication (admin status = email match against `ADMIN_EMAILS`).
 
 ## Tech Stack
 
@@ -77,10 +77,15 @@ src/
 │   │   ├── business-process/            # Same structure
 │   │   └── build-your-business/         # Same structure
 │   ├── auth/
-│   │   └── callback/route.ts   # PKCE code exchange → session; auto-enrolls from paid course_enrollments; redirects to /admin/invoices
+│   │   ├── callback/route.ts             # PKCE code exchange → session; auto-enrolls from paid course_enrollments; redirects to next
+│   │   ├── confirm/page.tsx              # Intermediate confirm-then-verifyOtp page — defeats Gmail link-scanner pre-fetch (token only consumed on button click)
+│   │   ├── login/page.tsx                # Email+password + Google OAuth; "Forgot password?" link
+│   │   ├── signup/page.tsx               # Account creation
+│   │   ├── forgot-password/page.tsx      # Request reset email
+│   │   └── reset-password/page.tsx       # Set new password (relies on session from confirm page)
 │   ├── admin/
 │   │   ├── layout.tsx          # Thin layout (metadata + robots: noindex only — no auth check)
-│   │   ├── login/page.tsx      # Magic link login form; useSearchParams wrapped in Suspense
+│   │   ├── login/page.tsx      # Server-side redirect to /auth/login?redirect=/admin (kept so old bookmarks don't 404)
 │   │   └── (protected)/
 │   │       ├── layout.tsx      # Auth check + AdminNav (only runs for protected routes)
 │   │       ├── page.tsx        # Redirects → /admin/invoices
@@ -224,21 +229,30 @@ WhereWeAreSection (async Server Component, ISR revalidate 300s)
 Edge middleware intercepts /admin/** requests
   → createServerClient (utils/supabase/server.ts) refreshes session from cookies
     → supabase.auth.getUser() — trusted server-side call (not getSession)
-      → if no user or email ≠ ADMIN_EMAIL → redirect /admin/login
-      → if authed user on /admin/login → redirect /admin/blog
+      → if no user or email ∉ ADMIN_EMAILS → redirect /auth/login?redirect=<original-path>
 Admin layout re-verifies session for defence-in-depth
 PostForm (client) → POST/PUT /api/admin/posts/** → requireAdmin() re-checks session → Supabase upsert
 PostTable (client) → DELETE/PATCH /api/admin/posts/[id] → requireAdmin() → Supabase mutation → router.refresh()
 ```
 
 ### Auth Flow
+All auth (admin + student) goes through `/auth/login`. Admin status is purely an email check against `ADMIN_EMAILS` in `src/lib/admin.ts`, so any successful sign-in for those emails yields admin access.
+
 ```
-/admin/login → signInWithOtp({ email, emailRedirectTo: /auth/callback?next=/admin/blog })
-  → Supabase sends magic link email
-    → User clicks link → /auth/callback?code=...
-      → exchangeCodeForSession(code) → session stored in cookies
-        → redirect to ?next (/admin/blog)
+Password:  /auth/login → supabase.auth.signInWithPassword → router.push(redirect)
+Google:    /auth/login → supabase.auth.signInWithOAuth({provider: google,
+             redirectTo: /auth/callback?next=<redirect>}) → Google consent →
+             Supabase callback → /auth/callback exchanges code → session
+Recovery:  /auth/forgot-password → POST /api/auth/forgot-password
+             → supabase.auth.admin.generateLink(type=recovery)
+             → Postmark sends email with link to /auth/confirm?h=<token_hash>&t=recovery&next=/auth/reset-password
+             → User clicks "Confirm" button → JS calls supabase.auth.verifyOtp({type, token_hash})
+             → /auth/reset-password → supabase.auth.updateUser({password})
+Signup:    /auth/signup → POST /api/auth/signup → generateLink(type=signup) + Postmark email
+             → /auth/confirm?h=...&t=signup&next=/courses → user clicks Confirm
 ```
+
+**Email-link pre-fetch defence.** Email auth links never point straight at Supabase's `/auth/v1/verify` (which consumes the one-time token on any GET — Gmail's link scanner burns through them). Instead, `forgot-password` / `magic-link-style flows` / `signup` confirmation emails point at our own `/auth/confirm?h=<hashed_token>&t=<type>&next=<path>` page. That page does nothing on GET and only calls `verifyOtp({type, token_hash})` when the user clicks the button. See memory: `email_scanner_prefetch`.
 
 ### Pages
 - `page.tsx` uses `export const revalidate = 300` — ISR, rebuilds every 5 minutes for fresh schedule data
