@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import * as postmark from "postmark";
 import { getServiceClient } from "@/lib/admin";
-import { isKnownMailbox, normaliseAddress, autoReplyFor, type AutoReplyTemplate } from "@/lib/email";
+import { isKnownMailbox, normaliseAddress, autoReplyFor, looksLikeSpam, type AutoReplyTemplate } from "@/lib/email";
 
 // Postmark Inbound webhook. Postmark POSTs a parsed JSON payload here when
 // any mail forwarded to the configured inbound address arrives. We dedupe
@@ -45,7 +45,7 @@ function parseReferences(value: string | null): string[] {
   return value.split(/\s+/).map(s => s.replace(/^<|>$/g, "")).filter(Boolean);
 }
 
-function determineMailbox(body: PostmarkInboundPayload): string {
+function determineMailbox(body: PostmarkInboundPayload): string | null {
   // OriginalRecipient is set when the message went through a forwarding rule
   // (which is our SiteGround → Postmark setup). Fall back to To if missing.
   const candidates = [
@@ -57,8 +57,8 @@ function determineMailbox(body: PostmarkInboundPayload): string {
   for (const addr of candidates) {
     if (isKnownMailbox(addr)) return addr;
   }
-  // Unknown — store under whatever we got so the admin can still see it.
-  return candidates[0] ?? "unknown@coveblades.com";
+  // Not addressed to any of our real mailboxes — caller will treat as spam.
+  return null;
 }
 
 export async function POST(req: NextRequest) {
@@ -76,6 +76,28 @@ export async function POST(req: NextRequest) {
   }
 
   const toEmail = determineMailbox(body);
+  if (!toEmail) {
+    // Not addressed to one of our real mailboxes (info@, training@). Drop on
+    // the spot so it never lands in the admin inbox. 200 OK so Postmark
+    // doesn't retry.
+    console.log("[postmark inbound] dropped (unknown mailbox)", {
+      from: fromEmail,
+      originalRecipient: body.OriginalRecipient,
+      to: body.ToFull?.map(t => t.Email),
+      subject: body.Subject,
+    });
+    return NextResponse.json({ ok: true, dropped: "unknown-mailbox" });
+  }
+
+  if (looksLikeSpam({ subject: body.Subject, text: body.TextBody, html: body.HtmlBody })) {
+    console.log("[postmark inbound] dropped (spam pattern)", {
+      from: fromEmail,
+      to: toEmail,
+      subject: body.Subject,
+    });
+    return NextResponse.json({ ok: true, dropped: "spam" });
+  }
+
   const inReplyTo = headerValue(body.Headers, "In-Reply-To")?.replace(/^<|>$/g, "") ?? null;
   const references = parseReferences(headerValue(body.Headers, "References"));
   const ccEmails = (body.CcFull ?? []).map(c => normaliseAddress(c.Email)).filter(Boolean);

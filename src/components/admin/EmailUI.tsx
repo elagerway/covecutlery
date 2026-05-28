@@ -38,7 +38,7 @@ interface EmailRow {
 }
 
 const POLL_MS = 15_000;
-const MAILBOX_OPTIONS = ["info@coveblades.com", "erik@coveblades.com", "training@coveblades.com"];
+const MAILBOX_OPTIONS = ["info@coveblades.com", "training@coveblades.com"];
 
 function formatTimestamp(iso: string): string {
   const d = new Date(iso);

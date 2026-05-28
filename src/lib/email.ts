@@ -4,12 +4,37 @@
 // one here and re-deploy to recognise it; the rest of the pipeline (storage,
 // admin UI) will pick it up automatically.
 
-export const MAILBOXES = ["info@coveblades.com", "erik@coveblades.com", "training@coveblades.com"] as const;
+export const MAILBOXES = ["info@coveblades.com", "training@coveblades.com"] as const;
 export type Mailbox = (typeof MAILBOXES)[number];
 
 export function isKnownMailbox(addr: string | null | undefined): addr is Mailbox {
   if (!addr) return false;
   return (MAILBOXES as readonly string[]).includes(addr.toLowerCase());
+}
+
+// Inbound mail not addressed to one of the MAILBOXES, or whose body matches
+// one of these patterns, is dropped at the webhook. Add patterns as new
+// spam waves show up — keep them strong enough to avoid false positives on
+// genuine customer mail.
+const SPAM_PATTERNS: RegExp[] = [
+  // The SEO/web-design pitch opener
+  /your\s+website\s+(www\.)?coveblades\.com/i,
+  /noticed\s+(that\s+)?your\s+website/i,
+  /found\s+(your\s+website|coveblades\.com)/i,
+  // SEO pitch language
+  /(rank|ranking)\s+(higher|on\s+the\s+first\s+page|on\s+page\s+1|#\s*1)/i,
+  /(boost|improve|increase)\s+(your\s+)?(traffic|seo|google\s+ranking|search\s+ranking|website\s+ranking)/i,
+  // Generic phishing follow-up
+  /\bi\s+am\s+still\s+waiting\s+for\s+your\s+reply\b/i,
+];
+
+export function looksLikeSpam(parts: { subject?: string | null; text?: string | null; html?: string | null }): boolean {
+  const blob = [parts.subject, parts.text, parts.html]
+    .filter((v): v is string => typeof v === "string" && v.length > 0)
+    .join("\n")
+    .slice(0, 50_000);
+  if (!blob) return false;
+  return SPAM_PATTERNS.some((re) => re.test(blob));
 }
 
 export function normaliseAddress(addr: string | null | undefined): string {
@@ -135,39 +160,11 @@ https://coveblades.com`;
   };
 }
 
-export function buildErikAutoReply(args: AutoReplyArgs): AutoReplyTemplate {
-  const first = (args.firstName ?? "").trim().split(/\s+/)[0] || "there";
-
-  const text = `Hi ${first},
-
-Thanks — got your email. I'll reply personally as soon as I'm off the bench, usually within a business day.
-
-For anything urgent the fastest path is to text or call 604-210-8180.
-
-— Erik / Cove Blades
-https://coveblades.com`;
-
-  const bodyHtml = `
-    <p style="margin:0 0 16px;">Hi ${escapeHtml(first)},</p>
-    <p style="margin:0 0 16px;">Thanks — got your email. I'll reply personally as soon as I'm off the bench, usually within a business day.</p>
-    <p style="margin:0 0 16px;">For anything urgent the fastest path is to text or call <strong>+1 (604) 210-8180</strong>.</p>
-    <p style="margin:24px 0 0;color:#666;font-size:13px;">— Erik / Cove Blades<br><a href="https://coveblades.com" style="color:#D4A017;">coveblades.com</a></p>`;
-
-  return {
-    subject: subjectFor(args.originalSubject, "Got your email — Erik"),
-    text,
-    html: htmlShell({ headerLabel: "COVE BLADES", bodyHtml }),
-    fromAddress: "erik@coveblades.com",
-    fromName: "Erik · Cove Blades",
-  };
-}
-
 /** Returns the auto-reply template for a given inbox, or null if that inbox has no auto-reply. */
 export function autoReplyFor(mailbox: string, args: AutoReplyArgs): AutoReplyTemplate | null {
   switch (mailbox) {
     case "training@coveblades.com": return buildTrainingAutoReply(args);
     case "info@coveblades.com": return buildInfoAutoReply(args);
-    case "erik@coveblades.com": return buildErikAutoReply(args);
     default: return null;
   }
 }

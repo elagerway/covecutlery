@@ -5,7 +5,6 @@ import { MAILBOXES, isKnownMailbox } from "@/lib/email";
 
 const FROM_NAMES: Record<string, string> = {
   "info@coveblades.com": "Cove Blades",
-  "erik@coveblades.com": "Erik · Cove Blades",
   "training@coveblades.com": "Cove Blades Training",
 };
 
