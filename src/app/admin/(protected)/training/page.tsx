@@ -32,7 +32,6 @@ export default async function TrainingAdminPage() {
     if (u.banned_until && new Date(u.banned_until) > new Date()) bannedSet.add(u.id);
   }
 
-  const totalQuizzes = allQuizzes?.length ?? 0;
   const profileMap = new Map<string, any>();
   for (const p of profiles ?? []) profileMap.set(p.user_id, p);
 
@@ -54,31 +53,68 @@ export default async function TrainingAdminPage() {
   const moduleMap = new Map<string, any>();
   for (const m of allModules ?? []) moduleMap.set(m.id, m);
 
-  const totalLessons = (courses ?? []).reduce((sum: number, c: any) =>
-    sum + (c.modules?.reduce((s: number, m: any) => s + (m.lessons?.length ?? 0), 0) ?? 0), 0);
+  // Per-course lesson + quiz ids, so each student's denominator only counts
+  // content from the courses they're actually enrolled in.
+  const lessonIdsByCourse = new Map<string, Set<string>>();
+  for (const c of courses ?? []) {
+    const ids = new Set<string>();
+    for (const m of c.modules ?? []) {
+      for (const l of m.lessons ?? []) ids.add(l.id);
+    }
+    lessonIdsByCourse.set(c.id, ids);
+  }
+  const quizIdsByCourse = new Map<string, Set<string>>();
+  for (const q of allQuizzes ?? []) {
+    const m = moduleMap.get(q.module_id);
+    if (!m) continue;
+    if (!quizIdsByCourse.has(m.course_id)) quizIdsByCourse.set(m.course_id, new Set());
+    quizIdsByCourse.get(m.course_id)!.add(q.id);
+  }
+
+  // Group enrollments by user (a student may be enrolled in more than one
+  // course). `enrollments` is already ordered enrolled_at desc, so the first
+  // entry we see for a user is also their most-recent enrollment.
+  const enrollmentsByUser = new Map<string, { courseIds: Set<string>; mostRecent: string }>();
+  for (const e of enrollments ?? []) {
+    const existing = enrollmentsByUser.get(e.user_id);
+    if (existing) {
+      existing.courseIds.add(e.course_id);
+    } else {
+      enrollmentsByUser.set(e.user_id, { courseIds: new Set([e.course_id]), mostRecent: e.enrolled_at });
+    }
+  }
 
   const students: any[] = [];
-  const seen = new Set<string>();
-  for (const e of enrollments ?? []) {
-    if (seen.has(e.user_id)) continue;
-    seen.add(e.user_id);
-    const profile = profileMap.get(e.user_id);
-    const completedLessons = progressByUser.get(e.user_id)?.size ?? 0;
-    const userQuizResults = quizResultsByUser.get(e.user_id) ?? [];
-    const passedQuizzes = userQuizResults.filter((r: any) => r.passed).length;
+  for (const [userId, { courseIds, mostRecent }] of enrollmentsByUser) {
+    const profile = profileMap.get(userId);
+
+    // Union the lesson / quiz id sets for everything this student is enrolled in.
+    const enrolledLessonIds = new Set<string>();
+    const enrolledQuizIds = new Set<string>();
+    for (const cId of courseIds) {
+      for (const lId of lessonIdsByCourse.get(cId) ?? []) enrolledLessonIds.add(lId);
+      for (const qId of quizIdsByCourse.get(cId) ?? []) enrolledQuizIds.add(qId);
+    }
+
+    const userProgress = progressByUser.get(userId) ?? new Set<string>();
+    let completedLessons = 0;
+    for (const lId of userProgress) if (enrolledLessonIds.has(lId)) completedLessons++;
+
+    const userQuizResults = quizResultsByUser.get(userId) ?? [];
+    const passedQuizzes = userQuizResults.filter((r: any) => r.passed && enrolledQuizIds.has(r.module_quiz_id)).length;
 
     students.push({
-      user_id: e.user_id,
-      email: emailMap.get(e.user_id) ?? "",
+      user_id: userId,
+      email: emailMap.get(userId) ?? "",
       full_name: profile?.full_name || "Unknown",
-      enrolled_at: e.enrolled_at,
+      enrolled_at: mostRecent,
       xp: profile?.xp ?? 0,
       level: profile?.level ?? 1,
       completed_lessons: completedLessons,
-      total_lessons: totalLessons,
+      total_lessons: enrolledLessonIds.size,
       passed_quizzes: passedQuizzes,
-      total_quizzes: totalQuizzes,
-      banned: bannedSet.has(e.user_id),
+      total_quizzes: enrolledQuizIds.size,
+      banned: bannedSet.has(userId),
     });
   }
 
