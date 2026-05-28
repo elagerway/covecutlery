@@ -85,10 +85,15 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: true });
   }
 
-  const resetUrl = data.properties?.action_link;
-  if (!resetUrl) {
+  // Route the email link through our own /auth/confirm page so the token is
+  // only consumed on user click — Supabase's verify URL is single-use on GET,
+  // which Gmail/Outlook link scanners burn through before the user reaches it.
+  // See memory: email_scanner_prefetch.md
+  const tokenHash = data.properties?.hashed_token;
+  if (!tokenHash) {
     return NextResponse.json({ ok: true });
   }
+  const resetUrl = `https://coveblades.com/auth/confirm?h=${encodeURIComponent(tokenHash)}&t=recovery&next=${encodeURIComponent("/auth/reset-password")}`;
 
   if (!process.env.POSTMARK_API_KEY) {
     console.warn("[forgot-password] POSTMARK_API_KEY not set");

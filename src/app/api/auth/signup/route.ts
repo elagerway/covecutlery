@@ -80,10 +80,23 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
-  const confirmUrl = data.properties?.action_link;
-  if (!confirmUrl) {
+  // Route through /auth/confirm so Gmail's link scanner can't pre-fetch and
+  // consume the single-use token before the user clicks. See memory:
+  // email_scanner_prefetch.md
+  const tokenHash = data.properties?.hashed_token;
+  if (!tokenHash) {
     return NextResponse.json({ error: "Failed to generate confirmation link" }, { status: 500 });
   }
+  const nextPath = (() => {
+    try {
+      if (redirectTo) {
+        const u = new URL(redirectTo);
+        return u.searchParams.get("next") || "/courses";
+      }
+    } catch {}
+    return "/courses";
+  })();
+  const confirmUrl = `https://coveblades.com/auth/confirm?h=${encodeURIComponent(tokenHash)}&t=signup&next=${encodeURIComponent(nextPath)}`;
 
   const firstName = fullName.split(" ")[0];
 

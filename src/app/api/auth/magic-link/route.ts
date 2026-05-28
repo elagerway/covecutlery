@@ -75,10 +75,23 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 
-  const magicUrl = data.properties?.action_link;
-  if (!magicUrl) {
+  // Route through /auth/confirm so Gmail's link scanner can't pre-fetch and
+  // consume the single-use token before the user clicks. See memory:
+  // email_scanner_prefetch.md
+  const tokenHash = data.properties?.hashed_token;
+  if (!tokenHash) {
     return NextResponse.json({ error: "Failed to generate magic link" }, { status: 500 });
   }
+  const nextPath = (() => {
+    try {
+      if (redirectTo) {
+        const u = new URL(redirectTo);
+        return u.searchParams.get("next") || "/admin/invoices";
+      }
+    } catch {}
+    return "/admin/invoices";
+  })();
+  const magicUrl = `https://coveblades.com/auth/confirm?h=${encodeURIComponent(tokenHash)}&t=magiclink&next=${encodeURIComponent(nextPath)}`;
 
   if (!process.env.POSTMARK_API_KEY) {
     return NextResponse.json({ ok: true, warning: "POSTMARK_API_KEY not configured" });
