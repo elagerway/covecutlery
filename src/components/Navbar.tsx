@@ -173,19 +173,12 @@ export default function Navbar() {
                 {link.label}
               </Link>
             ))}
-            {isLoggedIn ? (
+            {isLoggedIn && (
               <Link
                 href="/dashboard"
                 className="text-sm text-emerald-400 hover:text-white transition-colors duration-200 tracking-wide"
               >
                 Dashboard
-              </Link>
-            ) : (
-              <Link
-                href="/auth/login"
-                className="text-sm text-[#6B7280] hover:text-white transition-colors duration-200 tracking-wide"
-              >
-                Sign in
               </Link>
             )}
             {isAdmin && (
@@ -199,7 +192,15 @@ export default function Navbar() {
           </div>
 
           {/* Desktop CTA */}
-          <div className="hidden md:block">
+          <div className="hidden md:flex items-center gap-3">
+            {!isLoggedIn && (
+              <Link
+                href="/auth/login"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-md border border-[#D4A017] text-[#D4A017] hover:bg-[#D4A017]/10 font-semibold text-sm tracking-wide transition-all duration-200 active:scale-95"
+              >
+                Sign in
+              </Link>
+            )}
             <button
               onClick={handleBookNow}
               className="inline-flex items-center gap-2 px-5 py-2 rounded-md bg-[#D4A017] hover:bg-[#e8b82a] text-[#0D1117] font-semibold text-sm tracking-wide transition-all duration-200 hover:shadow-[0_0_16px_rgba(212,160,23,0.4)] active:scale-95"
