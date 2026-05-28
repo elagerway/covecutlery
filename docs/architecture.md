@@ -48,13 +48,17 @@ src/
 │   │   │   ├── campaigns/
 │   │   │   │   ├── route.ts              # GET list + POST create & send bulk SMS via Magpipe with personalization
 │   │   │   │   └── [id]/route.ts         # GET detail + DELETE
-│   │   │   └── customers/
-│   │   │       ├── route.ts              # GET list + POST create — reads from customers table
-│   │   │       ├── [id]/route.ts         # GET + PATCH + DELETE — customer detail by UUID
-│   │   │       └── last-booking/route.ts # GET — finds most recent booking date from Cal.com + Supabase bookings
+│   │   │   ├── customers/
+│   │   │   │   ├── route.ts              # GET list + POST create — reads from customers table
+│   │   │   │   ├── [id]/route.ts         # GET + PATCH + DELETE — customer detail by UUID
+│   │   │   │   └── last-booking/route.ts # GET — finds most recent booking date from Cal.com + Supabase bookings
+│   │   │   └── courses/
+│   │   │       └── enrollment/route.ts   # GET list + PATCH toggle enrollment_open per course
+│   │   ├── courses/
+│   │   │   └── enroll/route.ts      # POST — creates course_enrollment + Stripe Checkout (card) or records e-transfer; Turnstile verify
 │   │   ├── stripe/
 │   │   │   ├── checkout/route.ts    # POST — creates Stripe Checkout session ($50 CAD), stores pending booking in Supabase
-│   │   │   └── webhook/route.ts     # POST — handles checkout.session.completed / expired; confirms booking or marks invoice paid
+│   │   │   └── webhook/route.ts     # POST — handles checkout.session.completed / expired; confirms booking, marks invoice paid, or enrolls course student
 │   │   ├── invoices/
 │   │   │   └── [id]/
 │   │   │       ├── route.ts         # GET — public invoice data (marks as viewed on first visit)
@@ -64,8 +68,16 @@ src/
 │   │       ├── book/route.ts        # POST proxy → Cal.com v2 /bookings; saves to Supabase as confirmed; sends SMS to admin + customer via Magpipe
 │   │       ├── cancel/route.ts      # POST — cancels a Cal.com booking by UID
 │   │       └── schedule/route.ts    # GET — returns 7-day DaySchedule[] from Cal.com bookings
+│   ├── train-to-be-sharp/
+│   │   ├── page.tsx                     # Training hub — 4 module cards linking to detail pages
+│   │   ├── one-inch-grinder/
+│   │   │   ├── page.tsx                 # Course detail + dynamic sign-up (checks enrollment_open)
+│   │   │   └── success/page.tsx         # Post-payment confirmation + account creation CTA
+│   │   ├── two-inch-grinder/            # Same structure
+│   │   ├── business-process/            # Same structure
+│   │   └── build-your-business/         # Same structure
 │   ├── auth/
-│   │   └── callback/route.ts   # PKCE code exchange → session; redirects to /admin/invoices
+│   │   └── callback/route.ts   # PKCE code exchange → session; auto-enrolls from paid course_enrollments; redirects to /admin/invoices
 │   ├── admin/
 │   │   ├── layout.tsx          # Thin layout (metadata + robots: noindex only — no auth check)
 │   │   ├── login/page.tsx      # Magic link login form; useSearchParams wrapped in Suspense
@@ -118,12 +130,15 @@ src/
 │   ├── DropBoxCodeButton.tsx   # Popover CTA offering Call or Text options for drop box code
 │   ├── ScheduleDayCard.tsx     # Client component — clickable day tile that opens BookingModal for that date
 │   ├── admin/
-│   │   ├── AdminNav.tsx        # Desktop sidebar + mobile bottom bar + slide-out drawer; Jobs/Invoices/Campaigns/Customers/Blog
+│   │   ├── AdminNav.tsx        # Desktop sidebar + mobile bottom bar + slide-out drawer; Jobs/Invoices/Campaigns/Customers/Blog/Training
+│   │   ├── EnrollmentToggles.tsx # Client — toggle switches for course enrollment_open (embedded in Training page)
 │   │   ├── PostForm.tsx        # Client form; auto-generates slug; Save Draft / Publish
 │   │   ├── PostTable.tsx       # Client component; Delete/Publish/Unpublish via PATCH
 │   │   ├── JobsTable.tsx       # Client component; cash/card payment capture; receipt popover; row-click detail drawer; status dropdown
 │   │   ├── CustomersTable.tsx  # Client component; clickable rows navigate to detail; Total Paid column
 │   │   └── CustomerDetail.tsx  # Client component; edit name/phone/address; booking history with Charged/Total columns; Total Paid stat
+│   ├── courses/
+│   │   └── CourseSignUp.tsx    # Client — sign-up form with Stripe checkout + e-transfer toggle + Turnstile
 │   └── sections/
 │       ├── HeroSection.tsx     # Full-screen hero, van photo, Book/Schedule/DropBox CTAs
 │       ├── TrustBar.tsx        # 4-item trust bar below hero
@@ -147,7 +162,8 @@ src/
     ├── admin.ts                # Shared requireAdmin(), getServiceClient(), ADMIN_EMAIL
     ├── format.ts               # formatCAD(), formatPhone(), normalizePhone(), escapeHtml(), LineItem interface
     ├── supabase.ts             # Lazy Supabase anon client — getSupabase() defers init until first call; safe for preview builds without env vars
-    └── cn.ts                   # className utility
+    ├── cn.ts                   # className utility
+    └── course-enrollment-status.ts # isEnrollmentOpen(slug) — checks courses.enrollment_open via service client
 
 public/
 ├── manifest.json              # PWA manifest — standalone, dark theme, shield icon, start_url /admin/invoices
@@ -396,6 +412,23 @@ RLS: admin full access only. Seeded from Cal.com bookings (both accounts), macOS
 | created_at | timestamptz | Auto |
 
 RLS: admin full access only.
+
+**`course_enrollments`** (since 2026-05-27)
+| Column | Type | Notes |
+|--------|------|-------|
+| id | uuid | Primary key |
+| course_slug | text | Matches COURSES map in /api/courses/enroll |
+| course_name | text | Display name |
+| amount | integer | Price in cents |
+| customer_name/email/phone | text | From sign-up form |
+| payment_method | text | `stripe` or `etransfer` |
+| status | text | `pending_payment`, `paid`, `cancelled` |
+| stripe_session_id | text | Nullable |
+| stripe_payment_intent_id | text | Nullable |
+| paid_at | timestamptz | When payment confirmed |
+| created_at | timestamptz | Auto |
+
+RLS: admin full access only. On Stripe webhook `checkout.session.completed`, status → `paid` + auto-enrolls user in LMS if account exists. Auth callback also checks for paid enrollments by email on every login/signup.
 
 **`campaigns`**
 | Column | Type | Notes |

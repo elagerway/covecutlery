@@ -1,5 +1,31 @@
 # Changelog
 
+## [2.14.0] — 2026-05-27 — Training course detail pages, online LMS content, Stripe enrollment
+
+### Added
+- **Course detail pages** at `/train-to-be-sharp/one-inch-grinder`, `/two-inch-grinder`, `/business-process`, `/build-your-business` — each with full marketing copy, course structure, and "Learn more" links from the training hub cards
+- **Stripe + Interac e-Transfer sign-up** via `CourseSignUp` component — name/email/phone + Turnstile, card checkout or e-transfer toggle with pay@coveblades.com instructions
+- **`course_enrollments` table** + `POST /api/courses/enroll` — handles both payment paths; Stripe webhook marks paid; expired sessions auto-cancel
+- **Auto-enrollment in LMS** — Stripe webhook enrolls user if account exists; auth callback enrolls on signup/login if email matches a paid `course_enrollment`
+- **Success pages** at `/train-to-be-sharp/[slug]/success` with "Create Account & Start Learning" CTA
+- **3 new online courses seeded** (Two-Inch Grinder: 6 modules/24 lessons/6 quizzes; Business Process: 5/18/5; Build Your Business: 6/22/6) — 64 new lessons + 17 quizzes with full markdown content
+- **Enrollment toggles** in `/admin/training` — `enrollment_open` column on courses table; admin can enable/disable sign-up per course without code changes
+- **`EnrollmentToggles` component** embedded in Training admin page
+- **`GET/PATCH /api/admin/courses/enrollment`** — list courses with enrollment status, toggle on/off
+
+### Changed
+- Training hub cards all link to detail pages with hover effects and "Learn more" text
+- "Recorded for life" practicum point replaced with "A billable skill" (professional skills focus)
+- One-Inch Grinder course set to $600 (was free)
+- Two-Inch Grinder detail page expanded with Airplaten radius platen thinning section, belt progression, safety, blade types, and 7 topic cards
+- Business Process page rewritten as "how we work commercially" discussion format with cross-links to Build Your Business workshop
+- Build Your Business page rewritten with 6 deliverables, tech stack (Claude Code, Next.js, Vercel, Supabase, GitHub), 4-step session flow
+
+### Notes
+- Three courses (Two-Inch, Business Process, Build Your Business) have enrollment disabled pending owner review of lesson content
+- Seed files: `supabase/seed_two_inch_grinder.sql`, `supabase/seed_business_process.sql`, `supabase/seed_build_your_business.sql`
+- Shipped as commits `c57925b` → `b1646a5` on `main`
+
 ## [2.13.1] — 2026-05-26 — Inbox read/unread + badges + search + multi-number SMS
 
 ### Added

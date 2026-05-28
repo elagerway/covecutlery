@@ -1,6 +1,25 @@
 # Project Status
 
-**Last updated:** 2026-05-26
+**Last updated:** 2026-05-27
+
+## Milestone 11 — Training course pages, online content, and Stripe enrollment ✅ Complete
+
+Four training modules with detail pages, sign-up + payment (Stripe/e-transfer), full online course content (LMS), and admin enrollment toggles.
+
+- [x] `/train-to-be-sharp/one-inch-grinder` — detailed course page with structure, copy from owner, $600 sign-up form
+- [x] `/train-to-be-sharp/two-inch-grinder` — full content: machine setup, abrasives, technique, heat management, Airplaten radius platen thinning, polishing, safety
+- [x] `/train-to-be-sharp/business-process` — "how we work" discussion format: mobile/drop-off logistics, AI/SMS automation, payments, customer acquisition
+- [x] `/train-to-be-sharp/build-your-business` — hands-on build session: 6 deliverables, tech stack (Claude Code/Next.js/Vercel/Supabase/GitHub), 4-step session flow
+- [x] Training hub cards all clickable with "Learn more" links and hover effects
+- [x] `CourseSignUp` component — name/email/phone + Turnstile, Stripe Checkout or Interac e-Transfer toggle
+- [x] `course_enrollments` table + `/api/courses/enroll` endpoint handling both payment paths
+- [x] Stripe webhook marks enrollment paid + auto-enrolls in LMS (if account exists)
+- [x] Auth callback auto-enrolls on signup/login if email matches a paid enrollment
+- [x] Success pages with "Create Account & Start Learning" CTA
+- [x] 3 online courses seeded: Two-Inch Grinder (24 lessons), Business Process (18 lessons), Build Your Business (22 lessons) — 64 lessons + 17 quizzes total
+- [x] `enrollment_open` column on courses table + admin toggle in `/admin/training`
+- [x] One-Inch Grinder enrollment enabled; other three disabled pending content review
+- [x] Shipped as commits `c57925b` → `b1646a5` on `main`
 
 ## Milestone 10 — Admin inbox (SMS + Email) ✅ Complete
 
@@ -86,7 +105,7 @@ Site fully rebranded and live at the new domain.
 ## Milestone 6 — Content parity with legacy coveblades.com ✅ Complete
 
 - [x] `/how-we-sharpen-your-knives` (process / methodology)
-- [x] `/train-to-be-sharp` (3-module course: One-Inch $600, Two-Inch $400, Business $200)
+- [x] `/train-to-be-sharp` (4-module course hub: One-Inch $600, Two-Inch $400, Business $200, Build Your Business $600 — expanded in Milestone 11)
 - [x] `/event-sharpening-service` (on-site for events)
 - [x] 3 legacy blog posts imported (how-to-cut-onions, japanese-knife-sharpening, knife-sharpening-on-the-north-shore)
 - [x] `/staysharp` 308-redirects to `/blog`
