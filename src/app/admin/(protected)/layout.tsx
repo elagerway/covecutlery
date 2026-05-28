@@ -14,7 +14,7 @@ export default async function ProtectedAdminLayout({
   } = await supabase.auth.getUser();
 
   if (!user || !ADMIN_EMAILS.includes(user.email!)) {
-    redirect("/admin/login");
+    redirect("/auth/login?redirect=/admin");
   }
 
   return (

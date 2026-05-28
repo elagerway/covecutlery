@@ -33,22 +33,19 @@ export async function proxy(request: NextRequest) {
 
   const { pathname } = request.nextUrl;
   const isAdminRoute = pathname.startsWith("/admin");
-  const isLoginPage = pathname === "/admin/login";
 
-  // Redirect unauthenticated / non-admin users away from admin
-  if (isAdminRoute && !isLoginPage) {
+  // Send unauthenticated / non-admin visitors to the shared auth login, with
+  // a redirect param so they land back where they were trying to go. The
+  // /admin/login route itself just redirects to /auth/login, so we exempt it
+  // here to avoid a momentary double-bounce.
+  if (isAdminRoute && pathname !== "/admin/login") {
     if (!user || !ADMIN_EMAILS.includes(user.email!)) {
       const url = request.nextUrl.clone();
-      url.pathname = "/admin/login";
+      url.pathname = "/auth/login";
+      url.search = "";
+      url.searchParams.set("redirect", pathname);
       return NextResponse.redirect(url);
     }
-  }
-
-  // Redirect authenticated admin away from login page
-  if (isLoginPage && ADMIN_EMAILS.includes(user?.email ?? "")) {
-    const url = request.nextUrl.clone();
-    url.pathname = "/admin/blog";
-    return NextResponse.redirect(url);
   }
 
   return supabaseResponse;
