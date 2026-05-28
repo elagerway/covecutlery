@@ -2,7 +2,7 @@
 
 import { useState, useRef } from "react";
 import Link from "next/link";
-import { Phone, Mail, MapPin, Clock, Send, CheckCircle, AlertCircle } from "lucide-react";
+import { Phone, MessageSquare, Mail, MapPin, Clock, Send, CheckCircle, AlertCircle } from "lucide-react";
 import { Turnstile, type TurnstileInstance } from "@marsidev/react-turnstile";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -19,9 +19,15 @@ const serviceTypes = [
 const contactDetails = [
   {
     icon: Phone,
-    label: "Phone",
+    label: "Call",
     value: "604 210 8180",
     href: "tel:6042108180",
+  },
+  {
+    icon: MessageSquare,
+    label: "Text",
+    value: "604 210 8180",
+    href: "sms:6042108180",
   },
   {
     icon: Mail,
@@ -433,15 +439,25 @@ export default function ContactPage() {
                 </a>
               </div>
 
-              {/* Quick Call CTA */}
-              <a
-                href="tel:6042108180"
-                className="flex items-center justify-center gap-2 py-4 rounded-xl font-semibold text-base border-2 transition-all duration-200 hover:bg-yellow-900/20 active:scale-95"
-                style={{ borderColor: "#D4A017", color: "#D4A017" }}
-              >
-                <Phone size={18} />
-                Call 604 210 8180
-              </a>
+              {/* Quick Call / Text CTAs */}
+              <div className="grid grid-cols-2 gap-3">
+                <a
+                  href="tel:6042108180"
+                  className="flex items-center justify-center gap-2 py-4 rounded-xl font-semibold text-base border-2 transition-all duration-200 hover:bg-yellow-900/20 active:scale-95"
+                  style={{ borderColor: "#D4A017", color: "#D4A017" }}
+                >
+                  <Phone size={18} />
+                  Call
+                </a>
+                <a
+                  href="sms:6042108180"
+                  className="flex items-center justify-center gap-2 py-4 rounded-xl font-semibold text-base border-2 transition-all duration-200 hover:bg-yellow-900/20 active:scale-95"
+                  style={{ borderColor: "#D4A017", color: "#D4A017" }}
+                >
+                  <MessageSquare size={18} />
+                  Text
+                </a>
+              </div>
             </div>
 
           </div>
