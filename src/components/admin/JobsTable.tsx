@@ -56,6 +56,7 @@ export default function JobsTable({ bookings }: { bookings: Booking[] }) {
   const [amountInput, setAmountInput] = useState("");
   const [saving, setSaving] = useState<string | null>(null);
   const [deleting, setDeleting] = useState<string | null>(null);
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
   const [refunding, setRefunding] = useState<string | null>(null);
   const [refundMsg, setRefundMsg] = useState<Record<string, string>>({});
   const [chargeMsg, setChargeMsg] = useState<Record<string, string>>({});
@@ -144,15 +145,16 @@ export default function JobsTable({ bookings }: { bookings: Booking[] }) {
   }
 
   async function handleDelete(id: string) {
-    if (!confirm("Delete this job and cancel the Cal.com appointment? This can't be undone.")) return;
     setDeleting(id);
     const res = await fetch(`/api/admin/bookings/${id}`, { method: "DELETE" });
     setDeleting(null);
     if (!res.ok) {
       const data = await res.json().catch(() => ({}));
+      setConfirmDeleteId(null);
       alert(data.error ?? "Failed to delete job.");
       return;
     }
+    setConfirmDeleteId(null);
     setSelectedBookingId(null);
     router.refresh();
   }
@@ -426,6 +428,53 @@ export default function JobsTable({ bookings }: { bookings: Booking[] }) {
         </div>
       )}
 
+      {/* Delete confirmation */}
+      {confirmDeleteId && (() => {
+        const b = bookings.find((x) => x.id === confirmDeleteId);
+        return (
+          <div
+            className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm"
+            onClick={() => deleting !== confirmDeleteId && setConfirmDeleteId(null)}
+          >
+            <div
+              className="rounded-xl p-6 flex flex-col gap-4 w-full max-w-sm"
+              style={{ backgroundColor: "#1C2230", border: "1px solid #30363D", boxShadow: "0 8px 32px rgba(0,0,0,.6)" }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div>
+                <h3 className="text-base font-semibold text-white">Delete this job?</h3>
+                {b && (
+                  <p className="text-sm mt-1" style={{ color: "#9CA3AF" }}>
+                    {b.customer_name} · {formatDate(b.appointment_date)} at {b.appointment_time}
+                  </p>
+                )}
+              </div>
+              <p className="text-sm leading-relaxed" style={{ color: "#9CA3AF" }}>
+                This cancels the appointment in Cal.com and permanently removes the job. This can&apos;t be undone.
+              </p>
+              <div className="flex gap-2 mt-1">
+                <button
+                  onClick={() => setConfirmDeleteId(null)}
+                  disabled={deleting === confirmDeleteId}
+                  className="flex-1 px-3 py-2 rounded-lg text-sm font-medium disabled:opacity-50"
+                  style={{ backgroundColor: "#21262D", color: "#C9D1D9", border: "1px solid #30363D" }}
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={() => handleDelete(confirmDeleteId)}
+                  disabled={deleting === confirmDeleteId}
+                  className="flex-1 px-3 py-2 rounded-lg text-sm font-semibold transition-all hover:brightness-110 disabled:opacity-50"
+                  style={{ backgroundColor: "#B91C1C", color: "#fff" }}
+                >
+                  {deleting === confirmDeleteId ? "Deleting…" : "Delete job"}
+                </button>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
+
       {/* Job Detail Drawer */}
       {selectedBooking && (
         <div className="fixed inset-0 z-50 flex justify-end" onClick={() => setSelectedBookingId(null)}>
@@ -565,12 +614,11 @@ export default function JobsTable({ bookings }: { bookings: Booking[] }) {
             {/* Danger zone */}
             <div className="mt-auto pt-4" style={{ borderTop: "1px solid #30363D" }}>
               <button
-                onClick={() => handleDelete(selectedBooking.id)}
-                disabled={deleting === selectedBooking.id}
-                className="w-full py-2.5 rounded-lg text-sm font-medium transition-all hover:brightness-110 disabled:opacity-50"
+                onClick={() => setConfirmDeleteId(selectedBooking.id)}
+                className="w-full py-2.5 rounded-lg text-sm font-medium transition-all hover:brightness-110"
                 style={{ backgroundColor: "#3A1C1C", color: "#F87171", border: "1px solid #7F1D1D" }}
               >
-                {deleting === selectedBooking.id ? "Deleting…" : "Delete job & cancel appointment"}
+                Delete job & cancel appointment
               </button>
               <p className="text-xs mt-2 text-center" style={{ color: "#6B7280" }}>
                 Removes this job and cancels the booking in Cal.com.
