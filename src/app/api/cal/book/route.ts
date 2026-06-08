@@ -78,17 +78,32 @@ export async function POST(req: NextRequest) {
     process.env.SUPABASE_SERVICE_ROLE_KEY!
   );
 
-  await supabase.from("bookings").insert({
-    cal_booking_uid: calBookingUid,
-    customer_name: name,
-    customer_email: email,
-    customer_phone: toE164CA(phone) ?? null,
-    appointment_date: appointmentDate,
-    appointment_time: appointmentTime,
-    address: address ?? null,
-    status: "confirmed",
-    deposit_amount: 0,
-  });
+  // Upsert keyed on cal_booking_uid so this is safe against the Cal webhook
+  // (/api/webhooks/cal) writing the same booking from its BOOKING_CREATED event.
+  const { error: insertError } = await supabase
+    .from("bookings")
+    .upsert(
+      {
+        cal_booking_uid: calBookingUid,
+        customer_name: name,
+        customer_email: email,
+        customer_phone: toE164CA(phone) ?? null,
+        appointment_date: appointmentDate,
+        appointment_time: appointmentTime,
+        address: address ?? null,
+        notes: notes ?? null,
+        status: "confirmed",
+        deposit_amount: 0,
+      },
+      { onConflict: "cal_booking_uid", ignoreDuplicates: true }
+    );
+
+  if (insertError) {
+    // The Cal.com booking already succeeded, so don't fail the customer — but
+    // surface it loudly: a swallowed insert here is exactly how bookings went
+    // missing from /admin/jobs.
+    console.error("[cal/book] booking insert failed:", JSON.stringify(insertError), "uid:", calBookingUid);
+  }
 
   // Send SMS notifications (fire-and-forget)
   const e164Phone = toE164CA(phone);
