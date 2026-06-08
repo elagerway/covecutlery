@@ -1,6 +1,22 @@
 # Project Status
 
-**Last updated:** 2026-05-28
+**Last updated:** 2026-06-08
+
+## Milestone 13 — Cal booking sync, jobs admin, voice picker + cloning ✅ Complete
+
+Closed a hole where native Cal.com bookings never reached `/admin/jobs`, made jobs manageable (delete + cleaner table), and added live voice selection + cloning for the phone agent. Capped off with a code-review pass and fixes.
+
+- [x] **Cal webhook** `POST /api/webhooks/cal` syncs native-page bookings into the `bookings` table (`BOOKING_CREATED`/`CANCELLED`/`RESCHEDULED`), keyed on `cal_booking_uid`; **HMAC signature verification** (`CAL_WEBHOOK_SECRET`) verified live
+- [x] **Unique index** on `cal_booking_uid` + `/api/cal/book` switched to an error-checked upsert; **backfilled 4 missing real jobs** (Pascal, Chris, Mike, Daniel)
+- [x] **Delete a job** in `/admin/jobs` (row trash + drawer button, confirm modal) → cancels the Cal appointment (active + upcoming only) and removes the row; blocks on unrefunded deposit
+- [x] **Jobs table formatting** — right-aligned tabular money, muted `$0`, uniform rows; **all admin views capped at 1400px left-aligned** via the shared layout
+- [x] **Voice picker** (`/admin/voice-prompt`) sets the live Magpipe agent's voice; **voice cloning** via in-browser recording or file upload (`/api/admin/voice/clone` → Magpipe → ElevenLabs)
+- [x] **Shared helpers** `src/lib/cal.ts` + voice helpers in `src/lib/magpipe.ts`; deduped 3× Cal-cancel copies; booking routes use shared `requireAdmin`
+- [x] **Stripe-checkout** insert→upsert so a webhook race can't destroy a paying booking
+- [x] **Code-review fixes** — out-of-order webhook guard, reschedule row-move, VoiceCloner mic/URL/timer fixes, delete-failure modal UX
+- [x] Removed 5 test/owner rows; `/admin/jobs` shows 6 real jobs
+- [x] Memories updated: `booking_ingestion_sync` (+ signature verification), new `magpipe_voice_agent`, refined `magpipe_integration` (HTTP works with the key for these endpoints)
+- [x] Shipped as commits `1db2373` → `137d297` on `main`
 
 ## Milestone 12 — Supabase cross-org migration + auth overhaul ✅ Complete
 

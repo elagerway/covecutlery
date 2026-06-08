@@ -201,11 +201,50 @@ User clicks "Book Mobile Service" → BookingProvider.open()
   → User picks date → time → fills details form
     → POST /api/cal/book (Next.js proxy)
       → Cal.com v2 POST /bookings
-        → INSERT into bookings table (status: confirmed, deposit_amount: 0)
+        → UPSERT into bookings table on cal_booking_uid (status: confirmed,
+          deposit_amount: 0) — upsert (not insert) so it's idempotent against
+          the Cal webhook below; insert errors are logged, not swallowed
         → SMS to admin (new booking alert) via Magpipe
         → SMS to customer (confirmation) via Magpipe
         → Modal shows success
 ```
+
+### Cal.com Booking Sync (Webhook)
+Bookings made on the **native Cal.com page** (not the website widget) never hit `/api/cal/book`, so they're captured by a Cal webhook instead. Both write paths key on `cal_booking_uid` (unique index `bookings_cal_booking_uid_key`) so they're idempotent against each other.
+```
+Cal.com fires webhook → POST /api/webhooks/cal
+  → verify HMAC signature (x-cal-signature-256) when CAL_WEBHOOK_SECRET set
+  → BOOKING_CREATED   → upsert confirmed row (insert-if-missing; never clobbers
+                         admin edits). A pre-existing cancelled tombstone stops
+                         resurrection
+  → BOOKING_CANCELLED → set status=cancelled; if row absent, write a cancelled
+                         tombstone (out-of-order delivery guard)
+  → BOOKING_RESCHEDULED → move the existing row to the new uid + time
+                         (Cal mints a new uid on reschedule), else insert
+```
+The webhook is registered on the **Blades** Cal account (`CAL_API_KEY_BLADES`); production `CAL_API_KEY` is that same account. Shared Cal helpers live in `src/lib/cal.ts` (`cancelCalBooking`, `formatAppointment`, `TIMEZONE`).
+
+### Jobs Admin (`/admin/jobs`)
+```
+JobsTable (client) lists every bookings row (no filter), capped at 1400px
+  → status dropdown / charge entry / refund / receipt → /api/admin/bookings/[id]
+  → Delete (row trash icon or detail-drawer button) → confirm modal
+    → DELETE /api/admin/bookings/[id]
+      → blocks if a deposit is unrefunded (409)
+      → cancels the Cal appointment only when active + upcoming (cancelCalBooking)
+      → deletes the row; failures keep the modal open with an inline error
+```
+
+### Voice Agent Admin (`/admin/voice-prompt`)
+```
+System prompt: stored in app_credentials (manual sync into Magpipe)
+Voice picker:  GET /api/admin/voice → Magpipe list-voices + get-agent (current voice_id)
+               PUT /api/admin/voice → Magpipe update-agent (sets voice_id live)
+Voice cloning: VoiceCloner records (MediaRecorder) or uploads an audio sample
+               → POST /api/admin/voice/clone (multipart, ≤4MB)
+                 → Magpipe clone-voice → ElevenLabs IVC → new voice in the picker
+```
+Magpipe calls route through `src/lib/magpipe.ts` helpers (`listVoices`, `getAgentVoiceId`, `setAgentVoice`, `cloneVoice`, `VOICE_AGENT_ID`).
 
 ### Schedule (ISR)
 ```
@@ -265,7 +304,9 @@ Signup:    /auth/signup → POST /api/auth/signup → generateLink(type=signup) 
 ### Environment Variables
 | Variable | Used In |
 |----------|---------|
-| `CAL_API_KEY` | `/api/cal/slots`, `/api/cal/book`, `lib/calSchedule.ts`, `/api/admin/customers/last-booking` |
+| `CAL_API_KEY` | `/api/cal/slots`, `/api/cal/book`, `lib/cal.ts` (cancel), `lib/calSchedule.ts`, `/api/admin/customers/last-booking` — in prod this is the **Blades** account |
+| `CAL_API_KEY_BLADES` | Blades Cal account key — used out-of-band to manage the Cal webhook (the webhook is owned by this account) |
+| `CAL_WEBHOOK_SECRET` | `/api/webhooks/cal` — HMAC secret for verifying Cal's `x-cal-signature-256`; same value set on the Cal webhook |
 | `CAL_EVENT_TYPE_ID` | `/api/cal/slots`, `/api/cal/book` |
 | `NEXT_PUBLIC_SUPABASE_URL` | `lib/supabase.ts`, `utils/supabase/server.ts`, `utils/supabase/client.ts`, blog pages |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | `lib/supabase.ts`, `utils/supabase/client.ts`, blog pages |
@@ -278,7 +319,7 @@ Signup:    /auth/signup → POST /api/auth/signup → generateLink(type=signup) 
 | `STRIPE_DEPOSIT_AMOUNT` | `/api/stripe/checkout` — deposit in cents (5000 = $50 CAD) |
 | `GOOGLE_MAPS_API_KEY` | `/api/geocode` — Google Places Autocomplete + Place Details |
 | `POSTMARK_API_KEY` | `/api/admin/bookings/[id]/receipt` — transactional email receipts |
-| `MAGPIPE_API_KEY` | `/api/admin/bookings/[id]/receipt` — SMS receipts via Magpipe |
+| `MAGPIPE_API_KEY` | `lib/magpipe.ts` — SMS receipts, voice picker (`/api/admin/voice`), and voice cloning (`/api/admin/voice/clone`) |
 | `MAGPIPE_SMS_FROM` | `/api/admin/bookings/[id]/receipt` — sender number (`+16042108180`) |
 | `INSTAGRAM_USER_ID` | `lib/instagram.ts` — IG Business account ID for Graph API |
 | `INSTAGRAM_ACCESS_TOKEN` | `lib/instagram.ts` — env-var fallback for the IG token (canonical lives in Supabase `app_credentials`) |

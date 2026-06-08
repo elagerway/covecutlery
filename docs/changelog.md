@@ -1,5 +1,35 @@
 # Changelog
 
+## [2.16.0] — 2026-06-08 — Cal booking sync, jobs admin polish, voice picker + cloning
+
+### Added
+- **Cal.com → Supabase booking sync** (`POST /api/webhooks/cal`) — bookings made on the native Cal.com page (not the website widget) now reach the `bookings` table and `/admin/jobs`. Handles `BOOKING_CREATED` / `CANCELLED` / `RESCHEDULED`, keyed on `cal_booking_uid`. Previously these were invisible in admin (only on the calendar); four real jobs had gone missing this way and were backfilled
+- **Unique index** `bookings_cal_booking_uid_key` (migration `20260607000000`) — backs idempotent upserts so the widget path and the webhook can't double-write
+- **HMAC signature verification** on the Cal webhook (`x-cal-signature-256`, `CAL_WEBHOOK_SECRET`) — verified live (signed create/cancel pass, unsigned → 401)
+- **Delete a job** from `/admin/jobs` — trash icon on each row + a button in the detail drawer, behind a styled confirm modal. Cancels the Cal appointment (only when active + upcoming) then removes the row; blocks deletion of bookings with an unrefunded deposit
+- **Voice picker** on `/admin/voice-prompt` — choose the live phone agent's voice from Magpipe's list (`GET/PUT /api/admin/voice`); applies immediately via Magpipe `update-agent`
+- **Voice cloning** — record in-browser (mic) or upload an audio clip to clone a voice (`POST /api/admin/voice/clone` → Magpipe `clone-voice` → ElevenLabs); the clone lands in the picker
+- **Shared helpers** `src/lib/cal.ts` (`cancelCalBooking`, `formatAppointment`, `TIMEZONE`) and voice/agent helpers in `src/lib/magpipe.ts` (`listVoices`, `getAgentVoiceId`, `setAgentVoice`, `cloneVoice`, `VOICE_AGENT_ID`)
+
+### Changed
+- **`/admin/jobs` formatting** — money columns right-aligned with tabular figures, `$0` deposits shown as a muted dash, one-line date/time, truncated long addresses/emails, tidied headers
+- **All admin views capped at 1400px**, left-aligned, via the shared protected layout
+- **`/api/cal/book`** now upserts (was a plain insert whose error was swallowed) and logs failures
+- **`/api/stripe/checkout`** upserts on `cal_booking_uid` so a webhook-won race can't hit the unique index and destroy a paying booking
+- The three copy-pasted Cal-cancel calls (`cal/cancel`, `stripe/webhook`, booking delete) now share `cancelCalBooking` (fixes the `cancellationReason` vs `reason` drift); booking route uses the shared `requireAdmin` (full `ADMIN_EMAILS`)
+
+### Fixed (code review)
+- Cal webhook out-of-order delivery (CANCELLED-before-CREATED) now writes a cancelled tombstone instead of resurrecting the booking; reschedules move the existing row instead of duplicating it
+- `VoiceCloner` guards the `MediaRecorder` constructor (stops the mic stream if it throws), revokes the sample object URL on unmount, and drives the timer without a `setState` side effect
+- Job-delete failures keep the confirm modal open with an inline error instead of closing + `alert()`
+
+### Data
+- Removed 5 test/owner rows from `bookings` (2 `test@example.com`, 3 `elagerway@gmail.com`); `/admin/jobs` shows the 6 real customer jobs
+
+### Notes
+- Cal webhook is owned by the **Blades** account — manage it (e.g. rotate the secret) with `CAL_API_KEY_BLADES`, not `CAL_API_KEY`
+- Shipped as commits `1db2373` → `137d297` on `main`
+
 ## [2.15.0] — 2026-05-28 — Supabase project migration to snapsonic org + auth overhaul
 
 ### Migrated
