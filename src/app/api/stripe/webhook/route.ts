@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 import { createClient } from "@supabase/supabase-js";
+import { cancelCalBooking } from "@/lib/cal";
 
 function getStripe() {
   return new Stripe(process.env.STRIPE_SECRET_KEY!);
@@ -111,17 +112,8 @@ export async function POST(req: NextRequest) {
 
       // Only cancel if still pending — guard against out-of-order webhook delivery
       if (booking && booking.status === "pending_payment") {
-        const cancelRes = await fetch(`https://api.cal.com/v2/bookings/${booking.cal_booking_uid}/cancel`, {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${process.env.CAL_API_KEY}`,
-            "cal-api-version": "2024-08-13",
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ reason: "Payment not completed" }),
-        });
-
-        if (cancelRes.ok) {
+        const { ok } = await cancelCalBooking(booking.cal_booking_uid, "Payment not completed");
+        if (ok) {
           await supabase
             .from("bookings")
             .update({ status: "cancelled" })

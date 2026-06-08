@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAdmin } from "@/lib/admin";
-
-const MAGPIPE_BASE = "https://api.magpipe.ai/functions/v1";
+import { cloneVoice } from "@/lib/magpipe";
 
 // Vercel serverless functions cap the request body around 4.5MB; keep the
 // upload comfortably under that. A minute of compressed audio is well within.
@@ -34,32 +33,14 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  // Forward the sample to Magpipe's clone endpoint (which hands it to
-  // ElevenLabs). multipart fields: name + audio.
-  const out = new FormData();
-  out.append("name", name.trim());
-  out.append("audio", audio, audio.name || "sample.webm");
-
-  let res: Response;
   try {
-    res = await fetch(`${MAGPIPE_BASE}/clone-voice`, {
-      method: "POST",
-      headers: { Authorization: `Bearer ${process.env.MAGPIPE_API_KEY}` },
-      body: out,
-    });
-  } catch {
-    return NextResponse.json({ error: "Couldn't reach Magpipe" }, { status: 502 });
-  }
-
-  const data = await res.json().catch(() => ({}));
-  if (!res.ok) {
-    // Magpipe surfaces ElevenLabs validation errors (e.g. corrupt/too-short audio) in `details`.
-    const detail = typeof data.details === "string" ? data.details : "";
+    const voice = await cloneVoice(name.trim(), audio);
+    return NextResponse.json({ ok: true, voice });
+  } catch (e) {
+    // Magpipe surfaces ElevenLabs validation errors (corrupt/too-short audio) in the message.
     return NextResponse.json(
-      { error: data.error || "Voice cloning failed.", details: detail || undefined },
+      { error: e instanceof Error ? e.message : "Voice cloning failed." },
       { status: 502 },
     );
   }
-
-  return NextResponse.json({ ok: true, voice: data.voice ?? data });
 }

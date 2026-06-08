@@ -64,17 +64,25 @@ export async function POST(req: NextRequest) {
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!
   );
-  const { error: insertError } = await supabase.from("bookings").insert({
-    cal_booking_uid: calBookingUid,
-    stripe_session_id: session.id,
-    customer_name: customerName,
-    customer_email: customerEmail,
-    customer_phone: customerPhone ?? null,
-    appointment_date: appointmentDate,
-    appointment_time: appointmentTime,
-    address: address ?? null,
-    status: "pending_payment",
-  });
+  // Upsert (not insert) on cal_booking_uid: the Cal BOOKING_CREATED webhook may
+  // race ahead and write this row first. A plain insert would hit the unique
+  // index, fall into the cleanup branch below, and cancel a paying customer's
+  // booking. Merging instead stamps the stripe_session_id the payment webhook
+  // matches on.
+  const { error: insertError } = await supabase.from("bookings").upsert(
+    {
+      cal_booking_uid: calBookingUid,
+      stripe_session_id: session.id,
+      customer_name: customerName,
+      customer_email: customerEmail,
+      customer_phone: customerPhone ?? null,
+      appointment_date: appointmentDate,
+      appointment_time: appointmentTime,
+      address: address ?? null,
+      status: "pending_payment",
+    },
+    { onConflict: "cal_booking_uid" },
+  );
 
   if (insertError) {
     console.error("Supabase insert error:", JSON.stringify(insertError));

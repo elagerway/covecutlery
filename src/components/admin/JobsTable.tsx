@@ -58,6 +58,7 @@ export default function JobsTable({ bookings }: { bookings: Booking[] }) {
   const [saving, setSaving] = useState<string | null>(null);
   const [deleting, setDeleting] = useState<string | null>(null);
   const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
   const [refunding, setRefunding] = useState<string | null>(null);
   const [refundMsg, setRefundMsg] = useState<Record<string, string>>({});
   const [chargeMsg, setChargeMsg] = useState<Record<string, string>>({});
@@ -147,12 +148,13 @@ export default function JobsTable({ bookings }: { bookings: Booking[] }) {
 
   async function handleDelete(id: string) {
     setDeleting(id);
+    setDeleteError(null);
     const res = await fetch(`/api/admin/bookings/${id}`, { method: "DELETE" });
     setDeleting(null);
     if (!res.ok) {
       const data = await res.json().catch(() => ({}));
-      setConfirmDeleteId(null);
-      alert(data.error ?? "Failed to delete job.");
+      // Keep the modal open and show the reason inline so it can be retried.
+      setDeleteError(data.error ?? "Failed to delete job.");
       return;
     }
     setConfirmDeleteId(null);
@@ -377,7 +379,7 @@ export default function JobsTable({ bookings }: { bookings: Booking[] }) {
 
                       {/* Delete */}
                       <button
-                        onClick={() => setConfirmDeleteId(b.id)}
+                        onClick={() => { setDeleteError(null); setConfirmDeleteId(b.id); }}
                         title="Delete job & cancel appointment"
                         aria-label="Delete job"
                         className="p-1.5 rounded transition-all hover:brightness-125 border border-transparent hover:border-red-400"
@@ -468,7 +470,7 @@ export default function JobsTable({ bookings }: { bookings: Booking[] }) {
         return (
           <div
             className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm"
-            onClick={() => deleting !== confirmDeleteId && setConfirmDeleteId(null)}
+            onClick={() => { if (deleting !== confirmDeleteId) { setConfirmDeleteId(null); setDeleteError(null); } }}
           >
             <div
               className="rounded-xl p-6 flex flex-col gap-4 w-full max-w-sm"
@@ -486,9 +488,14 @@ export default function JobsTable({ bookings }: { bookings: Booking[] }) {
               <p className="text-sm leading-relaxed" style={{ color: "#9CA3AF" }}>
                 This cancels the appointment in Cal.com and permanently removes the job. This can&apos;t be undone.
               </p>
+              {deleteError && (
+                <p className="text-sm rounded-lg px-3 py-2" style={{ backgroundColor: "#3A1C1C", color: "#F87171" }}>
+                  {deleteError}
+                </p>
+              )}
               <div className="flex gap-2 mt-1">
                 <button
-                  onClick={() => setConfirmDeleteId(null)}
+                  onClick={() => { setConfirmDeleteId(null); setDeleteError(null); }}
                   disabled={deleting === confirmDeleteId}
                   className="flex-1 px-3 py-2 rounded-lg text-sm font-medium disabled:opacity-50"
                   style={{ backgroundColor: "#21262D", color: "#C9D1D9", border: "1px solid #30363D" }}
@@ -648,7 +655,7 @@ export default function JobsTable({ bookings }: { bookings: Booking[] }) {
             {/* Danger zone */}
             <div className="mt-auto pt-4" style={{ borderTop: "1px solid #30363D" }}>
               <button
-                onClick={() => setConfirmDeleteId(selectedBooking.id)}
+                onClick={() => { setDeleteError(null); setConfirmDeleteId(selectedBooking.id); }}
                 className="w-full py-2.5 rounded-lg text-sm font-medium transition-all hover:brightness-110"
                 style={{ backgroundColor: "#3A1C1C", color: "#F87171", border: "1px solid #7F1D1D" }}
               >

@@ -1,19 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createClient } from "@/utils/supabase/server";
-import { getServiceClient } from "@/lib/admin";
-
-const ADMIN_EMAIL = "elagerway@gmail.com";
-
-async function requireAdmin() {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user || user.email !== ADMIN_EMAIL) return null;
-  return supabase;
-}
+import { requireAdmin, getServiceClient } from "@/lib/admin";
+import { cancelCalBooking, TIMEZONE } from "@/lib/cal";
 
 export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  const supabase = await requireAdmin();
-  if (!supabase) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const admin = await requireAdmin();
+  if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const { id } = await params;
   const { amount_charged, status, notes, payment_method } = await req.json();
@@ -24,6 +15,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
   if (notes !== undefined) updates.notes = notes;
   if (payment_method !== undefined) updates.payment_method = payment_method;
 
+  const supabase = getServiceClient();
   const { data, error } = await supabase
     .from("bookings")
     .update(updates)
@@ -36,37 +28,39 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 }
 
 export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
-  const auth = await requireAdmin();
-  if (!auth) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  const admin = await requireAdmin();
+  if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const { id } = await params;
-
-  // bookings is admin-RLS; use the service client for the mutations (same as
-  // the cancel + webhook paths) once the admin session is verified above.
   const supabase = getServiceClient();
   const { data: booking } = await supabase
     .from("bookings")
-    .select("cal_booking_uid, status")
+    .select("cal_booking_uid, status, appointment_date, stripe_payment_intent_id")
     .eq("id", id)
     .single();
 
   if (!booking) return NextResponse.json({ error: "Booking not found" }, { status: 404 });
 
-  // Cancel the Cal.com appointment first. If that fails, bail out without
-  // deleting so we never orphan a live appointment on the calendar. Already
-  // cancelled bookings (kept in sync by /api/webhooks/cal) skip this.
-  if (booking.cal_booking_uid && booking.status !== "cancelled") {
-    const res = await fetch(`https://api.cal.com/v2/bookings/${booking.cal_booking_uid}/cancel`, {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${process.env.CAL_API_KEY}`,
-        "cal-api-version": "2024-08-13",
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ cancellationReason: "Deleted by admin" }),
-    });
-    if (!res.ok) {
-      console.error(`[bookings/${id}] Cal cancel failed:`, res.status, await res.text().catch(() => ""));
+  // Don't silently discard money: a captured deposit that hasn't been refunded
+  // must be refunded first (there's a dedicated Refund action for that).
+  if (booking.stripe_payment_intent_id && booking.status !== "refunded") {
+    return NextResponse.json(
+      { error: "This booking has a deposit that hasn't been refunded. Refund it first, then delete." },
+      { status: 409 },
+    );
+  }
+
+  // Only cancel a Cal appointment that's still live: an active status AND a
+  // future date. Past or already-terminal bookings have nothing to cancel, and
+  // trying would 4xx and (previously) block the delete.
+  const today = new Date().toLocaleDateString("en-CA", { timeZone: TIMEZONE });
+  const isUpcoming = booking.appointment_date >= today;
+  const isActive = booking.status === "confirmed" || booking.status === "pending_payment";
+
+  if (booking.cal_booking_uid && isActive && isUpcoming) {
+    const { ok } = await cancelCalBooking(booking.cal_booking_uid, "Deleted by admin");
+    if (!ok) {
+      // A real upcoming appointment we couldn't cancel — don't orphan it.
       return NextResponse.json(
         { error: "Couldn't cancel the Cal.com appointment — job not deleted. Cancel it in Cal.com, then try again." },
         { status: 502 },
@@ -77,5 +71,5 @@ export async function DELETE(_req: NextRequest, { params }: { params: Promise<{ 
   const { error } = await supabase.from("bookings").delete().eq("id", id);
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
-  return NextResponse.json({ success: true });
+  return NextResponse.json({ ok: true });
 }

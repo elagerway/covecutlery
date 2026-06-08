@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import { cancelCalBooking } from "@/lib/cal";
 
 export async function POST(req: NextRequest) {
   const { uid } = await req.json();
@@ -20,17 +21,8 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Booking not eligible for cancellation" }, { status: 403 });
   }
 
-  const res = await fetch(`https://api.cal.com/v2/bookings/${uid}/cancel`, {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${process.env.CAL_API_KEY}`,
-      "cal-api-version": "2024-08-13",
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ cancellationReason: "Cancelled by customer" }),
-  });
-
-  if (!res.ok) return NextResponse.json({ error: "Failed to cancel" }, { status: 500 });
+  const { ok } = await cancelCalBooking(uid, "Cancelled by customer");
+  if (!ok) return NextResponse.json({ error: "Failed to cancel" }, { status: 500 });
 
   await supabase
     .from("bookings")

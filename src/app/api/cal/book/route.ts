@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import { formatAppointment } from "@/lib/cal";
 
 const ADMIN_PHONE = "+16042108180";
-const TIMEZONE = "America/Vancouver";
 
 /** Normalise a Canadian/US phone number to E.164 format (+1XXXXXXXXXX).
  *  Returns the original string if it's already E.164 or can't be normalised.
@@ -65,13 +65,7 @@ export async function POST(req: NextRequest) {
 
   // Save booking to Supabase as confirmed (no deposit required)
   const calBookingUid = data.uid ?? data.data?.uid ?? data.id;
-  const appointmentDate = new Date(start).toLocaleDateString("en-CA", { timeZone: TIMEZONE });
-  const appointmentTime = new Date(start).toLocaleTimeString("en-US", {
-    timeZone: TIMEZONE,
-    hour: "numeric",
-    minute: "2-digit",
-    hour12: true,
-  });
+  const { date: appointmentDate, time: appointmentTime } = formatAppointment(start);
 
   const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,

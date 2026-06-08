@@ -46,6 +46,68 @@ function getApiKey(): string {
   return key;
 }
 
+// The live Cove Blades inbound phone agent (+1 604 210 8180).
+export const VOICE_AGENT_ID = "49fba67b-50e6-4246-b601-ad4ca42e33e5";
+
+export interface MagpipeVoice {
+  id: string;
+  name: string;
+  description: string | null;
+  provider: string;
+  is_custom: boolean;
+}
+
+/** Low-level call to a Magpipe edge function. Throws on non-2xx so callers can
+ *  surface a single error path; the missing-key guard lives in getApiKey(). */
+async function magpipeFetch(
+  fn: string,
+  init: { method: "GET" | "POST"; body?: object; form?: FormData },
+): Promise<unknown> {
+  const headers: Record<string, string> = { Authorization: `Bearer ${getApiKey()}` };
+  let body: BodyInit | undefined;
+  if (init.form) {
+    body = init.form;
+  } else if (init.body) {
+    headers["Content-Type"] = "application/json";
+    body = JSON.stringify(init.body);
+  }
+  const res = await fetch(`${MAGPIPE_BASE}/${fn}`, { method: init.method, headers, body });
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok) {
+    const d = data as { error?: string; details?: string };
+    const msg = [d.error, d.details].filter(Boolean).join(" — ") || `Magpipe ${fn} responded ${res.status}`;
+    throw new Error(msg);
+  }
+  return data;
+}
+
+export async function listVoices(): Promise<MagpipeVoice[]> {
+  const data = (await magpipeFetch("list-voices", { method: "GET" })) as { voices?: MagpipeVoice[] };
+  return data.voices ?? [];
+}
+
+export async function getAgentVoiceId(agentId: string): Promise<string | null> {
+  const data = (await magpipeFetch("get-agent", { method: "POST", body: { agent_id: agentId } })) as {
+    agent?: { voice_id?: string };
+    voice_id?: string;
+  };
+  const agent = data.agent ?? data;
+  return agent.voice_id ?? null;
+}
+
+export async function setAgentVoice(agentId: string, voiceId: string): Promise<void> {
+  await magpipeFetch("update-agent", { method: "POST", body: { agent_id: agentId, voice_id: voiceId } });
+}
+
+/** Clone a voice from an audio sample (forwarded to ElevenLabs by Magpipe). */
+export async function cloneVoice(name: string, audio: File): Promise<MagpipeVoice> {
+  const form = new FormData();
+  form.append("name", name);
+  form.append("audio", audio, audio.name || "sample.webm");
+  const data = (await magpipeFetch("clone-voice", { method: "POST", form })) as { voice?: MagpipeVoice };
+  return data.voice ?? (data as MagpipeVoice);
+}
+
 export async function listMessages(opts: ListMessagesOptions = {}): Promise<ListMessagesResponse> {
   const res = await fetch(`${MAGPIPE_BASE}/list-messages`, {
     method: "POST",

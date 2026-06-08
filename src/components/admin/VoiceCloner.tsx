@@ -18,6 +18,12 @@ function fmtTime(s: number) {
   return `${m}:${sec.toString().padStart(2, "0")}`;
 }
 
+interface Sample {
+  blob: Blob;
+  url: string;
+  filename: string;
+}
+
 export default function VoiceCloner({ onCloned }: { onCloned: () => void }) {
   const [name, setName] = useState("");
   const [mode, setMode] = useState<"record" | "upload">("record");
@@ -29,31 +35,41 @@ export default function VoiceCloner({ onCloned }: { onCloned: () => void }) {
   const chunksRef = useRef<BlobPart[]>([]);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  // captured sample (from either mode)
-  const [sample, setSample] = useState<{ blob: Blob; url: string; filename: string } | null>(null);
+  // captured sample (from either mode). The url is mirrored to a ref so the
+  // unmount cleanup can revoke it without a stale-closure miss.
+  const [sample, setSample] = useState<Sample | null>(null);
+  const sampleUrlRef = useRef<string | null>(null);
 
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
 
+  function replaceSample(next: Sample | null) {
+    if (sampleUrlRef.current) URL.revokeObjectURL(sampleUrlRef.current);
+    sampleUrlRef.current = next?.url ?? null;
+    setSample(next);
+  }
+
   useEffect(() => {
     return () => {
       if (timerRef.current) clearInterval(timerRef.current);
-      if (sample?.url) URL.revokeObjectURL(sample.url);
+      if (sampleUrlRef.current) URL.revokeObjectURL(sampleUrlRef.current);
       recorderRef.current?.stream?.getTracks().forEach((t) => t.stop());
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  function clearSample() {
-    if (sample?.url) URL.revokeObjectURL(sample.url);
-    setSample(null);
+  function stopRecording() {
+    if (timerRef.current) clearInterval(timerRef.current);
+    timerRef.current = null;
+    if (recorderRef.current && recorderRef.current.state !== "inactive") recorderRef.current.stop();
+    setRecording(false);
   }
 
   async function startRecording() {
     setError(null);
     setSuccess(null);
-    clearSample();
+    replaceSample(null);
+
     let stream: MediaStream;
     try {
       stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -61,8 +77,17 @@ export default function VoiceCloner({ onCloned }: { onCloned: () => void }) {
       setError("Microphone access was denied.");
       return;
     }
-    const mimeType = pickMimeType();
-    const rec = new MediaRecorder(stream, mimeType ? { mimeType } : undefined);
+
+    let rec: MediaRecorder;
+    try {
+      const mimeType = pickMimeType();
+      rec = new MediaRecorder(stream, mimeType ? { mimeType } : undefined);
+    } catch {
+      stream.getTracks().forEach((t) => t.stop()); // don't leave the mic open
+      setError("Recording isn't supported in this browser — upload an audio file instead.");
+      return;
+    }
+
     chunksRef.current = [];
     rec.ondataavailable = (e) => e.data.size > 0 && chunksRef.current.push(e.data);
     rec.onstop = () => {
@@ -70,26 +95,21 @@ export default function VoiceCloner({ onCloned }: { onCloned: () => void }) {
       const blob = new Blob(chunksRef.current, { type });
       const ext = type.includes("mp4") ? "m4a" : "webm";
       stream.getTracks().forEach((t) => t.stop());
-      if (sample?.url) URL.revokeObjectURL(sample.url);
-      setSample({ blob, url: URL.createObjectURL(blob), filename: `recording.${ext}` });
+      replaceSample({ blob, url: URL.createObjectURL(blob), filename: `recording.${ext}` });
     };
     recorderRef.current = rec;
     rec.start();
     setRecording(true);
     setElapsed(0);
-    timerRef.current = setInterval(() => {
-      setElapsed((e) => {
-        if (e + 1 >= MAX_SECONDS) stopRecording();
-        return e + 1;
-      });
-    }, 1000);
-  }
 
-  function stopRecording() {
-    if (timerRef.current) clearInterval(timerRef.current);
-    timerRef.current = null;
-    recorderRef.current?.state !== "inactive" && recorderRef.current?.stop();
-    setRecording(false);
+    // Drive the timer from a local counter so we never run side effects inside
+    // a setState updater. Auto-stop at the cap.
+    let secs = 0;
+    timerRef.current = setInterval(() => {
+      secs += 1;
+      setElapsed(secs);
+      if (secs >= MAX_SECONDS) stopRecording();
+    }, 1000);
   }
 
   function handleFile(file: File | undefined) {
@@ -100,8 +120,7 @@ export default function VoiceCloner({ onCloned }: { onCloned: () => void }) {
       setError("That file is over 4MB. Use a shorter or more compressed clip.");
       return;
     }
-    clearSample();
-    setSample({ blob: file, url: URL.createObjectURL(file), filename: file.name });
+    replaceSample({ blob: file, url: URL.createObjectURL(file), filename: file.name });
   }
 
   async function handleSubmit() {
@@ -120,11 +139,11 @@ export default function VoiceCloner({ onCloned }: { onCloned: () => void }) {
       const res = await fetch("/api/admin/voice/clone", { method: "POST", body: fd });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
-        setError([data.error, data.details].filter(Boolean).join(" — ") || "Cloning failed.");
+        setError(data.error || "Cloning failed.");
       } else {
         setSuccess(`Cloned "${name.trim()}". It's now in the voice list above.`);
         setName("");
-        clearSample();
+        replaceSample(null);
         onCloned();
       }
     } catch {
@@ -207,7 +226,7 @@ export default function VoiceCloner({ onCloned }: { onCloned: () => void }) {
         {sample && !recording && (
           <div className="flex items-center gap-3">
             <audio controls src={sample.url} className="h-9" />
-            <button onClick={clearSample} title="Discard sample" className="p-1.5 rounded transition-all hover:brightness-125" style={{ backgroundColor: "#21262D", color: "#8B949E" }}>
+            <button onClick={() => replaceSample(null)} title="Discard sample" className="p-1.5 rounded transition-all hover:brightness-125" style={{ backgroundColor: "#21262D", color: "#8B949E" }}>
               <Trash2 className="w-3.5 h-3.5" />
             </button>
           </div>
