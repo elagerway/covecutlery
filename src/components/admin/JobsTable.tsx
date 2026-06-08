@@ -55,6 +55,7 @@ export default function JobsTable({ bookings }: { bookings: Booking[] }) {
   const [editing, setEditing] = useState<string | null>(null);
   const [amountInput, setAmountInput] = useState("");
   const [saving, setSaving] = useState<string | null>(null);
+  const [deleting, setDeleting] = useState<string | null>(null);
   const [refunding, setRefunding] = useState<string | null>(null);
   const [refundMsg, setRefundMsg] = useState<Record<string, string>>({});
   const [chargeMsg, setChargeMsg] = useState<Record<string, string>>({});
@@ -140,6 +141,20 @@ export default function JobsTable({ bookings }: { bookings: Booking[] }) {
       setReceiptMsg((prev) => ({ ...prev, [id]: "Sent!" }));
       router.refresh();
     }
+  }
+
+  async function handleDelete(id: string) {
+    if (!confirm("Delete this job and cancel the Cal.com appointment? This can't be undone.")) return;
+    setDeleting(id);
+    const res = await fetch(`/api/admin/bookings/${id}`, { method: "DELETE" });
+    setDeleting(null);
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      alert(data.error ?? "Failed to delete job.");
+      return;
+    }
+    setSelectedBookingId(null);
+    router.refresh();
   }
 
   async function handleStatusChange(id: string, status: string) {
@@ -545,6 +560,21 @@ export default function JobsTable({ bookings }: { bookings: Booking[] }) {
               >
                 {selectedBooking.status.replace("_", " ")}
               </span>
+            </div>
+
+            {/* Danger zone */}
+            <div className="mt-auto pt-4" style={{ borderTop: "1px solid #30363D" }}>
+              <button
+                onClick={() => handleDelete(selectedBooking.id)}
+                disabled={deleting === selectedBooking.id}
+                className="w-full py-2.5 rounded-lg text-sm font-medium transition-all hover:brightness-110 disabled:opacity-50"
+                style={{ backgroundColor: "#3A1C1C", color: "#F87171", border: "1px solid #7F1D1D" }}
+              >
+                {deleting === selectedBooking.id ? "Deleting…" : "Delete job & cancel appointment"}
+              </button>
+              <p className="text-xs mt-2 text-center" style={{ color: "#6B7280" }}>
+                Removes this job and cancels the booking in Cal.com.
+              </p>
             </div>
           </div>
         </div>
