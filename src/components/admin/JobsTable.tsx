@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { Trash2 } from "lucide-react";
 import { formatPhone } from "@/lib/format";
 
 interface Booking {
@@ -351,6 +352,17 @@ export default function JobsTable({ bookings }: { bookings: Booking[] }) {
                           Receipt
                         </button>
                       )}
+
+                      {/* Delete */}
+                      <button
+                        onClick={() => setConfirmDeleteId(b.id)}
+                        title="Delete job & cancel appointment"
+                        aria-label="Delete job"
+                        className="p-1.5 rounded transition-all hover:brightness-125 border border-transparent hover:border-red-400"
+                        style={{ backgroundColor: "#3A1C1C", color: "#F87171" }}
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
                     </div>
                   </td>
                 </tr>
