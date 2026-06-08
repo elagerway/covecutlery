@@ -184,8 +184,22 @@ export default function JobsTable({ bookings }: { bookings: Booking[] }) {
         <table className="w-full text-sm">
           <thead>
             <tr style={{ backgroundColor: "#161B22", borderBottom: "1px solid #30363D" }}>
-              {["Date / Time", "Customer", "Status", "Deposit", "Charged", "Total", "Actions"].map(h => (
-                <th key={h} className="text-left px-4 py-3 font-medium" style={{ color: "#6B7280" }}>{h}</th>
+              {[
+                { label: "Date / Time", align: "left" },
+                { label: "Customer", align: "left" },
+                { label: "Status", align: "left" },
+                { label: "Deposit", align: "right" },
+                { label: "Charged", align: "right" },
+                { label: "Total", align: "right" },
+                { label: "Actions", align: "right" },
+              ].map((h) => (
+                <th
+                  key={h.label}
+                  className={`px-4 py-2.5 text-[11px] font-semibold uppercase tracking-wider ${h.align === "right" ? "text-right" : "text-left"}`}
+                  style={{ color: "#6B7280" }}
+                >
+                  {h.label}
+                </th>
               ))}
             </tr>
           </thead>
@@ -207,25 +221,31 @@ export default function JobsTable({ bookings }: { bookings: Booking[] }) {
                   }}
                 >
                   {/* Date / Time */}
-                  <td className="px-4 py-3">
-                    <div className="text-white">{formatDate(b.appointment_date)}</div>
-                    <div className="text-xs mt-0.5" style={{ color: "#6B7280" }}>{b.appointment_time}</div>
-                    {b.address && <div className="text-xs mt-0.5" style={{ color: "#6B7280" }}>{b.address}</div>}
+                  <td className="px-4 py-3 align-top">
+                    <div className="text-white whitespace-nowrap">
+                      {formatDate(b.appointment_date)}
+                      <span className="ml-2" style={{ color: "#8B949E" }}>{b.appointment_time}</span>
+                    </div>
+                    {b.address && (
+                      <div className="text-xs mt-1 truncate max-w-[220px]" style={{ color: "#6B7280" }} title={b.address}>
+                        {b.address}
+                      </div>
+                    )}
                   </td>
 
                   {/* Customer */}
-                  <td className="px-4 py-3">
-                    <div className="font-medium text-white">{b.customer_name}</div>
-                    <div className="text-xs mt-0.5" style={{ color: "#6B7280" }}>{b.customer_email}</div>
-                    {b.customer_phone && <div className="text-xs" style={{ color: "#6B7280" }}>{formatPhone(b.customer_phone)}</div>}
+                  <td className="px-4 py-3 align-top">
+                    <div className="font-medium text-white truncate max-w-[200px]">{b.customer_name}</div>
+                    <div className="text-xs mt-0.5 truncate max-w-[200px]" style={{ color: "#6B7280" }} title={b.customer_email}>{b.customer_email}</div>
+                    {b.customer_phone && <div className="text-xs mt-0.5" style={{ color: "#6B7280" }}>{formatPhone(b.customer_phone)}</div>}
                   </td>
 
                   {/* Status */}
-                  <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
+                  <td className="px-4 py-3 align-top" onClick={(e) => e.stopPropagation()}>
                     <select
                       value={b.status}
                       onChange={(e) => handleStatusChange(b.id, e.target.value)}
-                      className="text-xs px-2 py-1 rounded-full font-medium border-0 outline-none cursor-pointer"
+                      className="text-xs px-2.5 py-1 rounded-full font-medium border-0 outline-none cursor-pointer"
                       style={{ backgroundColor: style.bg, color: style.color }}
                     >
                       <option value="pending_payment">pending payment</option>
@@ -237,12 +257,14 @@ export default function JobsTable({ bookings }: { bookings: Booking[] }) {
                   </td>
 
                   {/* Deposit */}
-                  <td className="px-4 py-3 text-white">{formatCAD(deposit)}</td>
+                  <td className="px-4 py-3 align-top text-right tabular-nums" style={{ color: deposit > 0 ? "#FFFFFF" : "#6B7280" }}>
+                    {deposit > 0 ? formatCAD(deposit) : "—"}
+                  </td>
 
                   {/* Charged on day */}
-                  <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
+                  <td className="px-4 py-3 align-top text-right tabular-nums" onClick={(e) => e.stopPropagation()}>
                     {editing === b.id ? (
-                      <div className="flex flex-col gap-1">
+                      <div className="flex flex-col gap-1 items-end text-left">
                         <div className="flex items-center gap-1">
                           <span style={{ color: "#6B7280" }}>$</span>
                           <input
@@ -310,13 +332,13 @@ export default function JobsTable({ bookings }: { bookings: Booking[] }) {
                   </td>
 
                   {/* Total */}
-                  <td className="px-4 py-3 font-medium" style={{ color: total !== null ? "#4ADE80" : "#6B7280" }}>
+                  <td className="px-4 py-3 align-top text-right tabular-nums font-medium" style={{ color: total !== null ? "#4ADE80" : "#6B7280" }}>
                     {formatCAD(total)}
                   </td>
 
                   {/* Actions */}
-                  <td className="px-4 py-3" onClick={(e) => e.stopPropagation()}>
-                    <div className="flex items-center gap-2">
+                  <td className="px-4 py-3 align-top" onClick={(e) => e.stopPropagation()}>
+                    <div className="flex items-center justify-end gap-1.5">
                       {b.notes && (
                         <span className="text-xs" style={{ color: "#6B7280" }} title={b.notes}>📝</span>
                       )}
