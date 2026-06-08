@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
+import VoiceCloner from "@/components/admin/VoiceCloner";
 
 interface Voice {
   id: string;
@@ -28,6 +29,20 @@ export default function VoicePromptPage() {
   const [voiceSuccess, setVoiceSuccess] = useState(false);
   const [voiceError, setVoiceError] = useState<string | null>(null);
 
+  const loadVoices = useCallback(() => {
+    return fetch("/api/admin/voice")
+      .then((res) => res.json().then((data) => ({ ok: res.ok, data })))
+      .then(({ ok, data }) => {
+        if (!ok) throw new Error(data.error || "Failed to load voices");
+        setVoices(data.voices || []);
+        setCurrentVoiceId(data.currentVoiceId || null);
+        setSelectedVoiceId((prev) => prev || data.currentVoiceId || "");
+        setVoiceError(null);
+      })
+      .catch((e) => setVoiceError(e.message || "Failed to load voices"))
+      .finally(() => setVoiceLoading(false));
+  }, []);
+
   useEffect(() => {
     fetch("/api/admin/voice-prompt")
       .then((res) => res.json())
@@ -39,17 +54,8 @@ export default function VoicePromptPage() {
       .catch(() => setError("Failed to load prompt"))
       .finally(() => setLoading(false));
 
-    fetch("/api/admin/voice")
-      .then((res) => res.json().then((data) => ({ ok: res.ok, data })))
-      .then(({ ok, data }) => {
-        if (!ok) throw new Error(data.error || "Failed to load voices");
-        setVoices(data.voices || []);
-        setCurrentVoiceId(data.currentVoiceId || null);
-        setSelectedVoiceId(data.currentVoiceId || "");
-      })
-      .catch((e) => setVoiceError(e.message || "Failed to load voices"))
-      .finally(() => setVoiceLoading(false));
-  }, []);
+    loadVoices();
+  }, [loadVoices]);
 
   async function handleSaveVoice() {
     setVoiceSaving(true);
@@ -162,6 +168,8 @@ export default function VoicePromptPage() {
           </div>
         )}
       </div>
+
+      <VoiceCloner onCloned={loadVoices} />
 
       {loading ? (
         <div className="flex justify-center py-12">
