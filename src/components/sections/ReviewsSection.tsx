@@ -10,6 +10,31 @@ interface Review {
 
 const reviews: Review[] = [
   {
+    author: "Archie Robertson",
+    text: "Wow, I thought my knives were decently sharp, but Erik brought our knives and garden shears back to better-than-new sharpness (without exaggeration, they all now slice paper and can shave arm hair, although we won't be using them for that). When Erik's van arrived on our street, we had an impromptu knife sharpening event as neighbours and family brought their knives along, too. Great and friendly service!!!",
+    rating: 5,
+  },
+  {
+    author: "Ross S.",
+    text: "Great experience with Cove Blades. Booking was easy, they conveniently came to my house on time, and my blades were razor sharp. Highly recommend.",
+    rating: 5,
+  },
+  {
+    author: "Chris Lee",
+    text: "Super professional, friendly and fast service. If you wish to have your knives sharpened by someone who cares, Erik is it.",
+    rating: 5,
+  },
+  {
+    author: "Lee Maingot",
+    text: "Brought my chef knife to House of Knives twice and they came back duller than ever. Cove Blades has it sharper than when it was new. Easy 5 stars.",
+    rating: 5,
+  },
+  {
+    author: "Keith Labrecque",
+    text: "Erik was able to bring my kitchen knives back like new sharpness, or maybe even better than brand new! He also successfully refurbished a slicer blade that I thought was beyond sharpening. Competitive prices and great service! Highly recommended.",
+    rating: 5,
+  },
+  {
     author: "Steve C.",
     text: "I have a variety of Shun knives, some Wusthof and some smaller name paring knives. All my knives have been used (and some abused) professionally, but needed some desperate rejuvenation. Erik brought all my knives back to their genuine edge... I even shaved a bit of hair on my arm with one of the blades! 8 blades sharpened and honed in 20 min. Even sharpened an old pair of sewing scissors. He knows his blades and the angle of their edges — highly recommend.",
     rating: 5,
