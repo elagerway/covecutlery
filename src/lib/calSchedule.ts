@@ -28,11 +28,11 @@ function toVancouverDate(iso: string): string {
   return new Date(iso).toLocaleDateString("en-CA", { timeZone: "America/Vancouver" });
 }
 
-/** Adds N days to a date string "YYYY-MM-DD" */
+/** Adds N days to a date string "YYYY-MM-DD" (pure calendar arithmetic, no timezone shift) */
 function addDays(dateStr: string, n: number): string {
   const [y, m, d] = dateStr.split("-").map(Number);
-  const date = new Date(y, m - 1, d + n);
-  return date.toLocaleDateString("en-CA", { timeZone: "America/Vancouver" });
+  const date = new Date(Date.UTC(y, m - 1, d + n));
+  return date.toISOString().slice(0, 10);
 }
 
 /** Returns the UTC ISO string for midnight Vancouver time on a given YYYY-MM-DD date */
@@ -51,13 +51,13 @@ function vancouverMidnightISO(dateStr: string): string {
 /** Formats "2026-03-24" → "Mon" */
 function toDayLabel(dateStr: string): string {
   const [y, m, d] = dateStr.split("-").map(Number);
-  return new Date(y, m - 1, d).toLocaleDateString("en-US", { weekday: "short" });
+  return new Date(Date.UTC(y, m - 1, d)).toLocaleDateString("en-US", { weekday: "short", timeZone: "UTC" });
 }
 
 /** Formats "2026-03-24" → "Mar 24" */
 function toDateLabel(dateStr: string): string {
   const [y, m, d] = dateStr.split("-").map(Number);
-  return new Date(y, m - 1, d).toLocaleDateString("en-US", { month: "short", day: "numeric" });
+  return new Date(Date.UTC(y, m - 1, d)).toLocaleDateString("en-US", { month: "short", day: "numeric", timeZone: "UTC" });
 }
 
 /** Extracts city from the booking.
