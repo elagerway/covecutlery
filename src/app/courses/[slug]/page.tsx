@@ -162,7 +162,7 @@ export default async function CoursePage({ params }: CoursePageProps) {
         <div className="mx-auto max-w-3xl px-4 py-12">
           <div className="mb-8">
             <div className="mb-3 flex items-center gap-2">
-              <Badge variant="secondary">Free</Badge>
+              <Badge variant="secondary">{typedCourse.is_free ? "Free" : `$${typedCourse.price}`}</Badge>
               <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider ${
                 typedCourse.level === "entry"
                   ? "bg-emerald-500/10 text-emerald-400"
