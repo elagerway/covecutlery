@@ -66,8 +66,10 @@ export default async function LessonPage({ params }: LessonPageProps) {
     .eq("user_id", user.id)
     .maybeSingle();
 
+  // Enrollment is granted only via paid checkout (Stripe webhook / login backfill)
+  // or an invite. Without it, send the user to the course overview to enroll/pay.
   if (!enrollment) {
-    await supabase.from("user_enrollments").insert({ course_id: typedCourse.id, user_id: user.id });
+    redirect(`/courses/${slug}`);
   }
 
   const { completedLessonIds, quizByModule, passedQuizIds } = await getCourseSidebarData(supabase, typedCourse, user.id);

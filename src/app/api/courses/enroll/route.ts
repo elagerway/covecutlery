@@ -7,11 +7,15 @@ function getStripe() {
   return new Stripe(process.env.STRIPE_SECRET_KEY!);
 }
 
-const COURSES: Record<string, { name: string; amount: number; description: string }> = {
-  "one-inch-grinder": { name: "One-Inch Grinder Course", amount: 60000, description: "Online course + 3-hour hands-on practicum" },
-  "two-inch-grinder": { name: "Two-Inch Grinder Module", amount: 40000, description: "Hands-on training on two-inch belt platform" },
-  "business-process": { name: "Business Process & Automation", amount: 20000, description: "Two-hour business operations discussion" },
-  "build-your-business": { name: "Build Your Business with AI — Hands-On", amount: 60000, description: "3–4 hour one-on-one business build session" },
+// `lmsSlug` is the slug of the matching course in the `courses` table; it is what
+// gets stored on the enrollment so the Stripe webhook / login backfill grant LMS
+// access. The map key is the routing slug used in the /train-to-be-sharp/* URLs
+// (and Stripe success/cancel redirects), which can differ from the LMS slug.
+const COURSES: Record<string, { name: string; amount: number; description: string; lmsSlug: string }> = {
+  "one-inch-grinder": { name: "One-Inch Grinder Course", amount: 60000, description: "Online course + 3-hour hands-on practicum", lmsSlug: "train-to-be-sharp" },
+  "two-inch-grinder": { name: "Two-Inch Grinder Module", amount: 40000, description: "Hands-on training on two-inch belt platform", lmsSlug: "two-inch-grinder" },
+  "business-process": { name: "Business Process & Automation", amount: 20000, description: "Two-hour business operations discussion", lmsSlug: "business-process" },
+  "build-your-business": { name: "Build Your Business with AI — Hands-On", amount: 60000, description: "3–4 hour one-on-one business build session", lmsSlug: "build-your-business" },
 };
 
 export async function POST(req: NextRequest) {
@@ -52,7 +56,7 @@ export async function POST(req: NextRequest) {
   const { data: enrollment, error: insertError } = await supabase
     .from("course_enrollments")
     .insert({
-      course_slug: courseSlug,
+      course_slug: course.lmsSlug,
       course_name: course.name,
       amount: course.amount,
       customer_name: customerName,
