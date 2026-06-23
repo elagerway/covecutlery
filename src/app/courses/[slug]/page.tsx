@@ -23,6 +23,12 @@ function formatDuration(minutes: number): string {
   return m > 0 ? `${h}h ${m}m` : `${h}h`;
 }
 
+// Maps an LMS course slug to its /train-to-be-sharp purchase-page routing slug
+// (defaults to the same slug when they match).
+const PURCHASE_ROUTING_SLUG: Record<string, string> = {
+  "train-to-be-sharp": "one-inch-grinder",
+};
+
 interface CoursePageProps {
   params: Promise<{ slug: string }>;
 }
@@ -201,9 +207,16 @@ export default async function CoursePage({ params }: CoursePageProps) {
                   )}
                 </div>
               ) : (
-                <div className="rounded-lg border border-amber-500/30 bg-amber-500/10 px-4 py-3">
-                  <p className="text-sm text-amber-200">
-                    This course is invite-only. Check your email for an invitation link, or <a href="mailto:info@coveblades.com" className="underline hover:text-amber-100">contact us</a> to request access.
+                <div className="space-y-3">
+                  <Link
+                    href={`/train-to-be-sharp/${PURCHASE_ROUTING_SLUG[typedCourse.slug] ?? typedCourse.slug}`}
+                    className="inline-flex h-10 items-center gap-2 rounded-lg bg-emerald-500 px-5 text-sm font-medium text-white transition-colors hover:bg-emerald-600"
+                  >
+                    <Lock className="size-4" />
+                    Enroll{typedCourse.is_free ? "" : ` — $${typedCourse.price}`}
+                  </Link>
+                  <p className="text-xs text-neutral-400">
+                    Already purchased with this email? Access unlocks automatically when you sign in — or <a href="mailto:info@coveblades.com" className="underline hover:text-neutral-200">contact us</a>.
                   </p>
                 </div>
               )}
