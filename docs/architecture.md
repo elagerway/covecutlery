@@ -55,7 +55,7 @@ src/
 │   │   │   └── courses/
 │   │   │       └── enrollment/route.ts   # GET list + PATCH toggle enrollment_open per course
 │   │   ├── courses/
-│   │   │   └── enroll/route.ts      # POST — creates course_enrollment + Stripe Checkout (card) or records e-transfer; Turnstile verify
+│   │   │   └── enroll/route.ts      # POST — creates course_enrollment + Stripe Checkout (card) or records e-transfer; Turnstile verify. Maps routing slug → LMS slug (e.g. one-inch-grinder → train-to-be-sharp) so the webhook grants the right course
 │   │   ├── stripe/
 │   │   │   ├── checkout/route.ts    # POST — creates Stripe Checkout session ($50 CAD), stores pending booking in Supabase
 │   │   │   └── webhook/route.ts     # POST — handles checkout.session.completed / expired; confirms booking, marks invoice paid, or enrolls course student
@@ -362,6 +362,8 @@ Schema also has `status` (CHECK `pending|accepted|expired`) and `accepted_at` co
 Two redundant enrollment paths consume invite rows so a customer never gets stranded:
 1. **Auth callback** — `processInvite()` in `src/app/auth/callback/route.ts` runs immediately after `exchangeCodeForSession`. Looks up the invite by `token` from the URL, enrolls, deletes the row.
 2. **Course-page self-heal** — `src/app/courses/[slug]/page.tsx`, when a logged-in user is rendered without an enrollment, looks up any matching pending invite by `(course_id, lowercased email, status='pending', not expired)`. If found, it enrolls + deletes the invite using the service-role client and renders the enrolled view. This is the safety net for the case where the `invite=` query param gets dropped or `getUser()` returns null mid-callback (an @supabase/ssr cookie-timing edge case in Route Handlers). Discovered in production 2026-05-08 when a customer who completed the full email→confirm flow was authenticated but unenrolled.
+
+**Payment enforcement (2026-06-24):** a `user_enrollments` row (LMS access) is created *only* by a paid `course_enrollment` (Stripe webhook / login backfill) or an accepted invite. The lesson page `src/app/courses/[slug]/lessons/[lessonSlug]/page.tsx` previously auto-created an enrollment for any logged-in visitor (the free hole); it now redirects non-enrolled users to the course overview, whose non-enrolled branch shows an **"Enroll — $price"** CTA linking to the matching `/train-to-be-sharp/*` purchase page. The unused `enroll-button.tsx` (free direct insert) was deleted.
 
 **`magpipe_call_logs`** (since 2026-05-08)
 | Column | Type | Notes |

@@ -1,6 +1,19 @@
 # Project Status
 
-**Last updated:** 2026-06-08
+**Last updated:** 2026-06-24
+
+## Milestone 14 — Schedule TZ fix, fresh reviews, course payment enforcement, practicum ✅ Complete
+
+A round of fixes and the start of the practicum: fixed a date bug in the schedule widget, refreshed Google reviews, closed a free-access hole so courses actually require payment, and stood up the Train to Be Sharp practicum (video) curriculum as GitHub issues + LMS stubs.
+
+- [x] **Schedule off-by-one** — `addDays()` built a `Date` at the host's local (UTC) midnight then re-read it as Vancouver, shifting day 0 back a day. Switched to pure UTC calendar arithmetic; label helpers also UTC-safe (`bce9d4b`)
+- [x] **Course prices** — `/courses` + `/courses/[slug]` showed a hardcoded "Free" badge; now driven by `is_free`/`price` ($600 shows correctly) (`ee2b46c`)
+- [x] **Payment enforced for LMS access** — lesson page no longer auto-enrolls any logged-in visitor (it redirects to the overview); `api/courses/enroll` maps routing slug → LMS slug (`one-inch-grinder` → `train-to-be-sharp`) so paying actually grants access; non-enrolled overview shows an "Enroll — $price" CTA; deleted unused free-insert `enroll-button.tsx` (`70d05fa`, `8b7b427`). Access now comes only from a paid enrollment or an invite
+- [x] **Reviews refreshed** — 5 newest 5★ Google reviews pulled via Places Details API and prepended in `ReviewsSection.tsx` (5.0 across 48 ratings) (`e08e518`)
+- [x] **Practicum curriculum** — GitHub epic [#1](https://github.com/elagerway/covecutlery/issues/1) + 10 sub-issues #13–#22 (one video lesson per theory module, each with script + shot list)
+- [x] **Practicum LMS stubs** — `seed_train_to_be_sharp_practicum.sql` adds a "Practicum: Watch Erik Sharpen" module (order 9) with 10 video-lesson stubs; applied to prod (`fb53fa5`)
+- [x] Memories: refreshed `reviews-ingestion`, new `courses-payment-lms`, new `supabase-prod-db-access`
+- [x] Shipped as commits `bce9d4b` → `fb53fa5` on `main`
 
 ## Milestone 13 — Cal booking sync, jobs admin, voice picker + cloning ✅ Complete
 

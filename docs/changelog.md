@@ -1,5 +1,23 @@
 # Changelog
 
+## [2.17.0] — 2026-06-24 — Schedule TZ fix, fresh reviews, course payment enforcement, practicum
+
+### Fixed
+- **Schedule widget off-by-one day** — `addDays()` in `src/lib/calSchedule.ts` built a `Date` at the server's *local* midnight (UTC on the host) then re-read it as Vancouver time, shifting day 0 back a day (highlighted SUN when it was MON). Now uses pure UTC calendar arithmetic; the day/date label helpers also construct/format in UTC so they can't drift on a non-UTC host
+- **Course price showed "Free"** — `/courses` catalog + `/courses/[slug]` hardcoded a "Free" badge despite `is_free`/`price` on the model. Badge now reflects the real price (e.g. Train to Be Sharp $600)
+
+### Changed
+- **Enforced payment before LMS access.** A `user_enrollments` row is now created only by a paid `course_enrollment` (Stripe webhook / login backfill) or an accepted invite:
+  - Lesson page (`courses/[slug]/lessons/[lessonSlug]`) no longer auto-enrolls any logged-in visitor (the free hole) — it redirects non-enrolled users to the course overview
+  - `api/courses/enroll` now maps the routing slug → LMS slug (`one-inch-grinder` → `train-to-be-sharp`) and stores the LMS slug on the enrollment, so paying actually grants access (was a silent mismatch)
+  - Course overview's non-enrolled branch shows an **"Enroll — $price"** CTA to the matching `/train-to-be-sharp/*` purchase page instead of an invite-only dead end
+  - Deleted unused `components/courses/enroll-button.tsx` (free direct insert into `user_enrollments`)
+- **Homepage reviews refreshed** — pulled the 5 newest 5★ Google reviews via the Places Details API and prepended them in `ReviewsSection.tsx` (profile now 5.0 across 48 ratings)
+
+### Added
+- **Train to Be Sharp practicum** — GitHub epic #1 + 10 sub-issues (#13–#22), one per module-aligned video lesson, each with objective, theory mapping, equipment, shot list, and a script outline
+- **Practicum LMS module** — `supabase/seed_train_to_be_sharp_practicum.sql` adds a "Practicum: Watch Erik Sharpen" module (order 9) with 10 `content_type='video'` lesson stubs (placeholder content + issue links; `video_url` filled in as filmed). Applied to prod
+
 ## [2.16.0] — 2026-06-08 — Cal booking sync, jobs admin polish, voice picker + cloning
 
 ### Added
