@@ -151,6 +151,7 @@ export function DashboardSidebar({ user, stats }: SidebarProps) {
             {isAdmin && (
               <Link
                 href="/admin/invoices"
+                prefetch={false}
                 onClick={() => setShowUserModal(false)}
                 className="flex w-full items-center gap-2 rounded-lg px-3 py-2.5 text-sm text-[#D4A017] hover:bg-[#D4A017]/10 transition-colors"
               >

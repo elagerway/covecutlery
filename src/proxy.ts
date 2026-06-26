@@ -44,7 +44,14 @@ export async function proxy(request: NextRequest) {
       url.pathname = "/auth/login";
       url.search = "";
       url.searchParams.set("redirect", pathname);
-      return NextResponse.redirect(url);
+      const redirectResponse = NextResponse.redirect(url);
+      // Carry over any session cookies refreshed by getUser() above so we never
+      // drop a freshly-rotated session on the way to the login redirect (e.g. a
+      // signed-in non-admin shouldn't get logged out just for visiting /admin).
+      supabaseResponse.cookies.getAll().forEach((cookie) => {
+        redirectResponse.cookies.set(cookie);
+      });
+      return redirectResponse;
     }
   }
 
@@ -53,6 +60,19 @@ export async function proxy(request: NextRequest) {
 
 export const config = {
   matcher: [
-    "/((?!_next/static|_next/image|favicon.ico|icon.svg|promaster.png|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+    {
+      // Skip prefetch requests. Next.js prefetches links in the background, but
+      // those responses' Set-Cookie headers are not persisted by the browser.
+      // If the proxy rotated the Supabase refresh token on a prefetch, the next
+      // real navigation would send a stale token, the refresh would fail, and
+      // the user would be bounced to login mid-session. Refresh only on real
+      // navigations, where the rotated cookies actually stick.
+      source:
+        "/((?!_next/static|_next/image|favicon.ico|icon.svg|promaster.png|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
+      missing: [
+        { type: "header", key: "next-router-prefetch" },
+        { type: "header", key: "purpose", value: "prefetch" },
+      ],
+    },
   ],
 };

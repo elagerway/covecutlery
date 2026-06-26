@@ -142,6 +142,7 @@ export default function AdminNav({ email }: AdminNavProps) {
             <Link
               key={href}
               href={href}
+              prefetch={false}
               onClick={() => setMobileMenuOpen(false)}
               className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors"
               style={{
@@ -165,6 +166,7 @@ export default function AdminNav({ email }: AdminNavProps) {
 
         <Link
           href="/dashboard"
+          prefetch={false}
           onClick={() => setMobileMenuOpen(false)}
           className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors hover:text-white"
           style={{ color: "#6B7280" }}
@@ -234,6 +236,7 @@ export default function AdminNav({ email }: AdminNavProps) {
             <Link
               key={href}
               href={href}
+              prefetch={false}
               className="relative flex flex-col items-center gap-1 px-2 py-1"
               style={{ color: active ? "#D4A017" : "#6B7280" }}
             >
