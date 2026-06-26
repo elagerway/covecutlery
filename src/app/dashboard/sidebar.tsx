@@ -4,8 +4,11 @@ import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { createClient } from "@/utils/supabase/client";
-import { BookOpen, User, LayoutDashboard, LogOut, Flame, Trophy, Star, Award } from "lucide-react";
+import { BookOpen, User, LayoutDashboard, LogOut, Flame, Trophy, Star, Award, Shield } from "lucide-react";
 import { cn } from "@/lib/cn";
+
+// Mirrors ADMIN_EMAILS in src/lib/admin.ts (kept inline because admin.ts pulls in server-only imports).
+const ADMIN_EMAILS = ["elagerway@gmail.com", "claude-admin@coveblades.com"];
 
 interface SidebarProps {
   user: { email: string; fullName: string; avatarUrl: string | null };
@@ -46,6 +49,8 @@ export function DashboardSidebar({ user, stats }: SidebarProps) {
   const initials = user.fullName
     ? user.fullName.split(" ").map(n => n[0]).join("").toUpperCase().slice(0, 2)
     : user.email.slice(0, 2).toUpperCase();
+
+  const isAdmin = ADMIN_EMAILS.includes(user.email);
 
   return (
     <aside className="hidden lg:flex w-64 shrink-0 flex-col border-r border-neutral-800 bg-neutral-900/50">
@@ -143,6 +148,16 @@ export function DashboardSidebar({ user, stats }: SidebarProps) {
               <User className="size-4" />
               Profile Settings
             </Link>
+            {isAdmin && (
+              <Link
+                href="/admin/invoices"
+                onClick={() => setShowUserModal(false)}
+                className="flex w-full items-center gap-2 rounded-lg px-3 py-2.5 text-sm text-[#D4A017] hover:bg-[#D4A017]/10 transition-colors"
+              >
+                <Shield className="size-4" />
+                Admin
+              </Link>
+            )}
             <button
               onClick={handleLogout}
               className="flex w-full items-center gap-2 rounded-lg px-3 py-2.5 text-sm text-red-400 hover:bg-red-500/10 transition-colors"

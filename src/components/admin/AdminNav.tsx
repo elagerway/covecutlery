@@ -164,6 +164,21 @@ export default function AdminNav({ email }: AdminNavProps) {
         })}
 
         <Link
+          href="/dashboard"
+          onClick={() => setMobileMenuOpen(false)}
+          className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors hover:text-white"
+          style={{ color: "#6B7280" }}
+        >
+          <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+            <rect x="3" y="3" width="7" height="7" />
+            <rect x="14" y="3" width="7" height="7" />
+            <rect x="14" y="14" width="7" height="7" />
+            <rect x="3" y="14" width="7" height="7" />
+          </svg>
+          User Dashboard
+        </Link>
+
+        <Link
           href="/"
           target="_blank"
           className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm font-medium transition-colors hover:text-white"
