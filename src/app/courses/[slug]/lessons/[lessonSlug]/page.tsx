@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { LessonCompleteButton } from "@/components/courses/lesson-complete-button";
 import { LessonContent } from "@/components/courses/lesson-content";
 import { VideoWithChapters } from "@/components/courses/video-with-chapters";
+import { PracticumSubmission } from "@/components/courses/practicum-submission";
 import { CourseSidebar } from "@/components/courses/course-sidebar";
 import { getCourseSidebarData } from "@/lib/course-sidebar-data";
 import { ChevronLeft, ChevronRight, Clock, FileText, Zap } from "lucide-react";
@@ -139,6 +140,10 @@ export default async function LessonPage({ params }: LessonPageProps) {
             )}
 
           <LessonContent content={currentLesson.content} contentType={currentLesson.content_type} title={currentLesson.title} />
+
+          {currentLesson.slug === "practicum-certification" && (
+            <PracticumSubmission courseSlug={slug} courseId={typedCourse.id} />
+          )}
 
           <div className="border-t border-neutral-800 pt-6">
             <div className="mb-6">
