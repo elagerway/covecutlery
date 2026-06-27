@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { LessonCompleteButton } from "@/components/courses/lesson-complete-button";
 import { LessonContent } from "@/components/courses/lesson-content";
+import { VideoWithChapters } from "@/components/courses/video-with-chapters";
 import { CourseSidebar } from "@/components/courses/course-sidebar";
 import { getCourseSidebarData } from "@/lib/course-sidebar-data";
 import { ChevronLeft, ChevronRight, Clock, FileText, Zap } from "lucide-react";
@@ -130,6 +131,12 @@ export default async function LessonPage({ params }: LessonPageProps) {
             </div>
             <h1 className="text-2xl font-bold tracking-tight text-white">{currentLesson.title}</h1>
           </div>
+
+          {currentLesson.content_type === "video" &&
+            currentLesson.video_url &&
+            /(?:youtube\.com|youtu\.be)/.test(currentLesson.video_url) && (
+              <VideoWithChapters videoUrl={currentLesson.video_url} />
+            )}
 
           <LessonContent content={currentLesson.content} contentType={currentLesson.content_type} title={currentLesson.title} />
 
