@@ -131,7 +131,7 @@ export default async function LessonPage({ params }: LessonPageProps) {
             <h1 className="text-2xl font-bold tracking-tight text-white">{currentLesson.title}</h1>
           </div>
 
-          <LessonContent content={currentLesson.content} contentType={currentLesson.content_type} />
+          <LessonContent content={currentLesson.content} contentType={currentLesson.content_type} title={currentLesson.title} />
 
           <div className="border-t border-neutral-800 pt-6">
             <div className="mb-6">

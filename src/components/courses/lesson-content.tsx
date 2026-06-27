@@ -9,6 +9,29 @@ import { Copy, Check } from "lucide-react";
 interface LessonContentProps {
   content: string;
   contentType: string;
+  /** Lesson title — used to strip a redundant leading heading from the content. */
+  title?: string;
+}
+
+// Lesson bodies are seeded with a leading `## <title>` that duplicates the page's
+// own <h1>. Drop that first heading when it matches the lesson title so the title
+// isn't printed twice. Comparison ignores case, punctuation, and dash variants.
+function stripDuplicateTitle(content: string, title?: string): string {
+  if (!title) return content;
+  const norm = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, "");
+  const target = norm(title);
+  if (!target) return content;
+
+  const lines = content.split("\n");
+  let i = 0;
+  while (i < lines.length && lines[i].trim() === "") i++;
+  const heading = lines[i]?.match(/^#{1,6}\s+(.+?)\s*$/);
+  if (heading && norm(heading[1]) === target) {
+    lines.splice(0, i + 1);
+    if (lines.length && lines[0].trim() === "") lines.shift();
+    return lines.join("\n");
+  }
+  return content;
 }
 
 function VideoThumbnail({ src, ytId, caption }: { src: string; ytId: string; caption: string }) {
@@ -53,9 +76,8 @@ function CodeBlock({ children, ...props }: React.HTMLAttributes<HTMLPreElement>)
   const [copied, setCopied] = useState(false);
 
   function handleCopy() {
-    const text = typeof children === "string"
-      ? children
-      : (children as any)?.props?.children ?? "";
+    const nested = (children as { props?: { children?: unknown } })?.props?.children;
+    const text = typeof children === "string" ? children : String(nested ?? "");
     navigator.clipboard.writeText(text);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
@@ -174,12 +196,13 @@ const markdownComponents: Components = {
   },
 };
 
-export function LessonContent({ content, contentType }: LessonContentProps) {
+export function LessonContent({ content, contentType, title }: LessonContentProps) {
+  const body = stripDuplicateTitle(content, title);
   return (
     <div className="mb-12 max-w-none">
       <div className="prose prose-invert max-w-none">
         <ReactMarkdown remarkPlugins={[remarkGfm]} components={markdownComponents}>
-          {content}
+          {body}
         </ReactMarkdown>
       </div>
     </div>
