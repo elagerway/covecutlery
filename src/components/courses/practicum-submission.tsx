@@ -2,10 +2,8 @@
 
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
-import { createClient } from "@/utils/supabase/client";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/cn";
-import { CheckCircle2, Clock, Loader2, RotateCcw, Upload, LinkIcon } from "lucide-react";
+import { CheckCircle2, Clock, Loader2, RotateCcw } from "lucide-react";
 
 interface Submission {
   id: string;
@@ -15,25 +13,12 @@ interface Submission {
   reviewed_at: string | null;
   submitted_at: string;
   external_url: string | null;
-  storage_path: string | null;
 }
 
-const MAX_BYTES = 200 * 1024 * 1024; // 200 MB — matches the bucket limit
-const ACCEPT = "video/mp4,video/quicktime,video/webm";
-
-export function PracticumSubmission({
-  courseSlug,
-  courseId,
-}: {
-  courseSlug: string;
-  courseId: string;
-}) {
-  const supabase = createClient();
+export function PracticumSubmission({ courseSlug }: { courseSlug: string }) {
   const [loading, setLoading] = useState(true);
   const [submission, setSubmission] = useState<Submission | null>(null);
 
-  const [mode, setMode] = useState<"upload" | "link">("upload");
-  const [file, setFile] = useState<File | null>(null);
   const [link, setLink] = useState("");
   const [note, setNote] = useState("");
   const [busy, setBusy] = useState(false);
@@ -60,43 +45,21 @@ export function PracticumSubmission({
 
   async function submit() {
     setError(null);
+    if (!link.trim()) {
+      setError("Paste a link to your video.");
+      return;
+    }
     setBusy(true);
     try {
-      let storagePath: string | null = null;
-      let externalUrl: string | null = null;
-
-      if (mode === "upload") {
-        if (!file) throw new Error("Choose a video file to upload.");
-        if (file.size > MAX_BYTES)
-          throw new Error(
-            "That file is over 200 MB. Trim it to a short clip, or use the link option (YouTube unlisted, Drive, Loom)."
-          );
-        const {
-          data: { user },
-        } = await supabase.auth.getUser();
-        if (!user) throw new Error("Your session expired — please sign in again.");
-        const ext = file.name.split(".").pop()?.toLowerCase() || "mp4";
-        const path = `${user.id}/${courseId}/${Date.now()}.${ext}`;
-        const { error: upErr } = await supabase.storage
-          .from("practicum-submissions")
-          .upload(path, file, { upsert: false, contentType: file.type });
-        if (upErr) throw new Error(upErr.message);
-        storagePath = path;
-      } else {
-        if (!link.trim()) throw new Error("Paste a link to your video.");
-        externalUrl = link.trim();
-      }
-
       const res = await fetch("/api/courses/practicum-submission", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ courseSlug, storagePath, externalUrl, studentNote: note }),
+        body: JSON.stringify({ courseSlug, externalUrl: link.trim(), studentNote: note }),
       });
       if (!res.ok) {
         const d = await res.json().catch(() => ({}));
         throw new Error(d.error || "Submission failed. Please try again.");
       }
-      setFile(null);
       setLink("");
       setNote("");
       await load();
@@ -107,8 +70,7 @@ export function PracticumSubmission({
     }
   }
 
-  const wrapper =
-    "my-8 rounded-xl border border-neutral-700 bg-neutral-900/50 p-5 sm:p-6";
+  const wrapper = "my-8 rounded-xl border border-neutral-700 bg-neutral-900/50 p-5 sm:p-6";
 
   if (loading) {
     return (
@@ -133,6 +95,16 @@ export function PracticumSubmission({
               your technique and you&apos;ll be notified with feedback. Your certificate is issued
               once your video is approved.
             </p>
+            {submission.external_url && (
+              <a
+                href={submission.external_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-2 inline-block text-sm text-emerald-400 hover:underline"
+              >
+                View the video you submitted →
+              </a>
+            )}
           </div>
         </div>
       </div>
@@ -172,8 +144,10 @@ export function PracticumSubmission({
     <div className={wrapper}>
       <h3 className="font-semibold text-white">Submit your technique video</h3>
       <p className="mt-1 text-sm text-neutral-400">
-        Record yourself taking a knife from dull to finished, then submit it here for Erik to
-        review. Your certificate is issued once your video is approved.
+        Record yourself taking a knife from dull to finished, upload it to{" "}
+        <span className="text-neutral-300">YouTube (unlisted)</span> or{" "}
+        <span className="text-neutral-300">Vimeo</span>, then paste the link here for Erik to review.
+        Your certificate is issued once your video is approved.
       </p>
 
       {changesRequested && submission && (
@@ -188,52 +162,20 @@ export function PracticumSubmission({
         </div>
       )}
 
-      {/* Mode toggle */}
-      <div className="mt-4 inline-flex rounded-lg border border-neutral-700 p-0.5">
-        {(["upload", "link"] as const).map((m) => (
-          <button
-            key={m}
-            type="button"
-            onClick={() => setMode(m)}
-            className={cn(
-              "flex items-center gap-1.5 rounded-md px-3 py-1.5 text-sm transition-colors",
-              mode === m ? "bg-neutral-700 text-white" : "text-neutral-400 hover:text-white"
-            )}
-          >
-            {m === "upload" ? <Upload className="size-4" /> : <LinkIcon className="size-4" />}
-            {m === "upload" ? "Upload file" : "Paste link"}
-          </button>
-        ))}
-      </div>
-
       <div className="mt-4 space-y-4">
-        {mode === "upload" ? (
-          <div>
-            <input
-              type="file"
-              accept={ACCEPT}
-              onChange={(e) => setFile(e.target.files?.[0] ?? null)}
-              className="block w-full text-sm text-neutral-300 file:mr-3 file:rounded-md file:border-0 file:bg-neutral-700 file:px-3 file:py-1.5 file:text-sm file:text-white hover:file:bg-neutral-600"
-            />
-            <p className="mt-1.5 text-xs text-neutral-500">
-              MP4 or MOV, up to 200 MB. For longer clips, upload to YouTube (unlisted) and use the
-              link option.
-            </p>
-          </div>
-        ) : (
-          <div>
-            <input
-              type="url"
-              value={link}
-              onChange={(e) => setLink(e.target.value)}
-              placeholder="https://youtu.be/…  (YouTube unlisted, Google Drive, Loom, or Vimeo)"
-              className="block w-full rounded-lg border border-neutral-700 bg-neutral-950 px-3 py-2 text-sm text-white placeholder:text-neutral-600 focus:border-emerald-500 focus:outline-none"
-            />
-            <p className="mt-1.5 text-xs text-neutral-500">
-              Make sure the link is viewable by anyone with the link (unlisted is fine).
-            </p>
-          </div>
-        )}
+        <div>
+          <input
+            type="url"
+            value={link}
+            onChange={(e) => setLink(e.target.value)}
+            placeholder="https://youtu.be/…  or  https://vimeo.com/…"
+            className="block w-full rounded-lg border border-neutral-700 bg-neutral-950 px-3 py-2 text-sm text-white placeholder:text-neutral-600 focus:border-emerald-500 focus:outline-none"
+          />
+          <p className="mt-1.5 text-xs text-neutral-500">
+            YouTube or Vimeo only. Set it to <span className="text-neutral-400">Unlisted</span> so
+            anyone with the link can view it.
+          </p>
+        </div>
 
         <div>
           <textarea
@@ -251,7 +193,7 @@ export function PracticumSubmission({
           {busy ? (
             <>
               <Loader2 className="size-4 animate-spin" />
-              {mode === "upload" ? "Uploading…" : "Submitting…"}
+              Submitting…
             </>
           ) : changesRequested ? (
             "Resubmit for review"

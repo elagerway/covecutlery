@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/utils/supabase/server";
 
-// Student practicum technique-video submissions (GitHub issue #23, Phase 2).
-// The file itself is uploaded client-side straight to the private
-// 'practicum-submissions' bucket (own folder, enforced by storage RLS); this
-// route records the submission row (or a pasted link) after enrollment checks.
+// Student practicum technique-video submissions (GitHub issue #23).
+// Link-only: students host their clip on YouTube (unlisted) or Vimeo and submit
+// the URL — we don't store video files. This route records/reads the submission
+// row (enrollment-guarded, RLS-backed).
 
 const ALLOWED_LINK =
-  /^https?:\/\/(www\.)?(youtube\.com|youtu\.be|drive\.google\.com|loom\.com|vimeo\.com)\//i;
+  /^https?:\/\/(www\.)?(youtube\.com|youtu\.be|vimeo\.com|player\.vimeo\.com)\//i;
 
 export async function GET(req: NextRequest) {
   const supabase = await createClient();
@@ -30,7 +30,7 @@ export async function GET(req: NextRequest) {
   const { data: submission } = await supabase
     .from("practicum_submissions")
     .select(
-      "id, status, student_note, reviewer_notes, reviewed_at, submitted_at, external_url, storage_path"
+      "id, status, student_note, reviewer_notes, reviewed_at, submitted_at, external_url"
     )
     .eq("user_id", user.id)
     .eq("course_id", course.id)
@@ -52,13 +52,20 @@ export async function POST(req: NextRequest) {
   if (!body || typeof body !== "object")
     return NextResponse.json({ error: "Invalid body" }, { status: 400 });
 
-  const { courseSlug, storagePath, externalUrl, studentNote } = body as {
+  const { courseSlug, externalUrl, studentNote } = body as {
     courseSlug?: string;
-    storagePath?: string;
     externalUrl?: string;
     studentNote?: string;
   };
   if (!courseSlug) return NextResponse.json({ error: "Missing courseSlug" }, { status: 400 });
+
+  const url = typeof externalUrl === "string" ? externalUrl.trim() : "";
+  if (!url) return NextResponse.json({ error: "Paste a link to your video." }, { status: 400 });
+  if (!ALLOWED_LINK.test(url))
+    return NextResponse.json(
+      { error: "Link must be a YouTube or Vimeo URL." },
+      { status: 400 }
+    );
 
   const { data: course } = await supabase
     .from("courses")
@@ -74,20 +81,8 @@ export async function POST(req: NextRequest) {
     .eq("user_id", user.id)
     .eq("course_id", course.id)
     .maybeSingle();
-  if (!enrollment) return NextResponse.json({ error: "You're not enrolled in this course." }, { status: 403 });
-
-  const path = typeof storagePath === "string" && storagePath ? storagePath : null;
-  const url = typeof externalUrl === "string" && externalUrl.trim() ? externalUrl.trim() : null;
-
-  if (!path && !url)
-    return NextResponse.json({ error: "Provide a video file or a link." }, { status: 400 });
-  if (url && !ALLOWED_LINK.test(url))
-    return NextResponse.json(
-      { error: "Link must be a YouTube, Google Drive, Loom, or Vimeo URL." },
-      { status: 400 }
-    );
-  if (path && !path.startsWith(`${user.id}/`))
-    return NextResponse.json({ error: "Invalid upload path." }, { status: 400 });
+  if (!enrollment)
+    return NextResponse.json({ error: "You're not enrolled in this course." }, { status: 403 });
 
   const note = typeof studentNote === "string" ? studentNote.slice(0, 2000) : "";
 
@@ -97,7 +92,6 @@ export async function POST(req: NextRequest) {
     .insert({
       user_id: user.id,
       course_id: course.id,
-      storage_path: path,
       external_url: url,
       student_note: note,
     })
