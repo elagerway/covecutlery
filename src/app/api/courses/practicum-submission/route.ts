@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/utils/supabase/server";
+import { ADMIN_EMAILS } from "@/lib/admin";
+import { sendEmail } from "@/lib/notify";
 
 // Student practicum technique-video submissions (GitHub issue #23).
 // Link-only: students host their clip on YouTube (unlisted) or Vimeo and submit
@@ -100,6 +102,18 @@ export async function POST(req: NextRequest) {
 
   if (error) return NextResponse.json({ error: error.message }, { status: 400 });
 
-  // TODO (Phase 5): notify Erik via Postmark that a new video was submitted.
+  // Notify Erik that a new video is awaiting review (best-effort).
+  await sendEmail({
+    to: ADMIN_EMAILS[0],
+    replyTo: user.email ?? undefined,
+    subject: `New practicum video to review — ${user.email ?? "a student"}`,
+    text: `${user.email ?? "A student"} submitted a practicum technique video for review.
+
+Video: ${url}
+Note: ${note || "(none)"}
+
+Review it in the admin: https://coveblades.com/admin/training`,
+  });
+
   return NextResponse.json({ submission: inserted });
 }

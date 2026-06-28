@@ -87,6 +87,34 @@ export async function POST(req: NextRequest) {
   if (!course) return NextResponse.json({ error: "Course not found" }, { status: 404 });
   if (!authUser?.user) return NextResponse.json({ error: "User not found" }, { status: 404 });
 
+  // Gate (#23 Phase 4): if this course has a practicum module, the student must
+  // have an approved technique-video submission before a certificate is issued.
+  const { data: practicumModule } = await supabase
+    .from("modules")
+    .select("id")
+    .eq("course_id", courseId)
+    .eq("slug", "practicum")
+    .maybeSingle();
+  if (practicumModule) {
+    const { data: approved } = await supabase
+      .from("practicum_submissions")
+      .select("id")
+      .eq("user_id", userId)
+      .eq("course_id", courseId)
+      .eq("status", "approved")
+      .limit(1)
+      .maybeSingle();
+    if (!approved) {
+      return NextResponse.json(
+        {
+          error:
+            "This student doesn't have an approved practicum video yet. Review and approve their submission before issuing the certificate.",
+        },
+        { status: 422 }
+      );
+    }
+  }
+
   const recipientName = (recipientNameOverride?.trim()) || profile?.full_name?.trim() || authUser.user.email || "Student";
   const issuedDate = issuedDateStr ? new Date(issuedDateStr + "T12:00:00-07:00") : new Date();
 

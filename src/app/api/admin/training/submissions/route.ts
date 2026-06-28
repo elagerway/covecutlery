@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAdmin, getServiceClient } from "@/lib/admin";
+import { sendEmail } from "@/lib/notify";
 
 // Admin review of practicum video submissions (GitHub issue #23, Phase 3).
 // GET ?userId=<id>  -> that student's submissions (newest first)
@@ -64,20 +65,45 @@ export async function PATCH(req: NextRequest) {
     return NextResponse.json({ error: "Invalid status" }, { status: 400 });
 
   const svc = getServiceClient();
+  const notes = typeof reviewerNotes === "string" ? reviewerNotes.slice(0, 2000) : "";
   const { data, error } = await svc
     .from("practicum_submissions")
     .update({
       status,
-      reviewer_notes: typeof reviewerNotes === "string" ? reviewerNotes.slice(0, 2000) : "",
+      reviewer_notes: notes,
       reviewer_id: admin.id,
       reviewed_at: new Date().toISOString(),
     })
     .eq("id", id)
-    .select("id, status")
+    .select("id, status, user_id")
     .single();
 
   if (error) return NextResponse.json({ error: error.message }, { status: 400 });
 
-  // TODO (Phase 5): email the student their decision via Postmark.
+  // Email the student their decision (best-effort).
+  if (status === "approved" || status === "changes_requested") {
+    const { data: authUser } = await svc.auth.admin.getUserById(data.user_id);
+    const email = authUser?.user?.email;
+    if (email) {
+      if (status === "approved") {
+        await sendEmail({
+          to: email,
+          subject: "Your practicum video is approved — Cove Blades",
+          text: `Great work — Erik approved your practicum technique video.${
+            notes ? `\n\nFeedback: ${notes}` : ""
+          }\n\nYour certificate can now be issued. View your dashboard: https://coveblades.com/dashboard/certificates`,
+        });
+      } else {
+        await sendEmail({
+          to: email,
+          subject: "Practicum video — changes requested — Cove Blades",
+          text: `Erik reviewed your practicum technique video and asked for some changes:\n\n${
+            notes || "Please refine your technique and resubmit."
+          }\n\nResubmit here: https://coveblades.com/courses/train-to-be-sharp/lessons/practicum-certification`,
+        });
+      }
+    }
+  }
+
   return NextResponse.json({ submission: data });
 }
