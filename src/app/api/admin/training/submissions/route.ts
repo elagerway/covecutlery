@@ -99,7 +99,7 @@ export async function PATCH(req: NextRequest) {
           subject: "Practicum video — changes requested — Cove Blades",
           text: `Erik reviewed your practicum technique video and asked for some changes:\n\n${
             notes || "Please refine your technique and resubmit."
-          }\n\nResubmit here: https://coveblades.com/courses/train-to-be-sharp/lessons/practicum-certification`,
+          }\n\nResubmit here: https://coveblades.com/courses/train-to-be-sharp/lessons/practicum-remote-certification`,
         });
       }
     }

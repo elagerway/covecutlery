@@ -78,16 +78,33 @@ Use the chapter list under the video to jump to any section.', 'https://youtu.be
 Use the chapter list under the video to jump to any section.', 'https://youtu.be/_Aam40x1HDw?t=2537', 19),
 ('d1000001-0020-4000-8000-000000000001', 'b1b2c3d4-0010-4000-8000-000000000001', 'Wrap-Up & Final Tips', 'practicum-wrap-up', 'video', 'Keeping blades cool, belt care, sourcing supplies, dust extraction, and a clean workspace.
 
-Use the chapter list under the video to jump to any section.', 'https://youtu.be/_Aam40x1HDw?t=2638', 20),
--- Remote certification: dedicated final step — points at the certification clip
--- and hosts the video-upload element (rendered by the lesson page for this slug).
-('d1000001-0021-4000-8000-000000000001', 'b1b2c3d4-0010-4000-8000-000000000001', 'Remote Certification — Submit Your Video', 'practicum-remote-certification', 'video', 'To earn your Train to Be Sharp certificate, Erik personally reviews your technique — a remote check-off so your certificate reflects real ability.
+Use the chapter list under the video to jump to any section.', 'https://youtu.be/_Aam40x1HDw?t=2638', 20)
+ON CONFLICT (module_id, slug) DO NOTHING;
 
-**Watch the certification clip above** (it starts at the “Certification & Video Review” section of the practicum), then:
+-- Remote Certification — its own section (module) after the practicum. Points at
+-- the certification clip and hosts the video-upload element (the lesson page
+-- renders it for slug 'practicum-remote-certification').
+INSERT INTO public.modules (id, course_id, title, slug, description, "order")
+VALUES (
+  'b1b2c3d4-0011-4000-8000-000000000001',
+  'a1b2c3d4-0001-4000-8000-000000000001',
+  'Remote Certification',
+  'remote-certification',
+  'Earn your certificate: submit a video of your technique for Erik''s personal review and sign-off.',
+  10
+)
+ON CONFLICT (course_id, slug) DO NOTHING;
 
-1. Record yourself taking a knife from dull to finished — a few focused minutes is plenty.
-2. Upload it to YouTube (unlisted) or Vimeo.
-3. Paste the link below and submit it for review.
+INSERT INTO public.lessons (id, module_id, title, slug, content_type, content, video_url, "order") VALUES
+('d1000001-0021-4000-8000-000000000001', 'b1b2c3d4-0011-4000-8000-000000000001', 'Remote Certification — Submit Your Video', 'practicum-remote-certification', 'video', 'Train to Be Sharp is certified by Erik personally — there''s no automated pass. For **remote students** (anyone completing the course online rather than in person), that sign-off happens by video review. Here''s exactly how it works:
 
-Erik will either approve it — which unlocks your certificate — or send feedback so you can resubmit. You''ll be notified by email either way.', 'https://youtu.be/_Aam40x1HDw?t=2481', 21)
+**1. Finish the practicum.** Watch the full walkthrough and practice until you can take a knife from dull to a clean, finished edge.
+
+**2. Record your technique.** Film yourself sharpening one knife start to finish — grinding, raising and chasing the burr, polishing, stropping, and a quick sharpness test. A few focused minutes is plenty; good lighting and a clear view of the edge help.
+
+**3. Upload it and submit the link.** Put the clip on YouTube (set to *Unlisted*) or Vimeo, then paste the link below.
+
+**4. Erik reviews it.** You''ll get an email when he''s reviewed it — he''ll either **approve** it (which unlocks your certificate) or **request changes** with specific feedback so you can refine and resubmit. There''s no limit on resubmissions.
+
+Your certificate is issued only after your video is approved, so it reflects real, demonstrated ability — not just finishing the lessons.', 'https://youtu.be/_Aam40x1HDw?t=2481', 1)
 ON CONFLICT (module_id, slug) DO NOTHING;
