@@ -229,12 +229,16 @@ export default async function CoursePage({ params }: CoursePageProps) {
               const modLessonIds = mod.lessons.map((l) => l.id);
               const modCompleted = modLessonIds.filter((id) => completedLessonIds.has(id)).length;
               const modMinutes = mod.lessons.reduce((s, l) => s + estimateLessonMinutes(l), 0) + (quizByModule.has(mod.id) ? 3 : 0);
+              const isCertMod = mod.slug === "remote-certification";
 
               return (
-                <Card key={mod.id}>
+                <Card key={mod.id} className={isCertMod ? "border-[#D4A017]/40" : undefined}>
                   <CardHeader>
                     <div className="flex items-center justify-between">
-                      <CardTitle>Module {modIndex + 1}: {mod.title}</CardTitle>
+                      <CardTitle className={isCertMod ? "flex items-center gap-2 text-[#D4A017]" : undefined}>
+                        {isCertMod && <Award className="size-5" />}
+                        Module {modIndex + 1}: {mod.title}
+                      </CardTitle>
                       <div className="flex items-center gap-3">
                         <span className="flex items-center gap-1 text-xs text-neutral-400">
                           <Clock className="size-3" />
@@ -259,7 +263,11 @@ export default async function CoursePage({ params }: CoursePageProps) {
                                 href={`/courses/${slug}/lessons/${lesson.slug}`}
                                 className={cn(
                                   "flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors hover:bg-neutral-800",
-                                  isComplete ? "text-neutral-500" : "text-neutral-200"
+                                  isComplete
+                                    ? "text-neutral-500"
+                                    : lesson.slug === "practicum-remote-certification"
+                                      ? "border border-[#D4A017]/40 bg-[#D4A017]/10 font-semibold text-[#D4A017] hover:bg-[#D4A017]/20"
+                                      : "text-neutral-200"
                                 )}
                               >
                                 {isComplete ? (

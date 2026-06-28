@@ -43,15 +43,24 @@ export function CourseSidebar({
         <h3 className="mb-3 text-sm font-semibold text-white">{course.title}</h3>
 
         <nav className="space-y-4">
-          {course.modules.map((mod) => (
+          {course.modules.map((mod) => {
+            const isCertMod = mod.slug === "remote-certification";
+            return (
             <div key={mod.id}>
-              <p className="mb-1 text-xs font-medium uppercase tracking-wider text-neutral-500">
+              <p
+                className={cn(
+                  "mb-1 flex items-center gap-1.5 text-xs uppercase tracking-wider",
+                  isCertMod ? "font-semibold text-[#D4A017]" : "font-medium text-neutral-500"
+                )}
+              >
+                {isCertMod && <Award className="size-3.5" />}
                 {mod.title}
               </p>
               <ul className="space-y-0.5">
                 {mod.lessons.map((lesson) => {
                   const isActive = lesson.id === activeLessonId;
                   const isComplete = completedLessonIds.has(lesson.id);
+                  const isCert = lesson.slug === "practicum-remote-certification";
                   return (
                     <li key={lesson.id}>
                       <Link
@@ -60,12 +69,14 @@ export function CourseSidebar({
                           "flex items-center gap-2 rounded-md px-2 py-1.5 text-sm transition-colors",
                           isActive
                             ? "bg-emerald-500/10 font-medium text-emerald-400"
-                            : "text-neutral-400 hover:bg-neutral-800 hover:text-white"
+                            : isCert
+                              ? "border border-[#D4A017]/40 bg-[#D4A017]/10 font-semibold text-[#D4A017] hover:bg-[#D4A017]/20"
+                              : "text-neutral-400 hover:bg-neutral-800 hover:text-white"
                         )}
                       >
                         {isComplete ? (
                           <CheckCircle2 className="size-3.5 shrink-0 text-green-500" />
-                        ) : lesson.slug === "practicum-remote-certification" ? (
+                        ) : isCert ? (
                           <Award className="size-3.5 shrink-0 text-[#D4A017]" />
                         ) : (
                           <BookOpen className="size-3.5 shrink-0" />
@@ -96,7 +107,8 @@ export function CourseSidebar({
                 })()}
               </ul>
             </div>
-          ))}
+            );
+          })}
         </nav>
       </div>
     </aside>
