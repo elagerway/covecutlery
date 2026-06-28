@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from "react";
 import { StudentCertificates } from "./StudentCertificates";
+import { PracticumSubmissions } from "./PracticumSubmissions";
 
 interface StudentRow {
   user_id: string;
@@ -166,6 +167,8 @@ export function TrainingRoster({ students: initial, wrongAnswers, courseSlug, co
             </div>
           </div>
         </div>
+
+        <PracticumSubmissions userId={selected.user_id} />
 
         <StudentCertificates
           userId={selected.user_id}

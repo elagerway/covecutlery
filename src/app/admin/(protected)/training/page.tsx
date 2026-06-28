@@ -2,6 +2,7 @@ import { createAdminClient } from "@/utils/supabase/admin";
 import { TrainingInviteForm } from "@/components/admin/TrainingInviteForm";
 import { TrainingRoster } from "@/components/admin/TrainingRoster";
 import { EnrollmentToggles } from "@/components/admin/EnrollmentToggles";
+import { PracticumSubmissions } from "@/components/admin/PracticumSubmissions";
 
 export default async function TrainingAdminPage() {
   const supabase = createAdminClient();
@@ -168,6 +169,8 @@ export default async function TrainingAdminPage() {
           <p className="text-xs text-neutral-400">Wrong Answers</p>
         </div>
       </div>
+
+      <PracticumSubmissions />
 
       <EnrollmentToggles
         initial={(courses ?? []).map((c: any) => ({
