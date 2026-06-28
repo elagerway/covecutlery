@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { BookOpen, CheckCircle2, ChevronLeft, Zap, Trophy } from "lucide-react";
+import { BookOpen, CheckCircle2, ChevronLeft, Zap, Trophy, Award } from "lucide-react";
 import { cn } from "@/lib/cn";
 import type { CourseWithModules } from "@/lib/types/database";
 
@@ -65,6 +65,8 @@ export function CourseSidebar({
                       >
                         {isComplete ? (
                           <CheckCircle2 className="size-3.5 shrink-0 text-green-500" />
+                        ) : lesson.slug === "practicum-remote-certification" ? (
+                          <Award className="size-3.5 shrink-0 text-[#D4A017]" />
                         ) : (
                           <BookOpen className="size-3.5 shrink-0" />
                         )}

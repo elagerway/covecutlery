@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { CourseProgress } from "@/components/courses/course-progress";
 import { CourseSidebar } from "@/components/courses/course-sidebar";
 import { getCourseSidebarData } from "@/lib/course-sidebar-data";
-import { BookOpen, CheckCircle2, ChevronRight, Clock, PlayCircle, Zap, Trophy, Lock } from "lucide-react";
+import { BookOpen, CheckCircle2, ChevronRight, Clock, PlayCircle, Zap, Trophy, Lock, Award } from "lucide-react";
 import { cn } from "@/lib/cn";
 import type { CourseWithModules, Lesson, UserProgress } from "@/lib/types/database";
 
@@ -264,6 +264,8 @@ export default async function CoursePage({ params }: CoursePageProps) {
                               >
                                 {isComplete ? (
                                   <CheckCircle2 className="size-4 shrink-0 text-green-500" />
+                                ) : lesson.slug === "practicum-remote-certification" ? (
+                                  <Award className="size-4 shrink-0 text-[#D4A017]" />
                                 ) : (
                                   <BookOpen className="size-4 shrink-0 text-neutral-500" />
                                 )}
@@ -276,7 +278,11 @@ export default async function CoursePage({ params }: CoursePageProps) {
                               </Link>
                             ) : (
                               <div className="flex items-center gap-3 px-3 py-2 text-sm text-neutral-500">
-                                <BookOpen className="size-4 shrink-0" />
+                                {lesson.slug === "practicum-remote-certification" ? (
+                                  <Award className="size-4 shrink-0 text-[#D4A017]" />
+                                ) : (
+                                  <BookOpen className="size-4 shrink-0" />
+                                )}
                                 <span className="flex-1">{lesson.title}</span>
                                 <span className="flex items-center gap-1 text-xs">
                                   <Clock className="size-3" />
