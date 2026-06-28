@@ -141,7 +141,7 @@ export default async function LessonPage({ params }: LessonPageProps) {
 
           <LessonContent content={currentLesson.content} contentType={currentLesson.content_type} title={currentLesson.title} />
 
-          {currentLesson.slug === "practicum-certification" && (
+          {currentLesson.slug === "practicum-remote-certification" && (
             <PracticumSubmission courseSlug={slug} />
           )}
 

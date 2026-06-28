@@ -78,5 +78,16 @@ Use the chapter list under the video to jump to any section.', 'https://youtu.be
 Use the chapter list under the video to jump to any section.', 'https://youtu.be/_Aam40x1HDw?t=2537', 19),
 ('d1000001-0020-4000-8000-000000000001', 'b1b2c3d4-0010-4000-8000-000000000001', 'Wrap-Up & Final Tips', 'practicum-wrap-up', 'video', 'Keeping blades cool, belt care, sourcing supplies, dust extraction, and a clean workspace.
 
-Use the chapter list under the video to jump to any section.', 'https://youtu.be/_Aam40x1HDw?t=2638', 20)
+Use the chapter list under the video to jump to any section.', 'https://youtu.be/_Aam40x1HDw?t=2638', 20),
+-- Remote certification: dedicated final step — points at the certification clip
+-- and hosts the video-upload element (rendered by the lesson page for this slug).
+('d1000001-0021-4000-8000-000000000001', 'b1b2c3d4-0010-4000-8000-000000000001', 'Remote Certification — Submit Your Video', 'practicum-remote-certification', 'video', 'To earn your Train to Be Sharp certificate, Erik personally reviews your technique — a remote check-off so your certificate reflects real ability.
+
+**Watch the certification clip above** (it starts at the “Certification & Video Review” section of the practicum), then:
+
+1. Record yourself taking a knife from dull to finished — a few focused minutes is plenty.
+2. Upload it to YouTube (unlisted) or Vimeo.
+3. Paste the link below and submit it for review.
+
+Erik will either approve it — which unlocks your certificate — or send feedback so you can resubmit. You''ll be notified by email either way.', 'https://youtu.be/_Aam40x1HDw?t=2481', 21)
 ON CONFLICT (module_id, slug) DO NOTHING;
