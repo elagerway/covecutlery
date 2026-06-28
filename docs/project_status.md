@@ -1,6 +1,23 @@
 # Project Status
 
-**Last updated:** 2026-06-24
+**Last updated:** 2026-06-27
+
+## Milestone 15 — Practicum video + remote certification, admin view-switch, auth fix ✅ Complete
+
+Filmed and shipped the Train to Be Sharp Level 1 practicum as a single chaptered video, rebuilt the Practicum module around it (one lesson per chapter), and built the full **remote-certification loop** — students submit a technique video, Erik reviews it, and the certificate is gated on approval — as its own course section. Plus an admin/user view switcher and an auth bounce-to-login fix.
+
+- [x] **Admin ↔ User view switching** — the dashboard user modal shows an "Admin" link for admin emails; the admin sidebar gets a "User Dashboard" link back (`fbab0cb`)
+- [x] **Auth bounce-to-login fix** — Next prefetch of admin links hit `proxy.ts` (the renamed middleware) and rotated the Supabase refresh token on requests whose `Set-Cookie` the browser drops, logging admins out mid-session. Fixed by excluding prefetch from the proxy matcher, carrying refreshed cookies onto the login redirect, and `prefetch={false}` on admin/switch links (`f3ca412`)
+- [x] **Practicum video** — produced the 44-min Level 1 practicum (ProRes master → 1080p H.264 + HLS adaptive set), transcribed locally with `whisper.cpp`, and authored **20 chapters**; uploaded to YouTube unlisted (`_Aam40x1HDw`) with description timestamps
+- [x] **Clickable chapters** — new `components/courses/video-with-chapters.tsx` (YouTube IFrame API) embeds the player and a clickable chapter list that seeks it (active chapter highlights); rendered for any video lesson with a YouTube `video_url`
+- [x] **Practicum module = one lesson per chapter (20)** — replaced the 10 theory-plan stubs with the 20 actual chapters, each deep-linked to its timestamp (`?t=`). No student progress existed (`a145080`, `7b0abdb`)
+- [x] **Lesson double-title fix** — lessons rendered their title twice (page `<h1>` + leading `## <title>` in content); `LessonContent` now strips the leading heading when it matches the title (`8e2fcaa`)
+- [x] **Remote certification (issue [#23](https://github.com/elagerway/covecutlery/issues/23), Phases 1–5)** — **link-only** (YouTube/Vimeo; no stored files): `practicum_submissions` table + RLS, student submission UI + `api/courses/practicum-submission`, admin review queue (`PracticumSubmissions` + `api/admin/training/submissions`) on the Training page and per student, **certificate gating** (issuance blocked until an approved submission, only for courses with a practicum module), and Postmark notifications both ways via `src/lib/notify.ts` (`81f9b5f`, `a0ac2e7`, `50bc668`, `d379e3c`, `8bf943d`)
+- [x] **Remote Certification as its own section** — moved out of the practicum module into a dedicated "Remote Certification" module (order 10) with remote-student process clarification, a gold-emphasized header/row, and a medal icon; completion (green-check) workflow preserved (`c9afa32`, `8933b24`, `16b2378`, `3613b04`)
+- [x] **Migrations** `20260627000000` (practicum_submissions + bucket) and `20260627010000` (drop bucket/`storage_path` → link-only); applied to prod via the Supabase Management API
+- [x] **Vercel** — a transient deploy-outputs error on `16b2378` (the build had completed) self-healed on the next commit; documented the correct log-reading command (CLI `--scope=snapsonic`)
+- [x] Memories: updated `courses-payment-lms`, new `vercel-build-logs`
+- [x] Shipped as commits `fbab0cb` → `3613b04` on `main`
 
 ## Milestone 14 — Schedule TZ fix, fresh reviews, course payment enforcement, practicum ✅ Complete
 

@@ -1,5 +1,26 @@
 # Changelog
 
+## [2.18.0] — 2026-06-27 — Practicum video, remote certification, admin view-switch, auth fix
+
+### Added
+- **Practicum video + clickable chapters** — the Level 1 practicum ships as one 44-min chaptered YouTube video (`_Aam40x1HDw`, 20 chapters). New `components/courses/video-with-chapters.tsx` (YouTube IFrame API) embeds the player with a clickable chapter list that seeks it and highlights the active chapter; the lesson page renders it for any video lesson with a YouTube `video_url`. The Practicum module is now **one lesson per chapter (20)**, each deep-linked to its timestamp (`?t=`)
+- **Remote certification loop** (issue #23) — students submit a technique video for Erik to review; the certificate is gated on approval:
+  - `practicum_submissions` table + RLS (students read/insert their own, enrolled-only; reviews server-side). **Link-only** — students host on YouTube (unlisted) or Vimeo and submit the URL; no video files are stored
+  - Student submission UI (`components/courses/practicum-submission.tsx`) + `GET/POST /api/courses/practicum-submission`
+  - Admin review queue (`components/admin/PracticumSubmissions.tsx` + `GET/PATCH /api/admin/training/submissions`) — inline embed + Approve / Request Changes, shown on the Training page and per student
+  - **Certificate gating** — `/api/admin/training/certificates` refuses to issue (422) until the student has an approved submission, but only for courses that have a `practicum` module
+  - **Notifications** via `src/lib/notify.ts` (Postmark, best-effort) — Erik emailed on submission; student emailed on approve / changes-requested
+- **Remote Certification section** — its own course module (order 10) after the practicum, with remote-student process clarification, a gold-emphasized header/row, and a medal icon; deep-links the certification clip and hosts the upload
+- **Admin ↔ User view switching** — "Admin" link in the dashboard user modal (admins only) and a "User Dashboard" link in the admin sidebar
+
+### Fixed
+- **Admin bounce-to-login mid-session** — Next prefetch of admin links hit `proxy.ts` (the renamed middleware) and rotated the Supabase refresh token on requests whose `Set-Cookie` the browser discards, so the next real navigation sent a stale token and logged the admin out. Fixed by excluding prefetch from the proxy matcher, copying refreshed cookies onto the login redirect, and `prefetch={false}` on admin/switch links
+- **Lessons printed their title twice** — the page renders the lesson title as `<h1>` and every lesson's content started with `## <title>`. `LessonContent` now strips the leading heading when it matches the title
+
+### Notes
+- Migrations `20260627000000` (practicum_submissions + bucket) and `20260627010000` (drop bucket/`storage_path` → link-only), applied to prod via the Supabase Management API
+- A Vercel deploy on `16b2378` errored at the "Deploying outputs" step *after* a successful build (transient platform error); the next commit redeployed cleanly. Read build logs with `vercel inspect "https://<url>" --logs --scope=snapsonic`
+
 ## [2.17.0] — 2026-06-24 — Schedule TZ fix, fresh reviews, course payment enforcement, practicum
 
 ### Fixed
