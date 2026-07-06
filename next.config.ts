@@ -18,6 +18,9 @@ const PROJECT_ENV_PREFIXES = [
 ];
 for (const [key, value] of Object.entries(process.env)) {
   if (!PROJECT_ENV_PREFIXES.some((p) => key.startsWith(p)) || !value) continue;
+  // Vercel-injected system vars (e.g. NEXT_PUBLIC_VERCEL_GIT_COMMIT_MESSAGE)
+  // legitimately contain newlines and aren't ours to validate
+  if (key.startsWith("NEXT_PUBLIC_VERCEL_")) continue;
   if (/^\s|\s$|[\r\n]|\\n/.test(value)) {
     throw new Error(
       `Env var ${key} contains leading/trailing whitespace or a newline. ` +
