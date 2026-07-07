@@ -304,7 +304,7 @@ export default function ContactSection() {
                   }}
                 >
                   <CheckCircle className="w-4 h-4 flex-shrink-0" />
-                  Message sent! We'll be in touch soon.
+                  Message sent! We&apos;ll be in touch soon.
                 </div>
               )}
               {submitState === "error" && (
