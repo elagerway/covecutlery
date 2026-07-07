@@ -12,6 +12,9 @@ import {
   AlertCircle,
 } from "lucide-react";
 
+const DROP_BOX_ADDRESS = "4086 Brockton Crescent, North Vancouver, BC V7G 1E6";
+const DROP_BOX_PLACE_ID = "ChIJYeYRokZ6hlQRjaaz9VgoPZQ";
+
 const InstagramIcon = () => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
     <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
@@ -377,7 +380,7 @@ export default function ContactSection() {
                 className="w-5 h-5 mt-0.5 flex-shrink-0"
                 style={{ color: "#D4A017" }}
               />
-              <div>
+              <div className="w-full min-w-0">
                 <p
                   className="text-xs uppercase tracking-wide mb-1"
                   style={{ color: "#6B7280" }}
@@ -390,6 +393,30 @@ export default function ContactSection() {
                 <p className="text-sm" style={{ color: "#6B7280" }}>
                   North Vancouver, BC V7G 1E6
                 </p>
+                <div
+                  className="mt-3 overflow-hidden rounded-lg border"
+                  style={{ borderColor: "#30363D" }}
+                >
+                  <iframe
+                    title="Drop box location — 4086 Brockton Crescent, North Vancouver"
+                    src={`https://maps.google.com/maps?q=${encodeURIComponent(DROP_BOX_ADDRESS)}&z=15&output=embed`}
+                    className="w-full"
+                    height={180}
+                    style={{ border: 0, display: "block" }}
+                    loading="lazy"
+                    allowFullScreen
+                    referrerPolicy="no-referrer-when-downgrade"
+                  />
+                </div>
+                <a
+                  href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(DROP_BOX_ADDRESS)}&destination_place_id=${DROP_BOX_PLACE_ID}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-block mt-2 text-sm font-medium transition-colors hover:text-yellow-400"
+                  style={{ color: "#D4A017" }}
+                >
+                  Get directions →
+                </a>
               </div>
             </div>
 
