@@ -1,5 +1,22 @@
 # Changelog
 
+## [2.20.0] — 2026-07-07 — Google Ads conversions live, Tip & Chip pricing, drop-box map, cancel-endpoint lockdown
+
+### Added
+- **Google Ads booking conversion is live** — created the "Book Mobile Appointment" conversion action and set `NEXT_PUBLIC_GADS_CONVERSION_ID` (`AW-18180527373/KLlYCLWAp8wcEI2qk91D`, value $60 CAD, event-snippet mode, count Every). Verified end-to-end with a headless-browser test booking on production: the `googleadservices.com/pagead/conversion` ping fired with the right label/value/currency (test booking cancelled afterward)
+- **Google Ads SPA page views** — `AnalyticsTracker` now re-fires the gtag `config` with `page_path` on client-side route changes (`lib/google-ads.ts#fireGooglePageView`), matching what Meta already did. Previously Google only saw the initial page load, breaking remarketing lists and any page-view-based conversions. `GOOGLE_ADS_ID` moved from `layout.tsx` into `lib/google-ads.ts` as the single source
+- **Tip & Chip Repairs — $10** added to both additional-services lists (homepage `PricingSection` + `/pricing`), note: "Badly chipped or broken tip repair (we do these repairs by default unless you ask us not to)". `PricingSection` items now support an optional `note` line; on `/pricing` this **replaces** the stale "Blade repair (chips, tip break) From $25" row (same service, contradictory price)
+- **Drop-box map** — the Contact section's Drop Box Address card now embeds a Google map of 4086 Brockton Crescent plus a "Get directions →" link (opens Google Maps directions with the place ID)
+
+### Security
+- **`/api/cal/cancel` locked down** — the unauthenticated endpoint (which exists only for the Stripe checkout `cancel_url` flow) also allowed cancelling **confirmed** bookings, so anyone with a booking uid could kill a real appointment. Now restricted to `pending_payment` only + uid shape validation; confirmed bookings cancel only via the `requireAdmin()`-gated admin API. Verified on prod: cancelled/unknown uid → 403, missing/non-string uid → 400. Found while running the conversion test booking
+
+### Notes
+- The map uses Google's **keyless** embed (`maps.google.com/maps?q=…&output=embed`) — the Maps Quick Builder API key isn't authorized for the Maps Embed API (403), and the keyless endpoint needs no key management at all. To switch to the official Embed API later, enable "Maps Embed API" on the key in Cloud Console
+- Unlike Meta's `fbevents.js`, Google's gtag **does** fire conversions from headless browsers — a Playwright booking works for verifying the Google side
+- Test bookings via the live widget send real SMS confirmations and now can't be cleaned up through `/api/cal/cancel` (they're `confirmed`) — cancel them from `/admin/jobs` instead
+- New Vercel prod env var: `NEXT_PUBLIC_GADS_CONVERSION_ID`
+
 ## [2.19.0] — 2026-07-07 — Meta Pixel conversions, Sentry monitoring, env-var hygiene
 
 ### Added

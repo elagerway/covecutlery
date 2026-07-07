@@ -2,6 +2,18 @@
 
 **Last updated:** 2026-07-07
 
+## Milestone 17 — Google Ads conversions live, pricing update, drop-box map, cancel lockdown ✅ Complete
+
+Completed the paid-ads conversion picture: Google Ads now receives SPA page views and a verified booking conversion (Meta was done in M16). Along the way a real vulnerability surfaced — the unauthenticated cancel endpoint could kill confirmed appointments — and got locked down the same day. Plus a pricing addition and a map in the contact section.
+
+- [x] **Google Ads booking conversion live** — "Book Mobile Appointment" action created in Google Ads; `NEXT_PUBLIC_GADS_CONVERSION_ID` (`AW-18180527373/KLlYCLWAp8wcEI2qk91D`) set via printf|CLI. Verified end-to-end with a Playwright test booking on prod: conversion ping carried the right label, $60 CAD (`c5f262a`)
+- [x] **Google SPA page views** — `fireGooglePageView()` on route changes via `AnalyticsTracker`; Google previously saw only initial loads (Meta already handled this). `GOOGLE_ADS_ID` consolidated into `lib/google-ads.ts`
+- [x] **Tip & Chip Repairs $10** on homepage + `/pricing` additional services ("done by default unless you ask us not to"); replaced the contradictory "Blade repair From $25" row on `/pricing`
+- [x] **`/api/cal/cancel` locked down** — was cancellable-by-anyone for confirmed bookings (found during the conversion test); now `pending_payment` only, verified 403/400 on prod (`ca8e8a2`)
+- [x] **Drop Box Address map** — keyless Google Maps embed + directions link in `ContactSection` (`14c83e6`)
+- [x] Memories: new `analytics-conversions`, updated `vercel-env-hygiene` gotchas
+- [x] Shipped as commits `c5f262a` → `2da391c` on `main`
+
 ## Milestone 16 — Meta Pixel conversions, Sentry monitoring, env-var hygiene ✅ Complete
 
 Set up Facebook ad conversion tracking end-to-end, and the process surfaced (then fixed) a systemic env-var problem: 11 production secrets had trailing newlines from dashboard pastes, one of which had silently broken the Turnstile CAPTCHA for ~3 months. Added a build guard and Sentry so neither failure mode can hide again.

@@ -66,7 +66,7 @@ src/
 │   │   └── cal/
 │   │       ├── slots/route.ts       # GET proxy → Cal.com v2 /slots
 │   │       ├── book/route.ts        # POST proxy → Cal.com v2 /bookings; saves to Supabase as confirmed; sends SMS to admin + customer via Magpipe
-│   │       ├── cancel/route.ts      # POST — cancels a Cal.com booking by UID
+│   │       ├── cancel/route.ts      # POST — cancels a Cal.com booking by UID; unauthenticated, so restricted to pending_payment bookings (Stripe cancel_url flow only)
 │   │       └── schedule/route.ts    # GET — returns 7-day DaySchedule[] from Cal.com bookings
 │   ├── train-to-be-sharp/
 │   │   ├── page.tsx                     # Training hub — 4 module cards linking to detail pages
@@ -150,11 +150,11 @@ src/
 │       ├── ServicesSection.tsx # 6-card services grid
 │       ├── MobileServiceSection.tsx  # Service area minimums, booking CTA
 │       ├── DropOffSection.tsx  # Step-by-step drop-off, static Google Maps image, DropBoxCodeButton inline with heading
-│       ├── PricingSection.tsx  # 4 tiers + additional services table
+│       ├── PricingSection.tsx  # 4 tiers + additional services list (items take an optional note line, e.g. Tip & Chip Repairs)
 │       ├── ReviewsSection.tsx  # 6 most-recent Google reviews + "see more" link
 │       ├── WhereWeAreSection.tsx  # Async Server Component — 7-day location strip from Cal.com bookings
 │       ├── AboutSection.tsx    # Story, YouTube placeholder, values
-│       └── ContactSection.tsx  # Form with Turnstile CAPTCHA (POSTs to /api/contact)
+│       └── ContactSection.tsx  # Form with Turnstile CAPTCHA (POSTs to /api/contact); Drop Box Address card embeds a keyless Google map + directions link
 ├── utils/
 │   └── supabase/
 │       ├── server.ts           # createServerClient factory (async cookies — Next.js 16)
@@ -168,7 +168,7 @@ src/
     ├── format.ts               # formatCAD(), formatPhone(), normalizePhone(), escapeHtml(), LineItem interface
     ├── supabase.ts             # Lazy Supabase anon client — getSupabase() defers init until first call; safe for preview builds without env vars
     ├── cn.ts                   # className utility
-    ├── google-ads.ts           # fireBookingConversion() — Google Ads conversion event; no-op until NEXT_PUBLIC_GADS_CONVERSION_ID is set
+    ├── google-ads.ts           # GOOGLE_ADS_ID (AW-18180527373) + fireGooglePageView() (SPA route changes) + fireBookingConversion() (live via NEXT_PUBLIC_GADS_CONVERSION_ID)
     ├── meta-pixel.ts           # fireMetaBookingConversion() (standard 'Schedule', $60 CAD) + fireMetaPageView(); no-op until NEXT_PUBLIC_FB_PIXEL_ID is set
     └── course-enrollment-status.ts # isEnrollmentOpen(slug) — checks courses.enrollment_open via service client
 
@@ -334,7 +334,7 @@ Signup:    /auth/signup → POST /api/auth/signup → generateLink(type=signup) 
 | `CRON_SECRET` | `/api/cron/refresh-instagram-token` — gates the cron route; Vercel auto-attaches as `Authorization: Bearer` |
 | `SUPABASE_ACCESS_TOKEN` | Local-only PAT for Supabase Management API (migrations, auth config); not deployed to Vercel |
 | `NEXT_PUBLIC_FB_PIXEL_ID` | `layout.tsx` (pixel base snippet), `lib/meta-pixel.ts` — Meta Pixel `922591534921896`; everything no-ops when unset |
-| `NEXT_PUBLIC_GADS_CONVERSION_ID` | `lib/google-ads.ts` — full `send_to` string (`AW-XXXX/YYYY`) for the Google Ads booking conversion; currently unset → no-op |
+| `NEXT_PUBLIC_GADS_CONVERSION_ID` | `lib/google-ads.ts` — full `send_to` string for the Google Ads booking conversion; set in prod (`AW-18180527373/KLlYCLWAp8wcEI2qk91D`, "Book Mobile Appointment") |
 | `NEXT_PUBLIC_SENTRY_DSN` | `instrumentation-client.ts`, `instrumentation.ts` — Sentry DSN; monitoring no-ops when unset |
 
 ## Database
@@ -528,7 +528,7 @@ RLS: admin full access only.
 Three independent tracking/observability layers (all no-op locally unless their env var is in `.env.local`):
 
 - **First-party events** — `AnalyticsTracker` (in `layout.tsx`) + `lib/analytics-client.ts` POST pageviews/events to `/api/events`; viewed at `/admin/analytics`
-- **Google Ads** — gtag base script in `layout.tsx` (`AW-18180527373` hardcoded); `lib/google-ads.ts#fireBookingConversion()` fires on booking success but is a no-op until `NEXT_PUBLIC_GADS_CONVERSION_ID` (the `send_to` string) is set
+- **Google Ads** — gtag base script in `layout.tsx` (`GOOGLE_ADS_ID` imported from `lib/google-ads.ts`); initial page view from the base `config`, SPA-navigation page views from `AnalyticsTracker` via `fireGooglePageView()` (re-runs `config` with `page_path`), and the "Book Mobile Appointment" conversion (`$60` CAD) from `BookingModal` via `fireBookingConversion()` (`NEXT_PUBLIC_GADS_CONVERSION_ID` set in prod). Verified live via headless test booking — gtag, unlike Meta, accepts headless-browser hits
 - **Meta Pixel** — base snippet in `layout.tsx` gated on `NEXT_PUBLIC_FB_PIXEL_ID`; initial `PageView` from the snippet, SPA-navigation `PageView`s from `AnalyticsTracker` (skips its first effect to avoid double-counting), and the standard **`Schedule`** conversion (`$60` CAD) from `BookingModal` on booking success via `lib/meta-pixel.ts`. Ad sets optimize on the `Schedule` event (Sales objective)
 - **Sentry** (`@sentry/nextjs`) — browser via `src/instrumentation-client.ts`, server/edge via `src/instrumentation.ts` (`onRequestError`), root crashes via `app/global-error.tsx`. Errors-only (`tracesSampleRate: 0`, `sendDefaultPii: false`), gated on `NEXT_PUBLIC_SENTRY_DSN`. No source-map upload yet (needs an org auth token), so prod stacks are minified
 
