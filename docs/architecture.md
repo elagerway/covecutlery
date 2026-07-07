@@ -168,7 +168,13 @@ src/
     ├── format.ts               # formatCAD(), formatPhone(), normalizePhone(), escapeHtml(), LineItem interface
     ├── supabase.ts             # Lazy Supabase anon client — getSupabase() defers init until first call; safe for preview builds without env vars
     ├── cn.ts                   # className utility
+    ├── google-ads.ts           # fireBookingConversion() — Google Ads conversion event; no-op until NEXT_PUBLIC_GADS_CONVERSION_ID is set
+    ├── meta-pixel.ts           # fireMetaBookingConversion() (standard 'Schedule', $60 CAD) + fireMetaPageView(); no-op until NEXT_PUBLIC_FB_PIXEL_ID is set
     └── course-enrollment-status.ts # isEnrollmentOpen(slug) — checks courses.enrollment_open via service client
+
+src/instrumentation-client.ts  # Sentry browser init + router-transition breadcrumbs (Next 16 client instrumentation convention)
+src/instrumentation.ts         # Sentry server/edge init (register) + captureRequestError (onRequestError)
+src/app/global-error.tsx       # Root error boundary — reports to Sentry, renders dark "Try again" recovery screen
 
 public/
 ├── manifest.json              # PWA manifest — standalone, dark theme, shield icon, start_url /admin/invoices
@@ -327,6 +333,9 @@ Signup:    /auth/signup → POST /api/auth/signup → generateLink(type=signup) 
 | `INSTAGRAM_APP_SECRET` | `/api/cron/refresh-instagram-token` — Meta app secret for token exchange |
 | `CRON_SECRET` | `/api/cron/refresh-instagram-token` — gates the cron route; Vercel auto-attaches as `Authorization: Bearer` |
 | `SUPABASE_ACCESS_TOKEN` | Local-only PAT for Supabase Management API (migrations, auth config); not deployed to Vercel |
+| `NEXT_PUBLIC_FB_PIXEL_ID` | `layout.tsx` (pixel base snippet), `lib/meta-pixel.ts` — Meta Pixel `922591534921896`; everything no-ops when unset |
+| `NEXT_PUBLIC_GADS_CONVERSION_ID` | `lib/google-ads.ts` — full `send_to` string (`AW-XXXX/YYYY`) for the Google Ads booking conversion; currently unset → no-op |
+| `NEXT_PUBLIC_SENTRY_DSN` | `instrumentation-client.ts`, `instrumentation.ts` — Sentry DSN; monitoring no-ops when unset |
 
 ## Database
 
@@ -514,6 +523,17 @@ RLS: admin full access only.
 | Muted | `#6B7280` | Secondary text, labels |
 | Border | `#30363D` | Card borders, dividers |
 
+## Analytics & Monitoring
+
+Three independent tracking/observability layers (all no-op locally unless their env var is in `.env.local`):
+
+- **First-party events** — `AnalyticsTracker` (in `layout.tsx`) + `lib/analytics-client.ts` POST pageviews/events to `/api/events`; viewed at `/admin/analytics`
+- **Google Ads** — gtag base script in `layout.tsx` (`AW-18180527373` hardcoded); `lib/google-ads.ts#fireBookingConversion()` fires on booking success but is a no-op until `NEXT_PUBLIC_GADS_CONVERSION_ID` (the `send_to` string) is set
+- **Meta Pixel** — base snippet in `layout.tsx` gated on `NEXT_PUBLIC_FB_PIXEL_ID`; initial `PageView` from the snippet, SPA-navigation `PageView`s from `AnalyticsTracker` (skips its first effect to avoid double-counting), and the standard **`Schedule`** conversion (`$60` CAD) from `BookingModal` on booking success via `lib/meta-pixel.ts`. Ad sets optimize on the `Schedule` event (Sales objective)
+- **Sentry** (`@sentry/nextjs`) — browser via `src/instrumentation-client.ts`, server/edge via `src/instrumentation.ts` (`onRequestError`), root crashes via `app/global-error.tsx`. Errors-only (`tracesSampleRate: 0`, `sendDefaultPii: false`), gated on `NEXT_PUBLIC_SENTRY_DSN`. No source-map upload yet (needs an org auth token), so prod stacks are minified
+
+**Env-var guard:** `next.config.ts` validates every project-prefixed env var at build start and throws on leading/trailing whitespace or newlines (exempting Vercel-injected `NEXT_PUBLIC_VERCEL_*`). Added after a trailing-newline `NEXT_PUBLIC_TURNSTILE_SITE_KEY` shipped a broken CAPTCHA for ~3 months and a scan found 11 poisoned prod secrets. Always add env vars via `printf '%s' 'VALUE' | vercel env add KEY production --scope=snapsonic`, never dashboard paste.
+
 ## Deployment
 
 - **Production URL:** https://coveblades.com (live; DNS flipped 2026-04-30)
@@ -561,4 +581,7 @@ Cron auth: Vercel auto-attaches `Authorization: Bearer ${CRON_SECRET}` to cron i
 - **Vercel project name (`covecutlery.vercel.app`) and GitHub repo (`elagerway/covecutlery`) intentionally not renamed** — only the public domain and brand changed; internal infra identifiers stayed as-is to avoid the cascade of breaking integrations that haven't been audited (CI, deploy hooks, etc.)
 - **Outgoing-URL host allowlist (`lib/origin.ts`):** `safeOrigin()` returns the request's `Origin` header iff its host is in `["coveblades.com", "www.coveblades.com", "staging.coveblades.com"]`, else `https://coveblades.com`. Used by Stripe checkout (`/api/invoices/[id]/pay`) and invoice send (`/api/admin/invoices/[id]/send`) so links/redirects respect staging. The prior hardcoded `https://coveblades.com` defended against `Origin` spoofing — the allowlist preserves that property while permitting staging
 - **Legacy slug parity:** the new pages `/how-we-sharpen-your-knives`, `/train-to-be-sharp`, `/event-sharpening-service` use the verbose slugs from the legacy WordPress site at coveblades.com so existing Google rankings and external backlinks survive the DNS flip. `/staysharp` redirects to `/blog` (and per-slug) via `next.config.ts` for the same reason. Don't "clean up" these slugs without setting up corresponding redirects
+- **Vercel env vars must be added via CLI** (`printf '%s' 'VALUE' | vercel env add`) — dashboard pastes appended trailing newlines to 11 prod secrets, silently breaking Turnstile for ~3 months (some SDKs trim, others reject). The `next.config.ts` guard now fails any build with a whitespace-poisoned project var; if a Vercel build dies in <10s with "Failed to load next.config.ts", read the guard's error via `vercel inspect <url> --logs --scope=snapsonic`
+- **`vercel redeploy <url>` rebuilds that deployment's source**, not HEAD — redeploying an old deployment URL aliases old code over newer commits. Redeploy the newest deployment or push to `main`
+- **Meta's `fbevents.js` drops all events from automated/headless browsers** (bot filtering — keeps bot traffic out of conversion data). Test the pixel with a real browser, or hit the `https://www.facebook.com/tr` image endpoint directly (the `<noscript>` mechanism)
 - **`<InquiryForm>` (`src/components/InquiryForm.tsx`):** shared client form used by `/train-to-be-sharp` and `/event-sharpening-service`. Takes `serviceType` as a prop and posts to `/api/contact` along with the captcha token. The same `/api/contact` endpoint is shared with `ContactSection` and `/contact` — different `service_type` values discriminate downstream in `/admin/jobs`

@@ -1,5 +1,22 @@
 # Changelog
 
+## [2.19.0] — 2026-07-07 — Meta Pixel conversions, Sentry monitoring, env-var hygiene
+
+### Added
+- **Meta (Facebook) Pixel conversion tracking** (`922591534921896`, via `NEXT_PUBLIC_FB_PIXEL_ID`) — base snippet in `layout.tsx` (`afterInteractive`, renders only when the env var is set); `PageView` on initial load + client-side route changes via `AnalyticsTracker` (skips the first effect so the initial view isn't double-counted); `src/lib/meta-pixel.ts` fires the standard **`Schedule`** event (`value: 60, currency: CAD`) alongside the Google Ads conversion on booking success in `BookingModal`. Verified live in Events Manager Test Events (PageView + Schedule). Ads Manager: use the **Sales** objective with conversion event `Schedule`
+- **Sentry error monitoring** (`@sentry/nextjs` 10.63.0) — browser errors via `src/instrumentation-client.ts` (+ router-transition breadcrumbs), server/edge errors via `src/instrumentation.ts` (`register` + `captureRequestError`), and a root `app/global-error.tsx` boundary (reports the crash, shows a dark-themed "Try again" screen). Gated on `NEXT_PUBLIC_SENTRY_DSN` (prod + `.env.local`); errors-only (`tracesSampleRate: 0`), no PII. Verified end-to-end: thrown test error on the live site → ingest 200. Source-map upload (readable prod stacks) deferred — needs a Sentry auth token
+- **Build-time env-var guard** in `next.config.ts` — the build fails loudly if any project-prefixed env var (`NEXT_PUBLIC_`, `STRIPE_`, `CAL_`, `TURNSTILE_`, …) contains leading/trailing whitespace or a newline. Vercel-injected `NEXT_PUBLIC_VERCEL_*` vars are exempt (`NEXT_PUBLIC_VERCEL_GIT_COMMIT_MESSAGE` legitimately contains newlines — this failed the first two git-push builds)
+
+### Fixed
+- **Turnstile CAPTCHA broken in production for ~3 months** — `NEXT_PUBLIC_TURNSTILE_SITE_KEY` in Vercel had a trailing newline, so Cloudflare rejected the sitekey and the contact form, inquiry form, and course sign-up CAPTCHA all failed silently (`TurnstileError` in every visitor's console; spotted during pixel testing). Re-added clean + redeployed
+- **11 poisoned production env vars** — the guard's first real build caught `STRIPE_WEBHOOK_SECRET` too; a full scan found trailing newlines on all Stripe keys, `TURNSTILE_SECRET_KEY`, `POSTMARK_API_KEY`, `GOOGLE_MAPS_API_KEY`, `MAGPIPE_API_KEY`, and the four `INSTAGRAM_*` vars (all from dashboard pastes). Some SDKs tolerate the whitespace, others don't — breakage was partial and silent. All trimmed and re-added via CLI; full prod env verified clean
+
+### Notes
+- **Add env vars only via `printf '%s' 'VALUE' | vercel env add KEY production --scope=snapsonic`** — pasting into the dashboard is what poisoned all 11
+- `vercel redeploy <url>` rebuilds **that deployment's source** — redeploying an old URL aliases old code over newer commits. Redeploy the newest deployment or push to `main`
+- Meta's `fbevents.js` silently drops events from automated/headless browsers (bot filtering) — test conversions with a real browser or the `https://www.facebook.com/tr` image endpoint
+- New Vercel prod env vars: `NEXT_PUBLIC_FB_PIXEL_ID`, `NEXT_PUBLIC_SENTRY_DSN`
+
 ## [2.18.0] — 2026-06-27 — Practicum video, remote certification, admin view-switch, auth fix
 
 ### Added

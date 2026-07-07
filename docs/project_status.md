@@ -1,6 +1,18 @@
 # Project Status
 
-**Last updated:** 2026-06-27
+**Last updated:** 2026-07-07
+
+## Milestone 16 — Meta Pixel conversions, Sentry monitoring, env-var hygiene ✅ Complete
+
+Set up Facebook ad conversion tracking end-to-end, and the process surfaced (then fixed) a systemic env-var problem: 11 production secrets had trailing newlines from dashboard pastes, one of which had silently broken the Turnstile CAPTCHA for ~3 months. Added a build guard and Sentry so neither failure mode can hide again.
+
+- [x] **Meta Pixel** (`922591534921896` via `NEXT_PUBLIC_FB_PIXEL_ID`) — base snippet in `layout.tsx`, SPA `PageView`s via `AnalyticsTracker` (first-mount skip to avoid double count), standard **`Schedule`** conversion ($60 CAD) from `BookingModal` on booking success (`lib/meta-pixel.ts`, mirrors `google-ads.ts`). Verified in Events Manager Test Events; ad sets use Sales objective + `Schedule` event (`868a446`)
+- [x] **Turnstile fix** — trailing newline in the prod `NEXT_PUBLIC_TURNSTILE_SITE_KEY` had Cloudflare rejecting the sitekey on contact/inquiry/course-signup forms since the key was added (~89 days); spotted via a console error during pixel testing, re-added clean + redeployed
+- [x] **Build-time env guard** in `next.config.ts` — fails the build on whitespace/newline garbage in project-prefixed env vars; exempts Vercel-injected `NEXT_PUBLIC_VERCEL_*` (`5820ce6`, `0f2709e`)
+- [x] **11 poisoned prod secrets fixed** — the guard's first git-push build caught `STRIPE_WEBHOOK_SECRET`; a full scan found trailing newlines on every dashboard-pasted secret (Stripe ×3, Turnstile secret, Postmark, Google Maps, Magpipe, Instagram ×4). All trimmed + re-added via CLI, env verified clean. **Rule: env vars only via `printf '%s' | vercel env add`**
+- [x] **Sentry error monitoring** (`@sentry/nextjs`) — client (`instrumentation-client.ts`), server/edge (`instrumentation.ts` + `captureRequestError`), and `global-error.tsx` boundary; errors-only, gated on `NEXT_PUBLIC_SENTRY_DSN`. Verified end-to-end (thrown test error → ingest 200). Source-map upload deferred (`1c3f080`)
+- [x] Memories: new `vercel-env-hygiene`
+- [x] Shipped as commits `868a446` → `0f2709e` on `main`
 
 ## Milestone 15 — Practicum video + remote certification, admin view-switch, auth fix ✅ Complete
 
