@@ -5,8 +5,7 @@ import './globals.css'
 import { BookingProvider } from '@/components/BookingProvider'
 import AnalyticsTracker from '@/components/AnalyticsTracker'
 import { safeJsonLd } from '@/lib/schema'
-
-const GOOGLE_ADS_ID = 'AW-18180527373'
+import { GOOGLE_ADS_ID } from '@/lib/google-ads'
 const FB_PIXEL_ID = process.env.NEXT_PUBLIC_FB_PIXEL_ID
 
 const inter = Inter({ subsets: ['latin'], variable: '--font-inter' })

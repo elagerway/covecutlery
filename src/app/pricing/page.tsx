@@ -42,7 +42,7 @@ const mainPricing = [
 ];
 
 const additionalServices = [
-  { service: "Blade repair (chips, tip break)", price: "From $25", note: "Pricing depends on damage extent" },
+  { service: "Tip & Chip Repairs", price: "$10", note: "Badly chipped or broken tip repair (we do these repairs by default unless you ask us not to)" },
   { service: "Handle tightening", price: "$10", note: "Bolster and handle inspection" },
   { service: "Rust removal & polish", price: "From $15", note: "Light surface rust" },
   { service: "Special event / market visit", price: "Contact us", note: "Minimum booking applies" },

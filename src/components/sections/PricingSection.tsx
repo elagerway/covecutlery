@@ -56,7 +56,12 @@ const tiers: PricingTier[] = [
   },
 ];
 
-const additionalServices = [
+const additionalServices: { name: string; price: string; note?: string }[] = [
+  {
+    name: "Tip & Chip Repairs",
+    price: "$10",
+    note: "Badly chipped or broken tip repair (we do these repairs by default unless you ask us not to)",
+  },
   { name: "Lawnmower Blades", price: "$20" },
   { name: "Serrated Cutlery Regrind", price: "$20" },
   { name: "Ceramic Knives", price: "$12" },
@@ -178,21 +183,28 @@ export default function PricingSection() {
             Additional <span style={{ color: "#D4A017" }}>Services</span>
           </h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {additionalServices.map(({ name, price }) => (
+            {additionalServices.map(({ name, price, note }) => (
               <div
                 key={name}
-                className="flex items-center justify-between py-2 border-b"
+                className="py-2 border-b"
                 style={{ borderColor: "#30363D" }}
               >
-                <span className="text-sm" style={{ color: "#FFFFFF" }}>
-                  {name}
-                </span>
-                <span
-                  className="text-sm font-semibold ml-4 flex-shrink-0"
-                  style={{ color: "#D4A017" }}
-                >
-                  {price}
-                </span>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm" style={{ color: "#FFFFFF" }}>
+                    {name}
+                  </span>
+                  <span
+                    className="text-sm font-semibold ml-4 flex-shrink-0"
+                    style={{ color: "#D4A017" }}
+                  >
+                    {price}
+                  </span>
+                </div>
+                {note && (
+                  <p className="text-xs mt-1" style={{ color: "#6B7280" }}>
+                    {note}
+                  </p>
+                )}
               </div>
             ))}
           </div>
