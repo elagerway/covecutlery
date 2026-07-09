@@ -160,12 +160,12 @@ src/
 │       ├── server.ts           # createServerClient factory (async cookies — Next.js 16)
 │       └── client.ts           # createBrowserClient factory for "use client" components
 ├── data/
-│   └── cities.ts              # CityData[] for 5 Lower Mainland cities; imported by sitemap, service-area pages
+│   └── cities.ts              # CityData[] for the Lower Mainland service-area cities; imported by sitemap, service-area pages, calSchedule + admin campaigns (known-city name matching). Server-side only — don't import into lib/format.ts (client bundles)
 └── lib/
     ├── schema.ts               # safeJsonLd(), breadcrumbSchema(), faqPageSchema(), FAQ interface — shared SEO helpers
     ├── calSchedule.ts          # getWeekSchedule() — fetches Cal.com bookings, extracts city per day
     ├── admin.ts                # Shared requireAdmin(), getServiceClient(), ADMIN_EMAIL
-    ├── format.ts               # formatCAD(), formatPhone(), normalizePhone(), escapeHtml(), LineItem interface
+    ├── format.ts               # formatCAD(), formatPhone(), normalizePhone(), escapeHtml(), cityFromAddress() (postal-code-safe, takes knownCities — see Gotchas), LineItem interface
     ├── supabase.ts             # Lazy Supabase anon client — getSupabase() defers init until first call; safe for preview builds without env vars
     ├── cn.ts                   # className utility
     ├── google-ads.ts           # GOOGLE_ADS_ID (AW-18180527373) + fireGooglePageView() (SPA route changes) + fireBookingConversion() (live via NEXT_PUBLIC_GADS_CONVERSION_ID)
@@ -569,7 +569,8 @@ Cron auth: Vercel auto-attaches `Authorization: Bearer ${CRON_SECRET}` to cron i
 - Cal.com v2 slots endpoint uses `start`/`end` params (not `startTime`/`endTime`) with `cal-api-version: 2024-09-04`; bookings endpoint uses `cal-api-version: 2024-08-13`
 - `BookingProvider` must wrap `{children}` in `layout.tsx` — it renders `BookingModal` globally so the modal persists across page navigations
 - `WhereWeAreSection` is an **async Server Component** — the first in this codebase. It cannot use hooks; interactive behavior is delegated to child `ScheduleDayCard` (client component)
-- City extraction in `calSchedule.ts` reads `booking.location` as a string (current `attendeeDefined` event type returns the address as a flat string), falls back to `booking.location.address` for legacy `attendeeAddress`-shaped bookings, then to `booking.metadata.notes` `"Address: ..."` format. Nominatim format: `"Street, City, Province Postal, Country"` — index 1 is city; index 2 if index 1 starts with a digit (unit number edge case)
+- City extraction in `calSchedule.ts` reads `booking.location` as a string (current `attendeeDefined` event type returns the address as a flat string), falls back to `booking.location.address` for legacy `attendeeAddress`-shaped bookings, then to `booking.metadata.notes` `"Address: ..."` format
+- **`cityFromAddress()` output is rendered on the PUBLIC schedule widget — it must never leak customer address details.** Booking addresses are customer-typed freeform; positional comma parsing once put a postal code on the homepage ("BC V7R4T6", fixed 2026-07-09). Current logic: (1) word-boundary match against canonical city names passed via the `knownCities` param (from `src/data/cities.ts`), preferring the match ending latest in the string then the longest — so "North Vancouver" beats "Vancouver", and a street named after a city loses to the real city after it; (2) fallback strict comma scan that strips postal codes and rejects digit-bearing/bare-province/"Canada" parts (handles cities outside the service list, e.g. Squamish); (3) `null` → widget shows "Home Shop". Within the service area the widget can only ever display a vetted city name
 - Cal.com booking location: address is passed as `location: { type: "attendeeDefined", location: address }`. The current event type (`CAL_EVENT_TYPE_ID=2520929` on the Cove Blades account) is configured for `attendeeDefined` only — sending `attendeeAddress` returns 400. The previous Cove Cutlery event type used `attendeeAddress`, hence the fallback path in `extractCity`
 - Cloudflare Turnstile CAPTCHA: site key is public (`NEXT_PUBLIC_`), secret key is server-only. ContactSection and `/contact` page use Turnstile; `BookingModal` and `/api/cal/book` do **not** — CAPTCHA was removed from the booking flow to reduce friction
 - Nominatim geocoding (`/api/geocode`) must stay server-side — browsers cannot set the `User-Agent` header (forbidden), so direct client-side fetch to Nominatim would return 403

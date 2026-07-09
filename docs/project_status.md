@@ -1,6 +1,17 @@
 # Project Status
 
-**Last updated:** 2026-07-07
+**Last updated:** 2026-07-09
+
+## Milestone 18 — Schedule widget privacy fix (postal code leak) ✅ Complete
+
+The public "Where We'll Be This Week" widget showed a customer's postal code — it parses customer-typed Cal.com booking addresses, and positional comma parsing grabbed "BC V7R4T6" as the "city". Fixed same-day in two passes: first made extraction leak-proof (strip postal codes, reject non-city parts, fall back to Home Shop), then added known-city matching against `src/data/cities.ts` so comma-less addresses still show the real city instead of the fallback.
+
+- [x] **Leak-proof `cityFromAddress()`** — postal codes stripped, digit/province/country parts rejected; unparseable → "Home Shop", never an address fragment (`a67f028`)
+- [x] **Known-city recovery** — word-boundary match against canonical service-area names (latest-ending match wins, then longest), so "…Marine Dr North Vancouver, BC V7R4T6" → North Vancouver; within the service area the widget can only display a vetted city name (`44914f1`)
+- [x] **Client-bundle guard** — city names passed as a param; `data/cities.ts` (~500 lines of SEO copy) stays out of `lib/format.ts`'s client importers
+- [x] Also improves city grouping in the admin campaigns recipient list (same parser)
+- [x] Memories: new `schedule-widget-privacy`
+- [x] Shipped as commits `a67f028` → `44914f1` on `main`
 
 ## Milestone 17 — Google Ads conversions live, pricing update, drop-box map, cancel lockdown ✅ Complete
 

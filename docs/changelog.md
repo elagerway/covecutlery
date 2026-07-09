@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.20.1] — 2026-07-09 — Schedule widget privacy: customer postal code leak fixed
+
+### Security
+- **Public schedule widget leaked a customer postal code** — the "Where We'll Be This Week" strip derives each day's city from customer-typed Cal.com booking addresses, and `cityFromAddress()` blindly took the second comma-separated chunk. For an address with the city glued to the street line ("…Marine Dr North Vancouver, BC V7R4T6, Canada") that chunk is the postal code, which rendered on the homepage. Rewritten to be leak-proof: postal codes are stripped up front and any digit-bearing, bare-province, or "Canada" part is rejected; unparseable addresses fall back to "Home Shop" (`a67f028`)
+
+### Fixed
+- **Comma-less addresses now resolve to the right city instead of "Home Shop"** — `cityFromAddress(address, knownCities)` first word-boundary-matches the raw address against canonical city names from `src/data/cities.ts`, preferring the match ending latest in the string then the longest ("North Vancouver" beats "Vancouver"; "Vancouver St, Port Coquitlam" → Port Coquitlam). Within the service area the widget can only ever show a vetted city name; the strict comma scan remains as fallback for unlisted cities (e.g. Squamish). Wired into `calSchedule.ts` and the admin campaigns route (better city grouping there too) (`44914f1`)
+
+### Notes
+- City names are passed into `cityFromAddress()` as a parameter rather than imported — `lib/format.ts` is imported by client components and `data/cities.ts` carries ~500 lines of SEO copy that would bloat browser bundles
+- The widget caches 5 minutes (`revalidate: 300`); fixes appear on prod shortly after deploy
+
 ## [2.20.0] — 2026-07-07 — Google Ads conversions live, Tip & Chip pricing, drop-box map, cancel-endpoint lockdown
 
 ### Added
