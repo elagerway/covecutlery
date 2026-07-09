@@ -30,15 +30,38 @@ export function formatPhone(raw: string | null): string {
   return `(${local.slice(0, 3)}) ${local.slice(3, 6)}-${local.slice(6)}`;
 }
 
+// Canadian postal code, e.g. "V7R 4T6" / "V7R4T6"
+const POSTAL_CODE_RE = /[A-Za-z]\d[A-Za-z]\s*\d[A-Za-z]\d/g;
+// A part that is only a province (bare abbreviation or full name)
+const PROVINCE_RE =
+  /^(?:BC|AB|SK|MB|ON|QC|NB|NS|PE|PEI|NL|YT|NT|NU|British Columbia|Alberta|Saskatchewan|Manitoba|Ontario|Quebec|Québec|New Brunswick|Nova Scotia|Prince Edward Island|Newfoundland(?: and Labrador)?|Yukon|Northwest Territories|Nunavut)$/i;
+// A province abbreviation trailing a city, e.g. "North Vancouver BC"
+const TRAILING_PROVINCE_RE = /\s+(?:BC|AB|SK|MB|ON|QC|NB|NS|PE|NL|YT|NT|NU)\.?$/i;
+
 /**
- * Extracts the city from a Nominatim/Google-Places-formatted address.
- *  Format: "Street, City, Province Postal, Country"
- *  Edge case: if parts[1] starts with a digit (unit/suite number), use parts[2] instead.
- *  Returns null if no city can be confidently extracted.
+ * Extracts the city from a customer-typed or Places-formatted address,
+ * e.g. "Street, City, Province Postal, Country".
+ *
+ * This value is shown on the PUBLIC schedule widget, so it must never leak
+ * customer address details: postal codes are stripped and any part containing
+ * digits (street/unit numbers), a bare province, or "Canada" is rejected.
+ * Returns null if no city can be confidently extracted.
  */
 export function cityFromAddress(address: string | null | undefined): string | null {
   if (!address) return null;
-  const parts = address.split(",").map((p) => p.trim()).filter(Boolean);
-  const candidate = parts[1]?.match(/^\d/) ? parts[2] : parts[1];
-  return candidate ?? null;
+  const parts = address
+    .split(",")
+    .map((p) => p.replace(POSTAL_CODE_RE, "").trim())
+    .filter(Boolean);
+
+  // parts[0] is always the street line; scan the rest for a city-shaped part
+  for (let i = 1; i < parts.length; i++) {
+    const candidate = parts[i].replace(TRAILING_PROVINCE_RE, "").trim();
+    if (!candidate) continue;
+    if (/\d/.test(candidate)) continue;
+    if (PROVINCE_RE.test(candidate)) continue;
+    if (/^canada$/i.test(candidate)) continue;
+    return candidate;
+  }
+  return null;
 }
