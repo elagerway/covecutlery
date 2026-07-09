@@ -38,6 +38,24 @@ const PROVINCE_RE =
 // A province abbreviation trailing a city, e.g. "North Vancouver BC"
 const TRAILING_PROVINCE_RE = /\s+(?:BC|AB|SK|MB|ON|QC|NB|NS|PE|NL|YT|NT|NU)\.?$/i;
 
+/** Finds a known city name in the raw address, tolerating missing commas
+ *  (e.g. "4587 Marine Dr North Vancouver, BC V7R4T6"). When several names
+ *  match, prefers the one ending latest in the string (the city follows the
+ *  street), then the longest ("North Vancouver" beats "Vancouver"). */
+function matchKnownCity(address: string, knownCities: readonly string[]): string | null {
+  let best: { end: number; len: number; name: string } | null = null;
+  for (const name of knownCities) {
+    const escaped = name.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const m = new RegExp(`\\b${escaped}\\b`, "i").exec(address);
+    if (!m) continue;
+    const end = m.index + m[0].length;
+    if (!best || end > best.end || (end === best.end && m[0].length > best.len)) {
+      best = { end, len: m[0].length, name };
+    }
+  }
+  return best?.name ?? null;
+}
+
 /**
  * Extracts the city from a customer-typed or Places-formatted address,
  * e.g. "Street, City, Province Postal, Country".
@@ -45,10 +63,21 @@ const TRAILING_PROVINCE_RE = /\s+(?:BC|AB|SK|MB|ON|QC|NB|NS|PE|NL|YT|NT|NU)\.?$/
  * This value is shown on the PUBLIC schedule widget, so it must never leak
  * customer address details: postal codes are stripped and any part containing
  * digits (street/unit numbers), a bare province, or "Canada" is rejected.
- * Returns null if no city can be confidently extracted.
+ *
+ * Pass `knownCities` (canonical service-area names) to also handle addresses
+ * with no comma before the city — a known-city match wins over comma parsing
+ * and returns the canonical name. Returns null if no city can be confidently
+ * extracted.
  */
-export function cityFromAddress(address: string | null | undefined): string | null {
+export function cityFromAddress(
+  address: string | null | undefined,
+  knownCities: readonly string[] = []
+): string | null {
   if (!address) return null;
+
+  const known = matchKnownCity(address, knownCities);
+  if (known) return known;
+
   const parts = address
     .split(",")
     .map((p) => p.replace(POSTAL_CODE_RE, "").trim())

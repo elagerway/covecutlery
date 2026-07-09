@@ -1,4 +1,7 @@
 import { cityFromAddress } from "@/lib/format";
+import { cities } from "@/data/cities";
+
+const KNOWN_CITIES = cities.map((c) => c.name);
 
 const HOME_CITY = "North Vancouver";
 const CAL_API = "https://api.cal.com/v2";
@@ -67,18 +70,18 @@ function toDateLabel(dateStr: string): string {
  */
 function extractCity(booking: CalBooking): string | null {
   if (typeof booking.location === "string" && booking.location) {
-    return cityFromAddress(booking.location);
+    return cityFromAddress(booking.location, KNOWN_CITIES);
   }
 
   if (booking.location && typeof booking.location === "object" && booking.location.address) {
-    return cityFromAddress(booking.location.address);
+    return cityFromAddress(booking.location.address, KNOWN_CITIES);
   }
 
   const notes = booking.metadata?.notes;
   if (typeof notes === "string") {
     const addressLine = notes.split("\n").find((l) => l.startsWith("Address:"));
     if (addressLine) {
-      return cityFromAddress(addressLine.replace("Address:", "").trim());
+      return cityFromAddress(addressLine.replace("Address:", "").trim(), KNOWN_CITIES);
     }
   }
 

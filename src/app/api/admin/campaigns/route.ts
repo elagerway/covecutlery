@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAdmin, getServiceClient } from "@/lib/admin";
 import { normalizePhone, cityFromAddress } from "@/lib/format";
+import { cities } from "@/data/cities";
+
+const KNOWN_CITIES = cities.map((c) => c.name);
 
 // GET /api/admin/campaigns — list all campaigns
 export async function GET() {
@@ -54,7 +57,7 @@ export async function POST(req: NextRequest) {
           id: c.id,
           name: c.name,
           normalized_phone: phone,
-          city: cityFromAddress(c.address),
+          city: cityFromAddress(c.address, KNOWN_CITIES),
         });
       }
     }
