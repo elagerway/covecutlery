@@ -64,8 +64,8 @@ src/
 │   │   │       ├── route.ts         # GET — public invoice data (marks as viewed on first visit)
 │   │   │       └── pay/route.ts     # POST — creates Stripe Checkout session for invoice payment
 │   │   └── cal/
-│   │       ├── slots/route.ts       # GET proxy → Cal.com v2 /slots
-│   │       ├── book/route.ts        # POST proxy → Cal.com v2 /bookings; saves to Supabase as confirmed; sends SMS to admin + customer via Magpipe
+│   │       ├── slots/route.ts       # GET proxy → Cal.com v2 /slots (always passes timeZone=America/Vancouver; sorts each day's slots chronologically)
+│   │       ├── book/route.ts        # POST proxy → Cal.com v2 /bookings; validates + normalizes phone to E.164; saves to Supabase as confirmed; sends SMS to admin + customer via Magpipe
 │   │       ├── cancel/route.ts      # POST — cancels a Cal.com booking by UID; unauthenticated, so restricted to pending_payment bookings (Stripe cancel_url flow only)
 │   │       └── schedule/route.ts    # GET — returns 7-day DaySchedule[] from Cal.com bookings
 │   ├── train-to-be-sharp/
@@ -131,7 +131,7 @@ src/
 │   ├── Navbar.tsx              # Sticky nav, mobile hamburger; Blog + Admin (auth-gated) links; "Sign in" for logged-out / "Dashboard" for logged-in (mutually exclusive); Book Now opens BookingModal
 │   ├── Footer.tsx              # 4-col grid, social SVGs, hours, contact; Privacy Policy + Terms of Service links
 │   ├── BookingProvider.tsx     # React context — exposes open() and openWithDate(date) globally
-│   ├── BookingModal.tsx        # 3-step modal: date picker → time slots → details form; phone required (no CAPTCHA)
+│   ├── BookingModal.tsx        # 3-step modal: date picker → time slots → details form; phone required, normalized to E.164 client-side before submit (no CAPTCHA)
 │   ├── DropBoxCodeButton.tsx   # Popover CTA offering Call or Text options for drop box code
 │   ├── ScheduleDayCard.tsx     # Client component — clickable day tile that opens BookingModal for that date
 │   ├── admin/
@@ -202,8 +202,8 @@ User fills form → ContactSection (client)
 User clicks "Book Mobile Service" → BookingProvider.open()
   → BookingModal opens (step: date)
     → GET /api/cal/slots?start=&end= (Next.js proxy)
-      → Cal.com v2 GET /slots?eventTypeId=2520929
-        → Returns available time slots grouped by date
+      → Cal.com v2 GET /slots?eventTypeId=2520929&timeZone=America/Vancouver
+        → Returns available time slots grouped by Vancouver-local date, sorted chronologically
   → User picks date → time → fills details form
     → POST /api/cal/book (Next.js proxy)
       → Cal.com v2 POST /bookings
@@ -567,6 +567,8 @@ Cron auth: Vercel auto-attaches `Authorization: Bearer ${CRON_SECRET}` to cron i
 - `lucide-react` v1 removed `Knife`, `Instagram`, `Facebook`, `Youtube` icons — replaced with custom inline SVGs in Navbar, Footer, MobileServiceSection, ContactSection, AboutSection
 - `"use client"` required on components that use hooks or browser APIs (BookingModal, BookingProvider, DropBoxCodeButton, HeroSection, MobileServiceSection, Navbar, ScheduleDayCard, ContactSection)
 - Cal.com v2 slots endpoint uses `start`/`end` params (not `startTime`/`endTime`) with `cal-api-version: 2024-09-04`; bookings endpoint uses `cal-api-version: 2024-08-13`
+- **Cal.com `/v2/slots` must be called with `timeZone=America/Vancouver`** — without it Cal groups slots by UTC date, so a 5:00 PM PDT slot (= midnight UTC) leaks onto the *next* day's key: the widget showed Saturday's 5 PM under Sunday, and clicking it would book Saturday (fixed 2026-07-16)
+- Phone numbers are normalized to E.164 (`+1XXXXXXXXXX`) in **both** `BookingModal` (client, with inline validation error) and `/api/cal/book` (server, 400 on invalid). The implementations differ slightly by design — the client only ever emits `+` followed by 10–15 digits, which the server's regex always accepts, so the client can never produce a server-rejected value. E.164 is what Cal.com, the `bookings.customer_phone` column, and Magpipe SMS all receive
 - `BookingProvider` must wrap `{children}` in `layout.tsx` — it renders `BookingModal` globally so the modal persists across page navigations
 - `WhereWeAreSection` is an **async Server Component** — the first in this codebase. It cannot use hooks; interactive behavior is delegated to child `ScheduleDayCard` (client component)
 - City extraction in `calSchedule.ts` reads `booking.location` as a string (current `attendeeDefined` event type returns the address as a flat string), falls back to `booking.location.address` for legacy `attendeeAddress`-shaped bookings, then to `booking.metadata.notes` `"Address: ..."` format

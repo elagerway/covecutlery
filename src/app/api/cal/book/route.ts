@@ -25,9 +25,24 @@ export async function POST(req: NextRequest) {
   }
   if (typeof name !== "string" || name.length > 200 ||
       typeof email !== "string" || !email.includes("@") || email.length > 200 ||
+      typeof phone !== "string" || phone.length > 30 ||
       typeof start !== "string" || start.length > 50) {
     return NextResponse.json({ error: "Invalid input." }, { status: 400 });
   }
+
+  const e164Phone = toE164CA(phone);
+  if (!e164Phone || !/^\+\d{10,15}$/.test(e164Phone)) {
+    return NextResponse.json({ error: "Please enter a valid 10-digit phone number." }, { status: 400 });
+  }
+
+  // Slots now arrive offset-formatted ("2026-07-18T17:00:00.000-07:00") since the
+  // slots proxy passes timeZone; Cal.com's bookings endpoint documents UTC, so
+  // convert rather than trust it to parse offsets.
+  const startDate = new Date(start);
+  if (isNaN(startDate.getTime())) {
+    return NextResponse.json({ error: "Invalid input." }, { status: 400 });
+  }
+  const startUTC = startDate.toISOString();
 
   let res: Response;
   try {
@@ -40,13 +55,13 @@ export async function POST(req: NextRequest) {
       },
       body: JSON.stringify({
         eventTypeId: Number(process.env.CAL_EVENT_TYPE_ID),
-        start,
+        start: startUTC,
         attendee: {
           name,
           email,
           timeZone: "America/Vancouver",
           language: "en",
-          phoneNumber: toE164CA(phone),
+          phoneNumber: e164Phone,
         },
         location: address ? { type: "attendeeDefined", location: address } : undefined,
         metadata: notes ? { notes } : {},
@@ -65,7 +80,7 @@ export async function POST(req: NextRequest) {
 
   // Save booking to Supabase as confirmed (no deposit required)
   const calBookingUid = data.uid ?? data.data?.uid ?? data.id;
-  const { date: appointmentDate, time: appointmentTime } = formatAppointment(start);
+  const { date: appointmentDate, time: appointmentTime } = formatAppointment(startUTC);
 
   const supabase = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -81,7 +96,7 @@ export async function POST(req: NextRequest) {
         cal_booking_uid: calBookingUid,
         customer_name: name,
         customer_email: email,
-        customer_phone: toE164CA(phone) ?? null,
+        customer_phone: e164Phone,
         appointment_date: appointmentDate,
         appointment_time: appointmentTime,
         address: address ?? null,
@@ -100,7 +115,6 @@ export async function POST(req: NextRequest) {
   }
 
   // Send SMS notifications (fire-and-forget)
-  const e164Phone = toE164CA(phone);
   if (process.env.MAGPIPE_API_KEY && process.env.MAGPIPE_SMS_FROM) {
     const sendSms = async (to: string, message: string) => {
       try {
@@ -122,12 +136,12 @@ export async function POST(req: NextRequest) {
     };
 
     // Notify admin + confirm to customer (parallel, non-blocking but awaited before response)
-    const adminMsg = `New booking! ${name} — ${appointmentDate} at ${appointmentTime}, ${address ?? "no address"}. Phone: ${phone}`;
+    const adminMsg = `New booking! ${name} — ${appointmentDate} at ${appointmentTime}, ${address ?? "no address"}. Phone: ${e164Phone}`;
     const customerMsg = `Hi ${name.split(" ")[0]}, your Cove Blades mobile sharpening is confirmed for ${appointmentDate} at ${appointmentTime}. We'll see you at ${address}! Questions? Call us at +1 (604) 210-8180.`;
 
     await Promise.allSettled([
       sendSms(ADMIN_PHONE, adminMsg),
-      e164Phone ? sendSms(e164Phone, customerMsg) : Promise.resolve(),
+      sendSms(e164Phone, customerMsg),
     ]);
   }
 

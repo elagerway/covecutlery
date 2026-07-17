@@ -1,6 +1,16 @@
 # Project Status
 
-**Last updated:** 2026-07-09
+**Last updated:** 2026-07-16
+
+## Milestone 19 — Booking widget wrong-day slot fix + E.164 phones ✅ Complete
+
+A "weird time sorting" report turned out to be a wrong-day booking bug: Cal.com groups `/v2/slots` by UTC date when no timezone is passed, so Saturday's 5 PM PDT slot rendered at the top of Sunday's list — and booking it would have booked Saturday. The same phantom slot made a real schedule change on Cal.com look like it hadn't taken effect. Also hardened phone handling to E.164 on both client and server.
+
+- [x] **Slots grouped by Vancouver date** — `/api/cal/slots` now always passes `timeZone=America/Vancouver` to Cal.com and sorts each day's slots chronologically (business timezone is always Vancouver)
+- [x] **E.164 phones end-to-end** — `BookingModal` normalizes + validates on submit (inline error), `/api/cal/book` validates server-side (400 on invalid); admin SMS now gets the normalized number instead of the raw customer-typed string
+- [x] **`.env.local` Cal.com cleanup** — local dev had the unused covecutlery account's key as `CAL_API_KEY` (plus a revoked spare); now matches prod (coveblades, event 2520929). The covecutlery Cal.com account is not used for anything
+- [x] Memories: new `cal-com-accounts`
+- [ ] **Address autocomplete outage (not code)** — `GOOGLE_MAPS_API_KEY` is blocked for Places/Geocoding (`API_KEY_SERVICE_BLOCKED`); needs "Places API" re-allowed on the key in Google Cloud Console
 
 ## Milestone 18 — Schedule widget privacy fix (postal code leak) ✅ Complete
 

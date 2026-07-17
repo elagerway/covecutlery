@@ -1,5 +1,17 @@
 # Changelog
 
+## [2.20.2] — 2026-07-16 — Booking widget: wrong-day slot leak fixed, E.164 phone normalization
+
+### Fixed
+- **Booking widget showed (and would book) slots on the wrong day** — `/api/cal/slots` called Cal.com v2 `/slots` without a `timeZone`, so Cal grouped slots by **UTC date**: a 5:00 PM PDT slot (= midnight UTC) landed under the *next* day's key. Symptom: Sunday's time list opened with a stray "5:00 PM" before 11:00 AM — actually Saturday's slot; picking it booked Saturday. This also made a legitimate schedule change on Cal.com look like it hadn't applied. The route now always passes `timeZone=America/Vancouver` (business timezone is always Vancouver) and defensively sorts each day's slots chronologically
+- **Phone numbers now guaranteed E.164 end-to-end** — `BookingModal` normalizes to `+1XXXXXXXXXX` on submit (inline error for invalid input, e.g. "604-555-1234" hint) and `/api/cal/book` validates/normalizes server-side (400 on garbage instead of passing it through). Previously the admin "New booking!" SMS carried the raw customer-typed string and unnormalizable input flowed as-is into Cal.com/Supabase/SMS
+
+### Known issues
+- **Address autocomplete on the booking form is down** — Google rejects `GOOGLE_MAPS_API_KEY` for Places Autocomplete/Details *and* Geocoding (`REQUEST_DENIED` / `API_KEY_SERVICE_BLOCKED`): the key's API restrictions no longer include those APIs. Fix is in Google Cloud Console (key → API restrictions → allow "Places API"), not code
+
+### Notes
+- Cal.com account clarity: the site uses the **coveblades** account only (event type 2520929, key `cal_live_0e4…` in prod and `.env.local`). A separate covecutlery Cal.com account exists but is not used for anything — its key was removed from `.env.local`, which had been pointing local dev at the wrong account
+
 ## [2.20.1] — 2026-07-09 — Schedule widget privacy: customer postal code leak fixed
 
 ### Security

@@ -31,6 +31,19 @@ function formatAddressComponents(components: AddressComponent[]): string {
   return parts.join(", ");
 }
 
+/** Mirrors toE164CA in /api/cal/book — normalise CA/US numbers to +1XXXXXXXXXX,
+ *  pass through other international numbers, null if not a valid phone.
+ */
+function toE164CA(phone: string): string | null {
+  const digits = phone.replace(/\D/g, "");
+  if (phone.trim().startsWith("+")) {
+    return /^\d{10,15}$/.test(digits) ? `+${digits}` : null;
+  }
+  if (digits.length === 10) return `+1${digits}`;
+  if (digits.length === 11 && digits.startsWith("1")) return `+${digits}`;
+  return null;
+}
+
 interface Slot {
   start: string;
 }
@@ -175,6 +188,11 @@ export default function BookingModal({ open, onClose, initialDate }: BookingModa
 
   async function handleBook() {
     if (!selectedSlot || !form.name || !form.email || !form.phone || !form.address) return;
+    const e164Phone = toE164CA(form.phone);
+    if (!e164Phone) {
+      setError("Please enter a valid 10-digit phone number, e.g. 604-555-1234.");
+      return;
+    }
     setSubmitting(true);
     setError(null);
     track("booking_submitted", {});
@@ -188,7 +206,7 @@ export default function BookingModal({ open, onClose, initialDate }: BookingModa
           start: selectedSlot,
           name: form.name,
           email: form.email,
-          phone: form.phone,
+          phone: e164Phone,
           address: form.address,
           notes,
         }),
