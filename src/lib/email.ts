@@ -128,7 +128,7 @@ Thanks for getting in touch. Erik or someone on the team will reply within one b
 
 In the meantime, here are quick links that answer most questions:
 
-• Book a mobile visit: https://coveblades.com (5-knife minimum, 30-day edge guarantee)
+• Book a mobile visit: https://coveblades.com (minimums from 6 pieces, 30-day edge guarantee)
 • Pricing: $12 standard, $18 Japanese — full breakdown at https://coveblades.com/pricing
 • 24/7 drop-off box (no minimum): https://coveblades.com/drop-off
 • Service area + drive times: https://coveblades.com/service-area
@@ -143,7 +143,7 @@ https://coveblades.com`;
     <p style="margin:0 0 16px;">Thanks for getting in touch. Erik or someone on the team will reply within one business day.</p>
     <p style="margin:0 0 12px;">In the meantime, here are quick links that answer most questions:</p>
     <ul style="margin:0 0 16px;padding-left:20px;color:#333;">
-      <li style="margin-bottom:6px;"><a href="https://coveblades.com" style="color:#D4A017;">Book a mobile visit</a> — 5-knife minimum, 30-day edge guarantee</li>
+      <li style="margin-bottom:6px;"><a href="https://coveblades.com" style="color:#D4A017;">Book a mobile visit</a> — minimums from 6 pieces, 30-day edge guarantee</li>
       <li style="margin-bottom:6px;"><a href="https://coveblades.com/pricing" style="color:#D4A017;">Pricing</a> — $12 standard, $18 Japanese</li>
       <li style="margin-bottom:6px;"><a href="https://coveblades.com/drop-off" style="color:#D4A017;">24/7 drop-off box</a> — no minimum, 24–48 hr turnaround</li>
       <li style="margin-bottom:6px;"><a href="https://coveblades.com/service-area" style="color:#D4A017;">Service area + drive times</a></li>

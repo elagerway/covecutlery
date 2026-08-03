@@ -49,15 +49,16 @@ const additionalServices = [
 ];
 
 const mobileMins = [
-  { area: "Vancouver / North Shore / Burnaby", min: "5 knives / $60" },
-  { area: "Surrey / Langley / Delta", min: "6 knives / $72" },
-  { area: "Abbotsford / Chilliwack", min: "Call for quote" },
+  { area: "North Shore", min: "6 pieces" },
+  { area: "North Burnaby", min: "8 pieces" },
+  { area: "South Burnaby / Vancouver / Port Moody", min: "10 pieces" },
+  { area: "Rest of Lower Mainland", min: "15 pieces" },
 ];
 
 const faqs = [
   {
     q: "Is there a minimum order for mobile service?",
-    a: "Yes — mobile visits require a minimum of 5 pieces. This helps us cover travel costs while keeping per-knife pricing low for you.",
+    a: "Yes, and it varies by area: 6 pieces on the North Shore, 8 in North Burnaby, 10 in South Burnaby, Vancouver, and Port Moody, and 15 for the rest of the Lower Mainland. This helps us cover travel costs while keeping per-knife pricing low for you. Drop-off has no minimum.",
   },
   {
     q: "Are there any hidden fees?",

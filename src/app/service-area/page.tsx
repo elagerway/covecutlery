@@ -22,7 +22,7 @@ const hubFaqs = [
   {
     question: 'Is there a minimum order for mobile knife sharpening?',
     answer:
-      'Yes. Mobile visits require a minimum of 5 knives ($60) for Vancouver, North Shore, and Burnaby. This covers travel while keeping per-knife pricing affordable at $12 for standard blades.',
+      'Yes, and it depends on how far we travel: 6 pieces on the North Shore, 8 in North Burnaby, 10 in South Burnaby, Vancouver, and Port Moody, and 15 for the rest of the Lower Mainland. This covers travel while keeping per-knife pricing affordable at $12 for standard blades.',
   },
   {
     question: 'Can I drop off my knives instead of booking mobile service?',

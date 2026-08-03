@@ -24,7 +24,7 @@ const services: { title: string; icon: typeof Clock; desc: React.ReactNode }[] =
     icon: Truck,
     desc: (
       <>
-        We come to you. Minimum 5 pieces. Servicing{" "}
+        We come to you. Minimums from 6 pieces. Servicing{" "}
         <Link
           href="/service-area"
           className="underline decoration-dotted underline-offset-2 hover:text-[#D4A017] transition-colors"

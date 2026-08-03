@@ -69,7 +69,7 @@ We use a combination of professional-grade belt systems and Japanese waterstones
       },
       {
         question: 'What is the minimum order for mobile sharpening in Vancouver?',
-        answer: 'Mobile visits to Vancouver require a minimum of 5 knives ($60). This covers our travel from North Vancouver while keeping the per-knife price low at $12 for standard blades.',
+        answer: 'Mobile visits to Vancouver require a minimum of 10 pieces — knives, scissors, or a mix. This covers our travel from North Vancouver while keeping the per-knife price low. If you have fewer, our 24/7 drop-off box at 4086 Brockton Crescent has no minimum.',
       },
       {
         question: 'How often should I have my kitchen knives professionally sharpened?',
@@ -104,7 +104,7 @@ Our mobile service is simple: book online, and we arrive at your door with our f
       },
       {
         question: 'What is the mobile sharpening minimum for Burnaby?',
-        answer: 'Mobile visits to Burnaby require a minimum of 5 knives ($60). This keeps our per-knife pricing low while covering travel from our North Vancouver base. Most customers bring 6–12 knives per visit.',
+        answer: 'It depends which side of the city you are on. North Burnaby is a minimum of 8 pieces; South Burnaby is 10 pieces. Either way it can be knives, scissors, or a mix, and most customers bring 6–12 knives per visit.',
       },
       {
         question: 'Can I drop off knives instead of booking mobile service?',
@@ -175,7 +175,7 @@ We sharpen every type of blade on-site: German chef's knives from Wusthof and He
       },
       {
         question: 'What is the mobile sharpening minimum for Coquitlam?',
-        answer: 'A 5-knife minimum ($60) applies to mobile visits. Many Coquitlam customers coordinate with a neighbour or two to combine orders, which makes the per-knife economics better and is often easier than booking solo for a small set.',
+        answer: 'A 15-piece minimum applies to mobile visits in Coquitlam. Many Coquitlam customers coordinate with a neighbour or two to combine orders, which makes the per-knife economics better and is often easier than booking solo for a small set.',
       },
       {
         question: 'How is professional sharpening different from using a pull-through sharpener?',
@@ -219,7 +219,7 @@ We sharpen every type of blade — German, Japanese, ceramic, serrated, cleavers
       },
       {
         question: 'What is the minimum order for mobile sharpening in Port Moody?',
-        answer: '5 knives ($60) minimum for a mobile visit. Most Port Moody households bring 6–10 knives. If you have fewer than 5, our 24/7 drop-off box at 4086 Brockton Crescent in North Vancouver has no minimum and a 24–48 hour turnaround.',
+        answer: '10 pieces minimum for a mobile visit — knives, scissors, or a mix. If you have fewer than 10, our 24/7 drop-off box at 4086 Brockton Crescent in North Vancouver has no minimum and a 24–48 hour turnaround.',
       },
     ],
     metaTitle: 'Knife Sharpening Port Moody | Mobile Service | Cove Blades',
@@ -254,7 +254,7 @@ Our mobile service is built for households exactly like the ones in PoCo. Book o
       },
       {
         question: 'What is the mobile minimum for Port Coquitlam?',
-        answer: '5 knives ($60). Many PoCo customers coordinate with a neighbour or two to combine orders. Our 24/7 drop-off box in North Vancouver is an alternative for smaller orders, with no minimum.',
+        answer: '15 pieces. Many PoCo customers coordinate with a neighbour or two to combine orders. Our 24/7 drop-off box in North Vancouver is an alternative for smaller orders, with no minimum.',
       },
     ],
     metaTitle: 'Knife Sharpening Port Coquitlam (PoCo) | Cove Blades',
@@ -290,7 +290,7 @@ We sharpen every type of knife on-site: German chef's knives from Wusthof and He
       },
       {
         question: 'What is the mobile minimum for New Westminster?',
-        answer: '5 knives ($60). New West\'s density makes neighbour coordination easy — many of our New West bookings are 8–15 knives across two or three units in the same building.',
+        answer: '15 pieces. New West\'s density makes neighbour coordination easy — many of our New West bookings are 15–20 knives across two or three units in the same building.',
       },
     ],
     metaTitle: 'Knife Sharpening New Westminster | Mobile Service | Cove Blades',
@@ -362,7 +362,7 @@ We sharpen every type of blade for every type of cook: German chef's knives, Jap
       },
       {
         question: 'What is the mobile minimum for Delta?',
-        answer: '5 knives ($60). Delta is a long drive for us — coordinating with a neighbour to combine orders is genuinely helpful and many Delta customers do exactly that. The 24/7 drop-off box in North Vancouver is also an option for smaller orders with no minimum.',
+        answer: '15 pieces. Delta is a long drive for us — coordinating with a neighbour to combine orders is genuinely helpful and many Delta customers do exactly that. The 24/7 drop-off box in North Vancouver is also an option for smaller orders with no minimum.',
       },
     ],
     metaTitle: 'Knife Sharpening Delta | North Delta, Ladner, Tsawwassen | Cove Blades',
@@ -395,7 +395,7 @@ Each blade is inspected for damage, sharpened to its original factory angle usin
       },
       {
         question: 'What is the mobile minimum for a Surrey visit?',
-        answer: '5 knives ($60). Surrey is a long drive — coordinating with a neighbour or two to combine an order helps everyone and makes the trip worth it. Many of our Surrey bookings come in at 10–15 knives across a couple of households.',
+        answer: '15 pieces. Surrey is a long drive — coordinating with a neighbour or two to combine an order helps everyone and makes the trip worth it. Many of our Surrey bookings come in at 15–20 knives across a couple of households.',
       },
       {
         question: 'Do you offer drop-off in Surrey?',
@@ -434,7 +434,7 @@ We sharpen every type of blade for every level of cook: German classic chef's kn
       },
       {
         question: 'What is the mobile minimum for White Rock?',
-        answer: '5 knives ($60). For longer-drive areas like White Rock, coordinating with a neighbour or two to combine orders makes the visit much more efficient. Many White Rock customers do this through neighbourhood networks — 12 to 20 knives across two or three households is a common booking.',
+        answer: '15 pieces. For longer-drive areas like White Rock, coordinating with a neighbour or two to combine orders makes the visit much more efficient. Many White Rock customers do this through neighbourhood networks — 12 to 20 knives across two or three households is a common booking.',
       },
     ],
     metaTitle: 'Knife Sharpening White Rock | Mobile Service | Cove Blades',
@@ -470,7 +470,7 @@ We sharpen every type of blade: German chef's knives from Wusthof and Henckels, 
       },
       {
         question: 'Is there a higher minimum for Langley because of the drive?',
-        answer: 'No — the standard 5-knife ($60) minimum applies. We absorb the drive cost as part of our regular service. That said, larger orders (combined with neighbours or extended family) make the per-knife economics better for everyone.',
+        answer: 'Yes — Langley falls in our 15-piece minimum tier, along with the rest of the outer Lower Mainland. The drive is 50 to 60 minutes each way, so we need enough work to make the trip viable. Combining with neighbours or extended family is the easy way to get there.',
       },
     ],
     metaTitle: 'Knife Sharpening Langley | Township & City | Cove Blades',
@@ -506,7 +506,7 @@ We sharpen every blade type: German chef's knives, Japanese single-bevel and dou
       },
       {
         question: 'What is the mobile minimum for Maple Ridge?',
-        answer: '5 knives ($60). Family households tend to bring 8–12 knives once they include the kids\' camping knives, the hunting blades, the garden shears, and the standard kitchen set. Combining with a neighbour or two makes it even more efficient.',
+        answer: '15 pieces. Family households often get there on their own once they include the kids\' camping knives, the hunting blades, the garden shears, and the standard kitchen set. Combining with a neighbour or two is the easiest way to make the count.',
       },
     ],
     metaTitle: 'Knife Sharpening Maple Ridge | Mobile Service | Cove Blades',
@@ -537,7 +537,7 @@ We sharpen every type of blade: German chef's knives, Japanese single-bevel and 
       },
       {
         question: 'What is the mobile minimum for Pitt Meadows?',
-        answer: '5 knives ($60). Most Pitt Meadows households bring 6–10 knives plus a few garden tools — easy to hit the minimum on a typical visit.',
+        answer: '15 pieces. Most Pitt Meadows households get there with the kitchen set plus the garden tools — shears and pruners count toward the total. Combining with a Maple Ridge or Pitt Meadows neighbour also works well, since we often route both on the same trip.',
       },
       {
         question: 'Can I drop knives off in North Vancouver instead?',

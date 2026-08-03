@@ -7,14 +7,14 @@ import Footer from "@/components/Footer";
 export const metadata: Metadata = {
   title: "Mobile Cutlery Sharpening Vancouver | Cove Blades",
   description:
-    "We come to you. Professional mobile cutlery sharpening service across Vancouver, North Shore, Burnaby, and up to Chilliwack. Minimum 5 pieces. Book online.",
+    "We come to you. Professional mobile cutlery sharpening service across Vancouver, North Shore, Burnaby, and up to Chilliwack. Minimums from 6 pieces. Book online.",
 };
 
 const requirements = [
   {
     title: "Minimum Order",
-    value: "5 pieces",
-    note: "Knives, scissors, or a mix",
+    value: "From 6 pieces",
+    note: "Varies by area — knives, scissors, or a mix",
   },
   {
     title: "Service Area",
@@ -71,24 +71,33 @@ const areas: { name: React.ReactNode; detail: React.ReactNode; min: string }[] =
   {
     name: "North Shore",
     detail: <><CityLink slug="north-vancouver">North Van</CityLink>, <CityLink slug="west-vancouver">West Van</CityLink></>,
-    min: "$60 minimum (5 knives)",
+    min: "Minimum 6 pieces",
+  },
+  {
+    name: <>North <CityLink slug="burnaby">Burnaby</CityLink></>,
+    detail: "Burnaby Heights, Capitol Hill, Brentwood",
+    min: "Minimum 8 pieces",
+  },
+  {
+    name: <>South <CityLink slug="burnaby">Burnaby</CityLink></>,
+    detail: "Metrotown, Edmonds, Deer Lake",
+    min: "Minimum 10 pieces",
   },
   {
     name: <CityLink slug="vancouver">Vancouver</CityLink>,
     detail: "All neighbourhoods",
-    min: "$60 minimum (5 knives)",
+    min: "Minimum 10 pieces",
   },
   {
-    name: <><CityLink slug="burnaby">Burnaby</CityLink> / <CityLink slug="new-westminster">New West</CityLink></>,
-    detail: <>Including <CityLink slug="coquitlam">Coquitlam</CityLink>, <CityLink slug="port-moody">Port Moody</CityLink></>,
-    min: "$60 minimum (5 knives)",
+    name: <CityLink slug="port-moody">Port Moody</CityLink>,
+    detail: "Including Anmore, Belcarra",
+    min: "Minimum 10 pieces",
   },
   {
-    name: <><CityLink slug="surrey">Surrey</CityLink> / <CityLink slug="langley">Langley</CityLink></>,
-    detail: <>Including <CityLink slug="delta">Delta</CityLink>, <CityLink slug="white-rock">White Rock</CityLink></>,
-    min: "$72 minimum (6 knives)",
+    name: "Rest of Lower Mainland",
+    detail: <>Whistler, Squamish, Chilliwack, <CityLink slug="surrey">Surrey</CityLink>, <CityLink slug="langley">Langley</CityLink>, <CityLink slug="coquitlam">Coquitlam</CityLink> &amp; more</>,
+    min: "Minimum 15 pieces",
   },
-  { name: "Abbotsford / Chilliwack", detail: "Fraser Valley", min: "Call for quote" },
 ];
 
 const faqs = [

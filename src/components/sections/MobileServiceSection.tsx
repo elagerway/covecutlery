@@ -60,7 +60,7 @@ const serviceAreas: { area: React.ReactNode; minimum: string }[] = [
         Whistler, Squamish, Chilliwack &amp; Rest of Lower Mainland
       </Link>
     ),
-    minimum: "Minimum 14 pieces",
+    minimum: "Minimum 15 pieces",
   },
 ];
 
