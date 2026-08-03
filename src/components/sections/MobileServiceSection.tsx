@@ -36,8 +36,20 @@ const serviceAreas: { area: React.ReactNode; minimum: string }[] = [
     minimum: "Minimum 6 pieces",
   },
   {
-    area: <><CityLink slug="burnaby">Burnaby</CityLink>, <CityLink slug="vancouver">Vancouver</CityLink>, <CityLink slug="port-moody">Port Moody</CityLink></>,
+    area: <CityLink slug="burnaby">North Burnaby</CityLink>,
     minimum: "Minimum 8 pieces",
+  },
+  {
+    area: <CityLink slug="burnaby">South Burnaby</CityLink>,
+    minimum: "Minimum 10 pieces",
+  },
+  {
+    area: <CityLink slug="vancouver">Vancouver</CityLink>,
+    minimum: "Minimum 10 pieces",
+  },
+  {
+    area: <CityLink slug="port-moody">Port Moody</CityLink>,
+    minimum: "Minimum 10 pieces",
   },
   {
     area: (
@@ -88,11 +100,11 @@ export default function MobileServiceSection() {
         />
 
         {/* Service Area Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-12">
+        <div className="flex flex-wrap justify-center gap-5 mb-12">
           {serviceAreas.map((item, i) => (
             <div
               key={i}
-              className="flex flex-col items-center text-center p-6 rounded-xl border"
+              className="flex flex-col items-center text-center p-6 rounded-xl border w-full sm:w-[calc(50%-0.625rem)] lg:w-[calc(33.333%-0.834rem)]"
               style={{
                 backgroundColor: "#161B22",
                 borderColor: "#30363D",
