@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import crypto from "node:crypto";
 import { getServiceClient } from "@/lib/admin";
 import { formatAppointment } from "@/lib/cal";
+import { upsertCustomerFromBooking } from "@/lib/customers";
 
 export const dynamic = "force-dynamic";
 
@@ -126,6 +127,15 @@ export async function POST(req: NextRequest) {
   if (event === "BOOKING_CREATED" || event === "BOOKING_RESCHEDULED") {
     const row = mapBooking(p);
     if (!row) return NextResponse.json({ error: "Missing start time" }, { status: 400 });
+
+    // Before the reschedule branches, which return early — this is idempotent, and it's
+    // the only customer-sync point for bookings made on Cal's own page.
+    await upsertCustomerFromBooking(supabase, {
+      name: row.customer_name,
+      email: row.customer_email,
+      phone: row.customer_phone,
+      address: row.address,
+    });
 
     if (event === "BOOKING_RESCHEDULED") {
       // Cal mints a new uid on reschedule. Move the existing row (preserving any

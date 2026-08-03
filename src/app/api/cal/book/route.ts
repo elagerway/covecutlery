@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { formatAppointment } from "@/lib/cal";
 import { cityFromAddress } from "@/lib/format";
+import { upsertCustomerFromBooking } from "@/lib/customers";
 import { cities } from "@/data/cities";
 
 const ADMIN_PHONE = "+16042108180";
@@ -130,6 +131,14 @@ export async function POST(req: NextRequest) {
     // missing from /admin/jobs.
     console.error("[cal/book] booking insert failed:", JSON.stringify(insertError), "uid:", calBookingUid);
   }
+
+  // Mirror the booking into the admin customer list.
+  await upsertCustomerFromBooking(supabase, {
+    name,
+    email,
+    phone: e164Phone,
+    address,
+  });
 
   // Send SMS notifications (fire-and-forget)
   if (process.env.MAGPIPE_API_KEY && process.env.MAGPIPE_SMS_FROM) {
