@@ -1,8 +1,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { formatAppointment } from "@/lib/cal";
+import { cityFromAddress } from "@/lib/format";
+import { cities } from "@/data/cities";
 
 const ADMIN_PHONE = "+16042108180";
+
+const KNOWN_CITIES = cities.map((c) => c.name);
 
 /** Normalise a Canadian/US phone number to E.164 format (+1XXXXXXXXXX).
  *  Returns the original string if it's already E.164 or can't be normalised.
@@ -33,6 +37,19 @@ export async function POST(req: NextRequest) {
   const e164Phone = toE164CA(phone);
   if (!e164Phone || !/^\+\d{10,15}$/.test(e164Phone)) {
     return NextResponse.json({ error: "Please enter a valid 10-digit phone number." }, { status: 400 });
+  }
+
+  // The address box accepts free text, so a customer can skip the autocomplete dropdown
+  // and submit a bare street line ("4212 Carnarvon St."). We can't route from that, and
+  // the public schedule widget silently falls back to "Home Shop" for the day. Any address
+  // picked from the dropdown is comma-formatted and always carries a city, so this only
+  // rejects the hand-typed case. Validated here rather than in BookingModal so the city
+  // list stays server-side — src/data/cities.ts is ~500 lines of SEO copy.
+  if (typeof address !== "string" || !cityFromAddress(address, KNOWN_CITIES)) {
+    return NextResponse.json(
+      { error: "Please select your address from the dropdown list so we know which city to come to." },
+      { status: 400 }
+    );
   }
 
   // Slots now arrive offset-formatted ("2026-07-18T17:00:00.000-07:00") since the
