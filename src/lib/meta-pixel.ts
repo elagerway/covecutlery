@@ -3,7 +3,11 @@
 // here is a no-op.
 
 const PIXEL_ID = process.env.NEXT_PUBLIC_FB_PIXEL_ID;
-const DEFAULT_VALUE_CAD = 60; // 5 knives × $12 minimum
+// Reported for every booking conversion — callers pass no value. Priced as the
+// smallest mobile booking we accept: the 6-piece North Shore minimum at the
+// advertised $12/knife. Other areas start at 8, 10 or 15 pieces, so this floors
+// the value rather than overstating it.
+const DEFAULT_VALUE_CAD = 72;
 
 declare global {
   interface Window {

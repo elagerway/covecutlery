@@ -13,8 +13,9 @@ export interface CustomerFromBooking {
  *  paths (/api/cal/book for the widget, /api/webhooks/cal for native Cal-page bookings)
  *  call this so a booking always produces a customer.
  *
- *  There is no unique constraint on customers.email, so this matches-then-writes rather
- *  than upserting, mirroring /api/admin/customers. Never throws: a customer-sync failure
+ *  customers.email is unique (a conflicting write returns 409), so this matches-then-writes
+ *  rather than upserting, mirroring /api/admin/customers. A race between two bookings for a
+ *  new email can still lose that insert — it's logged, not thrown: a customer-sync failure
  *  must not fail a booking that Cal.com has already confirmed.
  */
 export async function upsertCustomerFromBooking(
