@@ -1,6 +1,23 @@
 # Project Status
 
-**Last updated:** 2026-07-16
+**Last updated:** 2026-08-04
+
+## Milestone 20 — Mobile minimums retiered, address autocomplete restored, bookings create customers ✅ Complete
+
+Started as a pricing-copy update and turned into three connected fixes. Splitting the mobile minimums out by area exposed stale "5 knives ($60)" copy across the whole site. Then a real Vancouver appointment showed as "Home Shop" on the public schedule widget — because the customer had typed a bare street address, because the address autocomplete had been silently dead since the key was blocked (the known issue from M19). Fixing that surfaced the last one: bookings had never created customer records at all.
+
+- [x] **Per-area minimums** — homepage now shows six area cards (North Shore 6, North Burnaby 8, South Burnaby 10, Vancouver 10, Port Moody 10, rest of Lower Mainland 15) in a centered flex-wrap grid (`6860979`)
+- [x] **Stale minimum copy retired sitewide** — `/mobile-service`, `/pricing`, `/service-area`, homepage services blurb, contact auto-reply email, and 12 city FAQ answers; piece counts only, no dollar figures (`be470f0`)
+- [x] **Address autocomplete restored** — `/api/geocode` migrated to Places API (New) with a legacy fallback, translating both to the shapes `BookingModal` already reads; Google's real error is now logged instead of masked as an empty result (`eb100eb`)
+- [x] **Production Maps key rotated** — single key in GCP project cove-blades (`279706376483`), set via `printf | vercel env add`, verified byte-exact; Places API (New) enabled so the route needs no fallback
+- [x] **City-less addresses rejected** — `/api/cal/book` 400s when `cityFromAddress()` finds no city, closing the loop that put "Home Shop" on the public widget (`eb100eb`)
+- [x] **Bookings create customers** — new `lib/customers.ts`, wired into both the widget and webhook paths (`3cf2cae`)
+- [x] **Backfill + cleanup** — 26 customers inserted, 6 merged by phone; 3 names recovered from SMS bodies; 3 non-customer rows deleted (customers 498 → 495, Unknown 23 → 17)
+- [x] **Conversion value repriced** $60 → $72 in `lib/google-ads.ts` + `lib/meta-pixel.ts` (`156ed5c`)
+- [x] Memories: new `google-maps-key`, `booking-address-validation`
+- [x] Shipped as commits `6860979` → `156ed5c` on `main`
+- [ ] **Delete the old Maps key** — `AIzaSy…qeojI` in GCP project `331191253023`, unrestricted and unused; console-only action
+- [ ] **Resolve the $12-flat vs tiered-pricing contradiction** — `/pricing` says $12/knife flat, `PricingSection` charges $10 at 6–20 pieces; every mobile minimum is now ≥6, so the homepage's "$12/knife" line is arguably wrong. Also decides whether the conversion value should be $72 or $60
 
 ## Milestone 19 — Booking widget wrong-day slot fix + E.164 phones ✅ Complete
 
@@ -10,7 +27,7 @@ A "weird time sorting" report turned out to be a wrong-day booking bug: Cal.com 
 - [x] **E.164 phones end-to-end** — `BookingModal` normalizes + validates on submit (inline error), `/api/cal/book` validates server-side (400 on invalid); admin SMS now gets the normalized number instead of the raw customer-typed string
 - [x] **`.env.local` Cal.com cleanup** — local dev had the unused covecutlery account's key as `CAL_API_KEY` (plus a revoked spare); now matches prod (coveblades, event 2520929). The covecutlery Cal.com account is not used for anything
 - [x] Memories: new `cal-com-accounts`
-- [ ] **Address autocomplete outage (not code)** — `GOOGLE_MAPS_API_KEY` is blocked for Places/Geocoding (`API_KEY_SERVICE_BLOCKED`); needs "Places API" re-allowed on the key in Google Cloud Console
+- [x] **Address autocomplete outage** — resolved in Milestone 20 (key rotated + `/api/geocode` migrated to Places API (New)); it turned out to need a code change too, not just a console fix
 
 ## Milestone 18 — Schedule widget privacy fix (postal code leak) ✅ Complete
 

@@ -28,7 +28,7 @@ src/
 │   ├── icon.svg                # SVG favicon — gold BladeIcon on #0D1117 background (matches navbar)
 │   ├── api/
 │   │   ├── contact/route.ts    # POST endpoint — validates input, Turnstile verify, saves to Supabase
-│   │   ├── geocode/route.ts    # GET proxy → Google Places Autocomplete + Place Details (server-side key protection)
+│   │   ├── geocode/route.ts    # GET proxy → Google Places API (New) autocomplete + details, falling back to legacy Places; returns legacy-shaped JSON (server-side key protection)
 │   │   ├── admin/
 │   │   │   ├── posts/
 │   │   │   │   ├── route.ts         # GET list + POST create; requireAdmin() checks session email
@@ -169,7 +169,8 @@ src/
     ├── supabase.ts             # Lazy Supabase anon client — getSupabase() defers init until first call; safe for preview builds without env vars
     ├── cn.ts                   # className utility
     ├── google-ads.ts           # GOOGLE_ADS_ID (AW-18180527373) + fireGooglePageView() (SPA route changes) + fireBookingConversion() (live via NEXT_PUBLIC_GADS_CONVERSION_ID)
-    ├── meta-pixel.ts           # fireMetaBookingConversion() (standard 'Schedule', $60 CAD) + fireMetaPageView(); no-op until NEXT_PUBLIC_FB_PIXEL_ID is set
+    ├── meta-pixel.ts           # fireMetaBookingConversion() (standard 'Schedule', $72 CAD) + fireMetaPageView(); no-op until NEXT_PUBLIC_FB_PIXEL_ID is set
+    ├── customers.ts            # upsertCustomerFromBooking() — mirrors every booking into the customers table; matches on email then phone, fills gaps without overwriting, never throws
     └── course-enrollment-status.ts # isEnrollmentOpen(slug) — checks courses.enrollment_open via service client
 
 src/instrumentation-client.ts  # Sentry browser init + router-transition breadcrumbs (Next 16 client instrumentation convention)
@@ -205,11 +206,15 @@ User clicks "Book Mobile Service" → BookingProvider.open()
       → Cal.com v2 GET /slots?eventTypeId=2520929&timeZone=America/Vancouver
         → Returns available time slots grouped by Vancouver-local date, sorted chronologically
   → User picks date → time → fills details form
+    → Service Address field autocompletes via GET /api/geocode (Places)
     → POST /api/cal/book (Next.js proxy)
+      → 400 unless cityFromAddress() resolves a city from the address
+        (blocks hand-typed street lines that carry no city)
       → Cal.com v2 POST /bookings
         → UPSERT into bookings table on cal_booking_uid (status: confirmed,
           deposit_amount: 0) — upsert (not insert) so it's idempotent against
           the Cal webhook below; insert errors are logged, not swallowed
+        → upsertCustomerFromBooking() → customers table (lib/customers.ts)
         → SMS to admin (new booking alert) via Magpipe
         → SMS to customer (confirmation) via Magpipe
         → Modal shows success
@@ -220,6 +225,10 @@ Bookings made on the **native Cal.com page** (not the website widget) never hit 
 ```
 Cal.com fires webhook → POST /api/webhooks/cal
   → verify HMAC signature (x-cal-signature-256) when CAL_WEBHOOK_SECRET set
+  → BOOKING_CREATED / BOOKING_RESCHEDULED
+                      → upsertCustomerFromBooking() → customers table (runs
+                         before the reschedule early-returns, so native-page
+                         bookings always produce a customer)
   → BOOKING_CREATED   → upsert confirmed row (insert-if-missing; never clobbers
                          admin edits). A pre-existing cancelled tombstone stops
                          resurrection
@@ -323,7 +332,7 @@ Signup:    /auth/signup → POST /api/auth/signup → generateLink(type=signup) 
 | `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` | (future client-side Stripe use) |
 | `STRIPE_WEBHOOK_SECRET` | `/api/stripe/webhook` — validates Stripe webhook signatures |
 | `STRIPE_DEPOSIT_AMOUNT` | `/api/stripe/checkout` — deposit in cents (5000 = $50 CAD) |
-| `GOOGLE_MAPS_API_KEY` | `/api/geocode` — Google Places Autocomplete + Place Details |
+| `GOOGLE_MAPS_API_KEY` | `/api/geocode` — Places API (New) autocomplete + details, legacy Places fallback. Single key, in GCP project **cove-blades** (`279706376483`); server-side only, never `NEXT_PUBLIC_` |
 | `POSTMARK_API_KEY` | `/api/admin/bookings/[id]/receipt` — transactional email receipts |
 | `MAGPIPE_API_KEY` | `lib/magpipe.ts` — SMS receipts, voice picker (`/api/admin/voice`), and voice cloning (`/api/admin/voice/clone`) |
 | `MAGPIPE_SMS_FROM` | `/api/admin/bookings/[id]/receipt` — sender number (`+16042108180`) |
@@ -528,8 +537,8 @@ RLS: admin full access only.
 Three independent tracking/observability layers (all no-op locally unless their env var is in `.env.local`):
 
 - **First-party events** — `AnalyticsTracker` (in `layout.tsx`) + `lib/analytics-client.ts` POST pageviews/events to `/api/events`; viewed at `/admin/analytics`
-- **Google Ads** — gtag base script in `layout.tsx` (`GOOGLE_ADS_ID` imported from `lib/google-ads.ts`); initial page view from the base `config`, SPA-navigation page views from `AnalyticsTracker` via `fireGooglePageView()` (re-runs `config` with `page_path`), and the "Book Mobile Appointment" conversion (`$60` CAD) from `BookingModal` via `fireBookingConversion()` (`NEXT_PUBLIC_GADS_CONVERSION_ID` set in prod). Verified live via headless test booking — gtag, unlike Meta, accepts headless-browser hits
-- **Meta Pixel** — base snippet in `layout.tsx` gated on `NEXT_PUBLIC_FB_PIXEL_ID`; initial `PageView` from the snippet, SPA-navigation `PageView`s from `AnalyticsTracker` (skips its first effect to avoid double-counting), and the standard **`Schedule`** conversion (`$60` CAD) from `BookingModal` on booking success via `lib/meta-pixel.ts`. Ad sets optimize on the `Schedule` event (Sales objective)
+- **Google Ads** — gtag base script in `layout.tsx` (`GOOGLE_ADS_ID` imported from `lib/google-ads.ts`); initial page view from the base `config`, SPA-navigation page views from `AnalyticsTracker` via `fireGooglePageView()` (re-runs `config` with `page_path`), and the "Book Mobile Appointment" conversion (`$72` CAD — the 6-piece North Shore minimum at $12/knife) from `BookingModal` via `fireBookingConversion()` (`NEXT_PUBLIC_GADS_CONVERSION_ID` set in prod). Verified live via headless test booking — gtag, unlike Meta, accepts headless-browser hits
+- **Meta Pixel** — base snippet in `layout.tsx` gated on `NEXT_PUBLIC_FB_PIXEL_ID`; initial `PageView` from the snippet, SPA-navigation `PageView`s from `AnalyticsTracker` (skips its first effect to avoid double-counting), and the standard **`Schedule`** conversion (`$72` CAD) from `BookingModal` on booking success via `lib/meta-pixel.ts`. Ad sets optimize on the `Schedule` event (Sales objective)
 - **Sentry** (`@sentry/nextjs`) — browser via `src/instrumentation-client.ts`, server/edge via `src/instrumentation.ts` (`onRequestError`), root crashes via `app/global-error.tsx`. Errors-only (`tracesSampleRate: 0`, `sendDefaultPii: false`), gated on `NEXT_PUBLIC_SENTRY_DSN`. No source-map upload yet (needs an org auth token), so prod stacks are minified
 
 **Env-var guard:** `next.config.ts` validates every project-prefixed env var at build start and throws on leading/trailing whitespace or newlines (exempting Vercel-injected `NEXT_PUBLIC_VERCEL_*`). Added after a trailing-newline `NEXT_PUBLIC_TURNSTILE_SITE_KEY` shipped a broken CAPTCHA for ~3 months and a scan found 11 poisoned prod secrets. Always add env vars via `printf '%s' 'VALUE' | vercel env add KEY production --scope=snapsonic`, never dashboard paste.
@@ -575,7 +584,9 @@ Cron auth: Vercel auto-attaches `Authorization: Bearer ${CRON_SECRET}` to cron i
 - **`cityFromAddress()` output is rendered on the PUBLIC schedule widget — it must never leak customer address details.** Booking addresses are customer-typed freeform; positional comma parsing once put a postal code on the homepage ("BC V7R4T6", fixed 2026-07-09). Current logic: (1) word-boundary match against canonical city names passed via the `knownCities` param (from `src/data/cities.ts`), preferring the match ending latest in the string then the longest — so "North Vancouver" beats "Vancouver", and a street named after a city loses to the real city after it; (2) fallback strict comma scan that strips postal codes and rejects digit-bearing/bare-province/"Canada" parts (handles cities outside the service list, e.g. Squamish); (3) `null` → widget shows "Home Shop". Within the service area the widget can only ever display a vetted city name
 - Cal.com booking location: address is passed as `location: { type: "attendeeDefined", location: address }`. The current event type (`CAL_EVENT_TYPE_ID=2520929` on the Cove Blades account) is configured for `attendeeDefined` only — sending `attendeeAddress` returns 400. The previous Cove Cutlery event type used `attendeeAddress`, hence the fallback path in `extractCity`
 - Cloudflare Turnstile CAPTCHA: site key is public (`NEXT_PUBLIC_`), secret key is server-only. ContactSection and `/contact` page use Turnstile; `BookingModal` and `/api/cal/book` do **not** — CAPTCHA was removed from the booking flow to reduce friction
-- Nominatim geocoding (`/api/geocode`) must stay server-side — browsers cannot set the `User-Agent` header (forbidden), so direct client-side fetch to Nominatim would return 403
+- **`/api/geocode` tries Places API (New) then falls back to legacy Places**, translating both into the legacy `place_id` / `description` / `structured_formatting` and `address_components` shapes `BookingModal` already reads. Which API a key can reach depends on its restrictions *and* which APIs its GCP project has enabled, and the two are mutually exclusive in practice: a referrer-restricted key cannot use legacy Places at all ("API keys with referer restrictions cannot be used with this API") and needs an explicit `Referer` header on the new API since server fetches send none; an API-restricted key works with legacy but only reaches the new API if the project has it enabled. The route sends `Referer` (a no-op for unrestricted keys) and logs Google's real error on both paths — a bare `[]` once made a blocked key look identical to "no matches" for weeks. A `[geocode] places-new … failed` line in the logs means the fallback is carrying the route
+- Google Cloud gotcha: `API_KEY_SERVICE_BLOCKED` means the key's **API restriction list** excludes that service; "has not been used in project N before or it is disabled" means the **API itself isn't enabled** on the project. Both can be true at once, and they're separate fixes. The console lists "Places API" and "Places API (New)" as *distinct* entries — restricting to the wrong one silently forces the legacy path
+- **A blocked Maps key now stops bookings, not just autocomplete** — `/api/cal/book` rejects addresses with no resolvable city, so if the dropdown can't load, a customer can neither pick an address nor type one. Never deploy tighter address validation without confirming the production key works
 - `lib/calSchedule.ts` uses `vancouverMidnightISO()` — a DST-aware helper that probes noon UTC via `Intl.DateTimeFormat` to determine Vancouver's UTC offset before constructing the midnight timestamp. Raw `new Date("YYYY-MM-DDT00:00:00")` would parse in server-local time (UTC on Vercel), yielding the wrong window
 - Next.js 16 App Router: `params` in page/route handler components is `Promise<{ ... }>` and must be `await`ed; `cookies()` from `next/headers` is also async
 - `@supabase/ssr` is used for all auth-aware server contexts (middleware, server components, API routes). The older `lib/supabase.ts` anon client remains for public-facing pages. Build-time pages (blog, sitemap) guard against missing Supabase env vars to prevent preview deployment failures — same pattern as the lazy Stripe init

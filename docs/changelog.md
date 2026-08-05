@@ -1,5 +1,45 @@
 # Changelog
 
+## [2.21.0] — 2026-08-04 — Mobile minimums retiered, address autocomplete restored, bookings now create customers
+
+### Added
+- **Every booking now creates a customer record** — new `src/lib/customers.ts` (`upsertCustomerFromBooking`) called from both write paths: `/api/cal/book` (website widget) and `/api/webhooks/cal` (bookings made on Cal.com's own page). Previously *neither* path wrote to `customers`, so nothing from a booking reached the admin customer list. The 46 rows marked `source="cal.com"` all dated from a single bulk import on 2026-04-09 — there had never been a live sync (`3cf2cae`)
+- **Per-area mobile minimums split out on the homepage** — the "Mobile Service" section now shows six area cards instead of three: North Shore 6 pieces, North Burnaby 8, South Burnaby 10, Vancouver 10, Port Moody 10, rest of Lower Mainland 15. Grid became a centered flex-wrap so rows stay even at every breakpoint (`6860979`, `be470f0`)
+
+### Fixed
+- **Service Address autocomplete was silently dead** — closes the known issue logged in 2.20.2. `GOOGLE_MAPS_API_KEY` was not authorized for Places, `/api/geocode` caught the error and returned `[]`, and a blocked key was indistinguishable from "no matches". With no dropdown, customers hand-typed bare street lines ("4212 Carnarvon St.") which carry no city — which in turn made the public schedule widget fall back to "Home Shop" for a day that had a real Vancouver appointment. `/api/geocode` now calls **Places API (New)** with a **legacy Places fallback**, translating both into the legacy response shapes `BookingModal` already reads (no client change), and logs Google's actual error on both paths (`eb100eb`)
+- **Bookings with no resolvable city are now rejected** — `/api/cal/book` returns 400 ("Please select your address from the dropdown list…") when `cityFromAddress()` can't find a city. Anything picked from the dropdown is comma-formatted and always carries a city, so this only catches the hand-typed case; the comma-scan fallback keeps service areas without a city page (Squamish, Whistler) passing. Validated server-side so `data/cities.ts` stays out of the client bundle (`eb100eb`)
+- **Stale 5-knife minimum copy sitewide** — the old flat "5 knives ($60)" figure was replaced with the area ladder across `/mobile-service` (areas table + stat + meta description), `/pricing` (minimums table + FAQ), `/service-area` FAQ, the homepage services blurb, the contact auto-reply email, and 12 city FAQ answers in `src/data/cities.ts`. Surrounding sentences the new counts falsified were reworded (Pitt Meadows' "6–10 knives — easy to hit the minimum", Langley's "No, there's no higher minimum" now answers yes). The Abbotsford/Chilliwack "call for quote" row folded into the 15-piece tier (`be470f0`)
+
+### Changed
+- **Booking conversion value $60 → $72** in `lib/google-ads.ts` and `lib/meta-pixel.ts`. The old value was commented "5 knives × $12" — a minimum that no longer exists. `BookingModal` calls both fire helpers with no argument, so this constant is the value reported for *every* booking conversion, not a rare fallback; it is now priced at the smallest booking we accept (6-piece North Shore minimum × $12 advertised), which floors rather than overstates the signal (`156ed5c`)
+- Copy states **piece counts only** — no dollar minimums. A dollar figure would contradict the volume tiers, which drop to $10/knife at 6–20 pieces while `/pricing` lists $12 flat
+
+### Fixed (post-review, same day)
+- **Repeat bookers would have been duplicated** — `upsertCustomerFromBooking` only consulted phone when a booking had *no* email, and `/api/cal/book` always requires one. 406 of 495 customers have no email at all (bulk import), so any of them re-booking through the widget would have created a second row. Now falls back to a phone match on an email miss and patches the email onto the existing row (the 30 phone-duplicate groups already in the table all date from the 2026-04-09 import, not from this code)
+- **Phone lookup could silently abort the sync** — `customers.phone` has no unique index and 30 numbers appear twice, so `.maybeSingle()` returned PostgREST `PGRST116` ("The result contains 2 rows") instead of a row, which the error path logged and swallowed. Now orders by `created_at` and takes the oldest match
+- **Phone format fights between the two write paths** — `/api/cal/book` sends E.164 while the webhook forwards Cal.com's raw value, and for a widget booking both run. The helper now normalizes through `normalizePhone()`, and only writes `email`/`address` when the existing row lacks them (the old code overwrote `phone` unconditionally, contradicting its own "only fill gaps" comment)
+- **Empty address components could wipe the address field** — `/api/geocode` coerced a missing component list to `[]`, which is truthy: it skipped the legacy fallback, and `BookingModal` then formatted an empty list into `""`, clearing the address the customer had just picked. Both detail helpers now return `null` instead
+- **`public/llms.txt` still advertised the retired minimums** — the file served to AI crawlers listed "5 knives ($60)" plus per-city 8/10-knife minimums for Abbotsford and Chilliwack, contradicting every page on the site. Rewritten to the new tiers; `project_spec.json` updated too
+- **Two FAQ answers quoted ranges below their own minimum** — Burnaby ("6–12 knives" under an 8/10 minimum) and White Rock ("12 to 20" under 15)
+
+### Data
+- **Backfilled 33 bookings that had left no customer behind** — 26 new customers inserted (back to 2026-04-19) and 6 matched to existing customers by phone rather than duplicated, gaining their missing email and upgrading placeholder names ("Unknown" → Mike Bordignon, Chris Sharpe; "the person" → Sarai Rileys). 1 already existed. Skipped the `TEST — Google Ads conversion check` booking. The backfill script is idempotent (re-run reports 0/0)
+- **Customer list cleanup** — recovered 3 names from `historical_sms_messages` bodies (Malissa, Christina Yau, Craig) and deleted 3 rows that were not customers: a Google verification-code shortcode, a relay/test line, and a duplicate of James Alexander. `customers` 498 → 495, `Unknown` 23 → 17. Safe because no table holds a `customers.id` foreign key — `bookings` and `course_enrollments` denormalize name/email/phone
+
+### Notes
+- **`GOOGLE_MAPS_API_KEY` rotated in production** to the single key in GCP project **cove-blades** (`279706376483`), set via `printf | vercel env add` and verified byte-exact. Places API (New) was enabled on that project and added to the key's API restrictions, so the route runs on the modern API with no fallback
+- Google Cloud diagnostics worth remembering: `API_KEY_SERVICE_BLOCKED` = the key's **API restriction list** excludes that service; "has not been used in project N before or it is disabled" = the **API isn't enabled** on the project. Both can be true simultaneously. The console lists "Places API" and "Places API (New)" as separate entries — restricting to the wrong one silently forces the legacy path
+- A referrer-restricted key **cannot** be used by `/api/geocode` at all: server fetches send no `Referer`, and legacy Places rejects such keys outright. The right shape for this key is API-restricted, application restriction **None**, server-side only — every map on the site is a keyless embed, so nothing client-side needs it
+- A required "city" booking field was briefly added to Cal event `2520929` and then removed once the address fix made it redundant. Caution for any future attempt: `PATCH /v2/event-types/{id}` **silently dropped** `attendeePhoneNumber` and the workflow-managed `smsReminderNumber` despite the docs claiming default fields are preserved. Back up the event type first and diff afterwards
+- `customers.email` **is** unique (a conflicting write returns 409) — the OpenAPI probe did not surface it. `upsertCustomerFromBooking` matches-then-writes and logs rather than throws, so a lost race can't fail a confirmed booking
+
+### Known issues
+- **Old Maps key still live** — `AIzaSy…qeojI` in GCP project `331191253023` had all restrictions stripped during debugging and is now unused. It should be deleted in the Google Cloud console
+- **17 customers still named "Unknown"** — all `source: sms`, and none identify themselves anywhere in their message history. Only manual naming can resolve these
+- **The SMS auto-reply still quotes the old minimum** — every inbound text is answered with "Mobile sharpening is $12 per knife with a 6 knife minimum." That string lives in Magpipe, not this repo, so the sitewide copy update did not reach it. Now correct only for the North Shore; needs editing in the Magpipe console
+- **The repo disagrees with itself on knife pricing** — `/pricing` lists $12 flat while `PricingSection` tiers charge $10/knife at 6–20 pieces and $8 at 21+. Since every mobile minimum is now ≥6 pieces, the homepage's "Pricing: $12/knife" line is arguably wrong. Unresolved; it also decides whether the conversion value should be $72 or $60
+
 ## [2.20.2] — 2026-07-16 — Booking widget: wrong-day slot leak fixed, E.164 phone normalization
 
 ### Fixed

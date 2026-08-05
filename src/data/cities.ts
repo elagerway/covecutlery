@@ -104,7 +104,7 @@ Our mobile service is simple: book online, and we arrive at your door with our f
       },
       {
         question: 'What is the mobile sharpening minimum for Burnaby?',
-        answer: 'It depends which side of the city you are on. North Burnaby is a minimum of 8 pieces; South Burnaby is 10 pieces. Either way it can be knives, scissors, or a mix, and most customers bring 6–12 knives per visit.',
+        answer: 'It depends which side of the city you are on. North Burnaby is a minimum of 8 pieces; South Burnaby is 10 pieces. Either way it can be knives, scissors, or a mix, and most customers bring 10–15 pieces per visit.',
       },
       {
         question: 'Can I drop off knives instead of booking mobile service?',
@@ -434,7 +434,7 @@ We sharpen every type of blade for every level of cook: German classic chef's kn
       },
       {
         question: 'What is the mobile minimum for White Rock?',
-        answer: '15 pieces. For longer-drive areas like White Rock, coordinating with a neighbour or two to combine orders makes the visit much more efficient. Many White Rock customers do this through neighbourhood networks — 12 to 20 knives across two or three households is a common booking.',
+        answer: '15 pieces. For longer-drive areas like White Rock, coordinating with a neighbour or two to combine orders makes the visit much more efficient. Many White Rock customers do this through neighbourhood networks — 15 to 25 knives across two or three households is a common booking.',
       },
     ],
     metaTitle: 'Knife Sharpening White Rock | Mobile Service | Cove Blades',

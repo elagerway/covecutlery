@@ -103,7 +103,11 @@ async function detailsNew(placeId: string): Promise<Component[] | null> {
     return null;
   }
 
+  // null, not [] — an empty array is truthy, so it would both skip the legacy fallback
+  // below and make BookingModal's `data.address_components ? …` branch format an empty
+  // list into "", wiping the address the customer just picked.
   const components: { longText?: string; shortText?: string; types?: string[] }[] = data.addressComponents ?? [];
+  if (components.length === 0) return null;
   return components.map((c) => ({
     long_name: c.longText ?? "",
     short_name: c.shortText ?? c.longText ?? "",
@@ -120,7 +124,8 @@ async function detailsLegacy(placeId: string): Promise<Component[] | null> {
     console.error("[geocode] places-legacy details failed:", data.status, String(data.error_message ?? "").slice(0, 200));
     return null;
   }
-  return data.result?.address_components ?? [];
+  const components: Component[] = data.result?.address_components ?? [];
+  return components.length > 0 ? components : null;
 }
 
 export async function GET(req: NextRequest) {
