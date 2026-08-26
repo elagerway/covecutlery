@@ -1,6 +1,10 @@
 const MAGPIPE_BASE = "https://api.magpipe.ai/functions/v1";
 
-export const SERVICE_NUMBER = process.env.MAGPIPE_SMS_FROM ?? "+16042108180";
+// `||`, not `??`: an empty MAGPIPE_SMS_FROM must fall back to the default too.
+// `??` only catches null/undefined, so a blank value would sail through and every
+// send would go out with an empty serviceNumber. Callers that guard on the env var
+// being truthy would skip sending entirely; sendSms() below has no such guard.
+export const SERVICE_NUMBER = process.env.MAGPIPE_SMS_FROM || "+16042108180";
 
 // All Cove Blades service numbers, current and historic. Magpipe stores
 // messages for each. The inbox queries every one of these and merges the
