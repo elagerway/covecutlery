@@ -3,9 +3,8 @@ import { createClient } from "@supabase/supabase-js";
 import { formatAppointment } from "@/lib/cal";
 import { cityFromAddress } from "@/lib/format";
 import { upsertCustomerFromBooking } from "@/lib/customers";
+import { notifyNewBooking } from "@/lib/bookingNotify";
 import { cities } from "@/data/cities";
-
-const ADMIN_PHONE = "+16042108180";
 
 const KNOWN_CITIES = cities.map((c) => c.name);
 
@@ -140,36 +139,16 @@ export async function POST(req: NextRequest) {
     address,
   });
 
-  // Send SMS notifications (fire-and-forget)
-  if (process.env.MAGPIPE_API_KEY && process.env.MAGPIPE_SMS_FROM) {
-    const sendSms = async (to: string, message: string) => {
-      try {
-        await fetch("https://api.magpipe.ai/functions/v1/send-user-sms", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${process.env.MAGPIPE_API_KEY}`,
-          },
-          body: JSON.stringify({
-            serviceNumber: process.env.MAGPIPE_SMS_FROM,
-            contactPhone: to,
-            message,
-          }),
-        });
-      } catch (e) {
-        console.error(`SMS to ${to} failed:`, e);
-      }
-    };
-
-    // Notify admin + confirm to customer (parallel, non-blocking but awaited before response)
-    const adminMsg = `New booking! ${name} — ${appointmentDate} at ${appointmentTime}, ${address ?? "no address"}. Phone: ${e164Phone}`;
-    const customerMsg = `Hi ${name.split(" ")[0]}, your Cove Blades mobile sharpening is confirmed for ${appointmentDate} at ${appointmentTime}. We'll see you at ${address}! Questions? Call us at +1 (604) 210-8180.`;
-
-    await Promise.allSettled([
-      sendSms(ADMIN_PHONE, adminMsg),
-      sendSms(e164Phone, customerMsg),
-    ]);
-  }
+  // Confirmation to the customer + alert to Erik. Shared with the Cal webhook
+  // and gated on an atomic claim, so the two paths can't both text this booking.
+  await notifyNewBooking(supabase, {
+    calBookingUid,
+    name,
+    phone: e164Phone,
+    appointmentDate,
+    appointmentTime,
+    address,
+  });
 
   return NextResponse.json(data);
 }
