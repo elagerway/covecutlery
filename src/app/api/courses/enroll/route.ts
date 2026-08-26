@@ -27,23 +27,34 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
   }
 
-  if (cfToken && process.env.TURNSTILE_SECRET_KEY) {
-    try {
-      const tsRes = await fetch(
-        "https://challenges.cloudflare.com/turnstile/v0/siteverify",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ secret: process.env.TURNSTILE_SECRET_KEY, response: cfToken }),
-        },
-      );
-      const tsData: { success: boolean } = await tsRes.json();
-      if (!tsData.success) {
-        return NextResponse.json({ error: "CAPTCHA verification failed." }, { status: 400 });
-      }
-    } catch {
-      return NextResponse.json({ error: "CAPTCHA verification unavailable." }, { status: 503 });
+  // Mandatory, not best-effort. The old `if (cfToken && secret)` shape let a direct
+  // caller skip verification entirely by omitting the token. Both client paths gate
+  // their submit button on a token being present, so requiring it costs nothing —
+  // and the client now refreshes the token after any failure, since Turnstile
+  // tokens are single-use and a card attempt would otherwise burn the one the
+  // e-transfer path reuses.
+  if (!process.env.TURNSTILE_SECRET_KEY) {
+    console.error("[courses/enroll] TURNSTILE_SECRET_KEY not configured — refusing enrollment");
+    return NextResponse.json({ error: "CAPTCHA verification unavailable." }, { status: 503 });
+  }
+  if (!cfToken || typeof cfToken !== "string" || cfToken.length > 2048) {
+    return NextResponse.json({ error: "CAPTCHA required." }, { status: 400 });
+  }
+  try {
+    const tsRes = await fetch(
+      "https://challenges.cloudflare.com/turnstile/v0/siteverify",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ secret: process.env.TURNSTILE_SECRET_KEY, response: cfToken }),
+      },
+    );
+    const tsData: { success: boolean } = await tsRes.json();
+    if (!tsData.success) {
+      return NextResponse.json({ error: "CAPTCHA verification failed." }, { status: 400 });
     }
+  } catch {
+    return NextResponse.json({ error: "CAPTCHA verification unavailable." }, { status: 503 });
   }
 
   const origin = safeOrigin(req);
