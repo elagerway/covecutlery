@@ -64,14 +64,61 @@ export default function CourseSignUp({
       });
       const data = await res.json();
       if (data.url) {
-        window.location.href = data.url;
+        // assign() rather than `location.href = …`: the React Compiler lint rule
+        // treats the assignment as mutating an out-of-component value.
+        window.location.assign(data.url);
       } else {
         setState("error");
         setErrorMsg(data.error || "Something went wrong");
+        refreshCaptcha();
       }
     } catch {
       setState("error");
       setErrorMsg("Network error — please try again");
+      refreshCaptcha();
+    }
+  }
+
+  /** Turnstile tokens are single-use. Any failed attempt has already redeemed
+   *  this one, so a retry — or switching from card to e-transfer — needs a fresh
+   *  token or the server will reject it as already-used. */
+  function refreshCaptcha() {
+    setToken(null);
+    turnstileRef.current?.reset();
+  }
+
+  async function handlePayEtransfer() {
+    if (!valid) return;
+    setState("loading");
+    setErrorMsg("");
+    try {
+      const res = await fetch("/api/courses/enroll", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          courseSlug,
+          customerName: name.trim(),
+          customerEmail: email.trim(),
+          customerPhone: phone.trim() || undefined,
+          paymentMethod: "etransfer",
+          cfToken: token,
+        }),
+      });
+      // Previously this was fire-and-forget: the response was never inspected, so
+      // a rejected enrollment still showed the success screen and the signup was
+      // lost silently.
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}) as { error?: string });
+        setState("error");
+        setErrorMsg(data.error || "We couldn't record your enrollment — please try again.");
+        refreshCaptcha();
+        return;
+      }
+      setState("etransfer_sent");
+    } catch {
+      setState("error");
+      setErrorMsg("Network error — please try again");
+      refreshCaptcha();
     }
   }
 
@@ -215,26 +262,7 @@ export default function CourseSignUp({
           </p>
           {valid && (
             <button
-              onClick={async () => {
-                setState("loading");
-                try {
-                  await fetch("/api/courses/enroll", {
-                    method: "POST",
-                    headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({
-                      courseSlug,
-                      customerName: name.trim(),
-                      customerEmail: email.trim(),
-                      customerPhone: phone.trim() || undefined,
-                      paymentMethod: "etransfer",
-                      cfToken: token,
-                    }),
-                  });
-                } catch {
-                  /* best-effort */
-                }
-                setState("etransfer_sent");
-              }}
+              onClick={handlePayEtransfer}
               disabled={state === "loading"}
               className="w-full mt-4 py-3 rounded-xl text-sm font-semibold transition-all hover:brightness-110 active:scale-[0.98] disabled:opacity-50"
               style={{
