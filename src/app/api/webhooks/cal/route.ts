@@ -3,6 +3,7 @@ import crypto from "node:crypto";
 import { getServiceClient } from "@/lib/admin";
 import { formatAppointment } from "@/lib/cal";
 import { upsertCustomerFromBooking } from "@/lib/customers";
+import { notifyNewBooking } from "@/lib/bookingNotify";
 
 export const dynamic = "force-dynamic";
 
@@ -176,6 +177,20 @@ export async function POST(req: NextRequest) {
       console.error("[webhooks/cal] upsert failed:", error);
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
+
+    // Bookings made on Cal.com directly — including by the Magpipe AI receptionist,
+    // whose Cal booking function is live — never touched /api/cal/book, so this is
+    // their only chance at a confirmation text and a reschedule link. The claim
+    // inside notifyNewBooking makes this a no-op when the widget already sent it.
+    await notifyNewBooking(supabase, {
+      calBookingUid: uid,
+      name: row.customer_name,
+      phone: row.customer_phone,
+      appointmentDate: row.appointment_date,
+      appointmentTime: row.appointment_time,
+      address: row.address,
+    });
+
     return NextResponse.json({ ok: true });
   }
 
