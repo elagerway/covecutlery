@@ -41,20 +41,30 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Please enter your phone number." }, { status: 400 });
   }
 
-  if (cfToken && process.env.TURNSTILE_SECRET_KEY) {
-    try {
-      const tsRes = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ secret: process.env.TURNSTILE_SECRET_KEY, response: cfToken }),
-      });
-      const tsData: { success: boolean } = await tsRes.json();
-      if (!tsData.success) {
-        return NextResponse.json({ error: "CAPTCHA verification failed." }, { status: 400 });
-      }
-    } catch {
-      return NextResponse.json({ error: "CAPTCHA verification unavailable." }, { status: 503 });
+  // Mandatory, not best-effort. This endpoint sends an SMS from the Cove Blades
+  // service number, so an unverified caller could use it to make that number text
+  // people. The `if (token && secret)` shape used elsewhere lets a direct caller
+  // skip verification simply by omitting the token — fail closed instead, on both
+  // a missing token and missing server config.
+  if (!process.env.TURNSTILE_SECRET_KEY) {
+    console.error("[bookings/manage-link] TURNSTILE_SECRET_KEY not configured — refusing to send");
+    return NextResponse.json({ error: "CAPTCHA verification unavailable." }, { status: 503 });
+  }
+  if (!cfToken || typeof cfToken !== "string" || cfToken.length > 2048) {
+    return NextResponse.json({ error: "CAPTCHA required." }, { status: 400 });
+  }
+  try {
+    const tsRes = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ secret: process.env.TURNSTILE_SECRET_KEY, response: cfToken }),
+    });
+    const tsData: { success: boolean } = await tsRes.json();
+    if (!tsData.success) {
+      return NextResponse.json({ error: "CAPTCHA verification failed." }, { status: 400 });
     }
+  } catch {
+    return NextResponse.json({ error: "CAPTCHA verification unavailable." }, { status: 503 });
   }
 
   const e164 = toE164CA(phone);
