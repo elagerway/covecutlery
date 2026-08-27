@@ -42,19 +42,15 @@ const tiers: PricingTier[] = [
     price: 8,
     features: ["Sharpen", "Hone", "Sanitize", "Sharpness Test"],
   },
-  {
-    name: "Mobile Service",
-    quantity: "5+ pieces",
-    price: 12,
-    features: [
-      "Sharpen",
-      "Hone",
-      "Sanitize",
-      "Sharpness Test",
-      "30 Day Guarantee",
-    ],
-  },
 ];
+
+// The Mobile Service tier used to sit here as "5+ pieces, $12". A single figure
+// can't express mobile pricing: the minimum varies by area (6 on the North Shore,
+// 8 in North Burnaby, 10 in South Burnaby/Vancouver/Port Moody, 15 for the rest of
+// the Lower Mainland), so "5+" was both stale and under every real minimum — a
+// Vancouver customer reading it would book 6 knives and fall short of the actual 10.
+// Mobile pricing and the per-area minimums live in MobileServiceSection, which
+// renders on this same page and can show the full table.
 
 const additionalServices: { name: string; price: string; note?: string }[] = [
   {
@@ -100,7 +96,7 @@ export default function PricingSection() {
         </div>
 
         {/* Pricing Grid */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-16">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-16">
           {tiers.map((tier) => (
             <div
               key={tier.name}
