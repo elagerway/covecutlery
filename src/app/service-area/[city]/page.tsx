@@ -5,6 +5,7 @@ import { ChevronRight, MapPin, Phone, Clock, Shield } from 'lucide-react'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import { cities, getCityBySlug } from '@/data/cities'
+import { minimumForSlug } from '@/data/mobileMinimums'
 import { safeJsonLd, breadcrumbSchema, faqPageSchema } from '@/lib/schema'
 
 export function generateStaticParams() {
@@ -42,6 +43,7 @@ export default async function CityPage({
     { name: city.name, url: `https://coveblades.com/service-area/${city.slug}` },
   ])
 
+  const minimum = minimumForSlug(city.slug)
   const faqJsonLd = faqPageSchema(city.faqs)
 
   const serviceJsonLd = {
@@ -104,6 +106,21 @@ export default async function CityPage({
             <p className="text-lg max-w-xl mx-auto leading-relaxed" style={{ color: '#6B7280' }}>
               {city.driveTime}. Mobile service, 24/7 drop-off, and $12/knife with a 30-day edge guarantee.
             </p>
+            {/* Minimum up top, not buried in the FAQ — people were booking mobile
+                visits with a single knife because the number sat below the fold. */}
+            {minimum && (
+              <p
+                className="mt-6 inline-flex flex-wrap items-center justify-center gap-x-2 gap-y-1 rounded-lg border px-4 py-3 text-sm"
+                style={{ borderColor: '#D4A017', backgroundColor: 'rgba(212,160,23,0.08)', color: '#FFFFFF' }}
+              >
+                <span style={{ color: '#D4A017' }} className="font-semibold">
+                  Mobile minimum in {city.name}: {minimum.note ?? `${minimum.pieces} pieces`}
+                </span>
+                <span style={{ color: '#6B7280' }}>
+                  Under that? Our 24/7 drop-off box has no minimum.
+                </span>
+              </p>
+            )}
           </div>
         </section>
 

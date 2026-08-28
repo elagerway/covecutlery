@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
+import { minimumForAddress, LOWEST_MINIMUM, HIGHEST_MINIMUM } from "@/data/mobileMinimums";
 import { X, ChevronLeft, ChevronRight, Loader2, CheckCircle, MapPin } from "lucide-react";
 import { track } from "@/lib/analytics-client";
 import { fireBookingConversion } from "@/lib/google-ads";
@@ -97,6 +98,11 @@ export default function BookingModal({ open, onClose, initialDate }: BookingModa
   const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
   const [form, setForm] = useState({ name: "", email: "", phone: "", address: "", notes: "" });
   const [submitting, setSubmitting] = useState(false);
+  // Resolved from the typed address so we can name the customer's own minimum.
+  // Null for addresses outside the listed cities — we show generic copy rather
+  // than assert a number we can't stand behind.
+  const areaMinimum = minimumForAddress(form.address);
+
   const [error, setError] = useState<string | null>(null);
   const [addressSuggestions, setAddressSuggestions] = useState<AddressSuggestion[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
@@ -254,7 +260,7 @@ export default function BookingModal({ open, onClose, initialDate }: BookingModa
           <div>
             <h2 className="text-lg font-bold text-white">Book Mobile Sharpening</h2>
             <p className="text-sm mt-0.5" style={{ color: "#6B7280" }}>
-              We come to you · $12/knife
+              We come to you · $12/knife · {LOWEST_MINIMUM}–{HIGHEST_MINIMUM} piece minimum by area
             </p>
           </div>
           <button
@@ -290,6 +296,16 @@ export default function BookingModal({ open, onClose, initialDate }: BookingModa
           {/* STEP: Date */}
           {step === "date" && (
             <div>
+              {/* Up front, before they pick a slot: the #1 cause of unusable
+                  bookings was people arriving with one knife. */}
+              <p
+                className="mb-4 rounded-lg border px-3 py-2.5 text-xs leading-relaxed"
+                style={{ borderColor: "#D4A017", backgroundColor: "rgba(212,160,23,0.08)", color: "#FFFFFF" }}
+              >
+                <span className="font-semibold" style={{ color: "#D4A017" }}>Mobile visits have a minimum.</span>{" "}
+                {LOWEST_MINIMUM} pieces on the North Shore, up to {HIGHEST_MINIMUM} further out — knives, scissors, or a mix.
+                Fewer than that? Our 24/7 drop-off box has no minimum.
+              </p>
               <div className="flex items-center justify-between mb-4">
                 <p className="text-sm font-semibold text-white">Select a date</p>
                 <div className="flex gap-2">
@@ -505,6 +521,18 @@ export default function BookingModal({ open, onClose, initialDate }: BookingModa
                     </ul>
                   )}
                 </div>
+                {areaMinimum && (
+                  <p
+                    className="rounded-lg border px-3 py-2.5 text-xs leading-relaxed"
+                    style={{ borderColor: "#D4A017", backgroundColor: "rgba(212,160,23,0.08)", color: "#FFFFFF" }}
+                  >
+                    <span className="font-semibold" style={{ color: "#D4A017" }}>
+                      {areaMinimum.name} minimum:{" "}
+                      {areaMinimum.minimum.note ?? `${areaMinimum.minimum.pieces} pieces`}
+                    </span>{" "}
+                    Please confirm your count below — visits under the minimum can&apos;t be completed on site.
+                  </p>
+                )}
                 <div>
                   <label className="block text-xs font-medium mb-1.5" style={{ color: "#6B7280" }}>
                     Notes (# of knives, parking, etc.)
@@ -512,7 +540,7 @@ export default function BookingModal({ open, onClose, initialDate }: BookingModa
                   <textarea
                     value={form.notes}
                     onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))}
-                    placeholder="e.g. 8 kitchen knives, street parking available"
+                    placeholder={areaMinimum ? `e.g. ${areaMinimum.minimum.pieces} kitchen knives, street parking available` : "e.g. 8 kitchen knives, street parking available"}
                     rows={2}
                     className="w-full px-3 py-2.5 rounded-lg text-sm text-white placeholder-[#6B7280] outline-none resize-none"
                     style={{ backgroundColor: "#161B22", border: "1px solid #30363D" }}
