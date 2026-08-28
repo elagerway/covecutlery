@@ -96,12 +96,17 @@ export default function BookingModal({ open, onClose, initialDate }: BookingModa
   const [loadingSlots, setLoadingSlots] = useState(false);
   const [selectedDate, setSelectedDate] = useState<string | null>(null);
   const [selectedSlot, setSelectedSlot] = useState<string | null>(null);
-  const [form, setForm] = useState({ name: "", email: "", phone: "", address: "", notes: "" });
+  const [form, setForm] = useState({ name: "", email: "", phone: "", address: "", notes: "", pieces: "" });
   const [submitting, setSubmitting] = useState(false);
   // Resolved from the typed address so we can name the customer's own minimum.
   // Null for addresses outside the listed cities — we show generic copy rather
   // than assert a number we can't stand behind.
   const areaMinimum = minimumForAddress(form.address);
+  const declaredPieces = Number.parseInt(form.pieces, 10);
+  const hasPieces = Number.isInteger(declaredPieces) && declaredPieces > 0;
+  // Only assert a shortfall once we can resolve their area; before an address is
+  // entered we have no minimum to judge against. The server re-checks regardless.
+  const belowMinimum = hasPieces && !!areaMinimum && declaredPieces < areaMinimum.minimum.pieces;
 
   const [error, setError] = useState<string | null>(null);
   const [addressSuggestions, setAddressSuggestions] = useState<AddressSuggestion[]>([]);
@@ -144,7 +149,7 @@ export default function BookingModal({ open, onClose, initialDate }: BookingModa
         setStep("date");
         setSelectedDate(null);
         setSelectedSlot(null);
-        setForm({ name: "", email: "", phone: "", address: "", notes: "" });
+        setForm({ name: "", email: "", phone: "", address: "", notes: "", pieces: "" });
         setError(null);
         setAddressSuggestions([]);
       }, 300);
@@ -194,6 +199,7 @@ export default function BookingModal({ open, onClose, initialDate }: BookingModa
 
   async function handleBook() {
     if (!selectedSlot || !form.name || !form.email || !form.phone || !form.address) return;
+    if (!hasPieces || belowMinimum) return;
     const e164Phone = toE164CA(form.phone);
     if (!e164Phone) {
       setError("Please enter a valid 10-digit phone number, e.g. 604-555-1234.");
@@ -214,6 +220,7 @@ export default function BookingModal({ open, onClose, initialDate }: BookingModa
           email: form.email,
           phone: e164Phone,
           address: form.address,
+          pieces: declaredPieces,
           notes,
         }),
       });
@@ -535,12 +542,37 @@ export default function BookingModal({ open, onClose, initialDate }: BookingModa
                 )}
                 <div>
                   <label className="block text-xs font-medium mb-1.5" style={{ color: "#6B7280" }}>
-                    Notes (# of knives, parking, etc.)
+                    How many pieces? <span style={{ color: "#D4A017" }}>*</span>
+                  </label>
+                  <input
+                    type="number"
+                    inputMode="numeric"
+                    min={1}
+                    max={500}
+                    required
+                    value={form.pieces}
+                    onChange={(e) => setForm((f) => ({ ...f, pieces: e.target.value }))}
+                    placeholder={areaMinimum ? `${areaMinimum.minimum.pieces} or more` : "e.g. 10"}
+                    className="w-full px-3 py-2.5 rounded-lg text-sm text-white placeholder-[#6B7280] outline-none"
+                    style={{
+                      backgroundColor: "#161B22",
+                      border: `1px solid ${belowMinimum ? "#F85149" : "#30363D"}`,
+                    }}
+                  />
+                  <p className="mt-1.5 text-xs" style={{ color: belowMinimum ? "#F85149" : "#6B7280" }}>
+                    {belowMinimum && areaMinimum
+                      ? `${areaMinimum.name} has a ${areaMinimum.minimum.pieces}-piece minimum. For fewer, our 24/7 drop-off box has no minimum.`
+                      : "Knives, scissors, and garden shears all count toward the total."}
+                  </p>
+                </div>
+                <div>
+                  <label className="block text-xs font-medium mb-1.5" style={{ color: "#6B7280" }}>
+                    Notes (parking, gate codes, etc.)
                   </label>
                   <textarea
                     value={form.notes}
                     onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))}
-                    placeholder={areaMinimum ? `e.g. ${areaMinimum.minimum.pieces} kitchen knives, street parking available` : "e.g. 8 kitchen knives, street parking available"}
+                    placeholder="e.g. street parking available, side gate code 1234"
                     rows={2}
                     className="w-full px-3 py-2.5 rounded-lg text-sm text-white placeholder-[#6B7280] outline-none resize-none"
                     style={{ backgroundColor: "#161B22", border: "1px solid #30363D" }}
@@ -555,7 +587,7 @@ export default function BookingModal({ open, onClose, initialDate }: BookingModa
 
                 <button
                   onClick={handleBook}
-                  disabled={submitting || !form.name || !form.email || !form.phone || !form.address}
+                  disabled={submitting || !form.name || !form.email || !form.phone || !form.address || !hasPieces || belowMinimum}
                   className="w-full py-3 rounded-lg font-semibold text-sm transition-all duration-200 hover:brightness-110 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
                   style={{ backgroundColor: "#D4A017", color: "#0D1117" }}
                 >

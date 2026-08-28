@@ -19,6 +19,7 @@ export interface BookingNotifyArgs {
   appointmentDate: string;
   appointmentTime: string;
   address: string | null;
+  pieceCount?: number | null;
 }
 
 /** Cal.com's attendee page — Reschedule and Cancel, both enabled on the event
@@ -77,7 +78,7 @@ export async function notifyNewBooking(
   const tasks: Promise<unknown>[] = [
     sendSms({
       to: ADMIN_PHONE,
-      message: `New booking! ${b.name} — ${b.appointmentDate} at ${b.appointmentTime}, ${b.address ?? "no address"}. Phone: ${b.phone ?? "none"}${addressWarning}`,
+      message: `New booking! ${b.name} — ${b.appointmentDate} at ${b.appointmentTime}, ${b.address ?? "no address"}. ${b.pieceCount ? `${b.pieceCount} pieces. ` : ""}Phone: ${b.phone ?? "none"}${addressWarning}`,
     }),
   ];
 
