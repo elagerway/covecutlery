@@ -4,6 +4,7 @@ import { formatAppointment } from "@/lib/cal";
 import { cityFromAddress } from "@/lib/format";
 import { upsertCustomerFromBooking } from "@/lib/customers";
 import { notifyNewBooking } from "@/lib/bookingNotify";
+import { requiredMinimumForAddress } from "@/data/mobileMinimums";
 import { cities } from "@/data/cities";
 
 const KNOWN_CITIES = cities.map((c) => c.name);
@@ -22,7 +23,7 @@ function toE164CA(phone: string | undefined): string | undefined {
 
 export async function POST(req: NextRequest) {
   const body = await req.json();
-  const { start, name, email, phone, address, notes } = body;
+  const { start, name, email, phone, address, notes, pieces } = body;
 
   if (!start || !name || !email || !phone || !address) {
     return NextResponse.json({ error: "start, name, email, phone, and address required" }, { status: 400 });
@@ -49,6 +50,31 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(
       { error: "Please select your address from the dropdown list so we know which city to come to." },
       { status: 400 }
+    );
+  }
+
+  // Declared piece count, enforced server-side. The client disables submit below
+  // the minimum, but that's a courtesy — this is the check that actually holds,
+  // since anyone can POST here directly. Before this existed the count lived only
+  // in free-text notes and a 4-piece booking sailed through a 15-piece area.
+  const required = requiredMinimumForAddress(address);
+  const declared = typeof pieces === "number" ? pieces : Number.parseInt(String(pieces ?? ""), 10);
+  if (!Number.isInteger(declared) || declared < 1 || declared > 500) {
+    return NextResponse.json(
+      { error: "Please tell us how many pieces you'd like sharpened." },
+      { status: 400 },
+    );
+  }
+  if (declared < required.pieces) {
+    const where = required.cityName ? `in ${required.cityName}` : "in your area";
+    return NextResponse.json(
+      {
+        error:
+          `Mobile visits ${where} have a ${required.pieces}-piece minimum, and you've entered ${declared}. ` +
+          `Knives, scissors, and garden shears all count toward the total. ` +
+          `For smaller orders our 24/7 drop-off box has no minimum.`,
+      },
+      { status: 400 },
     );
   }
 
@@ -81,7 +107,7 @@ export async function POST(req: NextRequest) {
           phoneNumber: e164Phone,
         },
         location: address ? { type: "attendeeDefined", location: address } : undefined,
-        metadata: notes ? { notes } : {},
+        metadata: { pieces: String(declared), ...(notes ? { notes } : {}) },
       }),
     });
   } catch {
@@ -114,6 +140,7 @@ export async function POST(req: NextRequest) {
         customer_name: name,
         customer_email: email,
         customer_phone: e164Phone,
+        piece_count: declared,
         appointment_date: appointmentDate,
         appointment_time: appointmentTime,
         address: address ?? null,
@@ -148,6 +175,7 @@ export async function POST(req: NextRequest) {
     appointmentDate,
     appointmentTime,
     address,
+    pieceCount: declared,
   });
 
   return NextResponse.json(data);

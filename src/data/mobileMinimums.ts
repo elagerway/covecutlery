@@ -72,3 +72,20 @@ export function minimumForAddress(
   }
   return null;
 }
+
+/**
+ * The count a booking must meet for this address. Falls back to the highest
+ * minimum we serve when the city isn't one we list — mobile service is only
+ * offered in the listed areas, so an unrecognised city is the case where we
+ * should be strictest, not most lenient. Never returns null, so the booking
+ * route always has a number to enforce.
+ */
+export function requiredMinimumForAddress(address: string): {
+  pieces: number;
+  cityName: string | null;
+  note?: string;
+} {
+  const match = minimumForAddress(address);
+  if (!match) return { pieces: HIGHEST_MINIMUM, cityName: null };
+  return { pieces: match.minimum.pieces, cityName: match.name, note: match.minimum.note };
+}
