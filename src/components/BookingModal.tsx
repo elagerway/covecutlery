@@ -52,6 +52,9 @@ interface Slot {
 interface BookingModalProps {
   open: boolean;
   onClose: () => void;
+  /** "page" drops the overlay, backdrop and close button so the same flow can be
+   *  rendered as a standalone route (/book) that the AI receptionist can text. */
+  variant?: "modal" | "page";
   initialDate?: string | null;
 }
 
@@ -85,7 +88,8 @@ function addDays(date: Date, n: number) {
   return d;
 }
 
-export default function BookingModal({ open, onClose, initialDate }: BookingModalProps) {
+export default function BookingModal({ open, onClose, initialDate, variant = "modal" }: BookingModalProps) {
+  const isPage = variant === "page";
   const [step, setStep] = useState<"date" | "time" | "details" | "done">("date");
   const [weekStart, setWeekStart] = useState<Date>(() => {
     const d = new Date();
@@ -246,17 +250,9 @@ export default function BookingModal({ open, onClose, initialDate }: BookingModa
 
   if (!open) return null;
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      {/* Backdrop */}
+  const card = (
       <div
-        className="absolute inset-0 bg-black/70 backdrop-blur-sm"
-        onClick={onClose}
-      />
-
-      {/* Modal */}
-      <div
-        className="relative w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden"
+        className={`relative w-full max-w-lg rounded-2xl shadow-2xl overflow-hidden${isPage ? " mx-auto" : ""}`}
         style={{ backgroundColor: "#0D1117", border: "1px solid #30363D" }}
       >
         {/* Header */}
@@ -270,13 +266,15 @@ export default function BookingModal({ open, onClose, initialDate }: BookingModa
               We come to you · $12/knife · {LOWEST_MINIMUM}–{HIGHEST_MINIMUM} piece minimum by area
             </p>
           </div>
-          <button
-            onClick={onClose}
-            className="p-2 rounded-lg transition-colors hover:bg-white/10"
-            aria-label="Close"
-          >
-            <X className="w-5 h-5 text-white" />
-          </button>
+          {!isPage && (
+            <button
+              onClick={onClose}
+              className="p-2 rounded-lg transition-colors hover:bg-white/10"
+              aria-label="Close"
+            >
+              <X className="w-5 h-5 text-white" />
+            </button>
+          )}
         </div>
 
         {/* Steps indicator */}
@@ -618,6 +616,15 @@ export default function BookingModal({ open, onClose, initialDate }: BookingModa
           )}
         </div>
       </div>
+  );
+
+  if (isPage) return card;
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      {/* Backdrop */}
+      <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={onClose} />
+      {card}
     </div>
   );
 }
