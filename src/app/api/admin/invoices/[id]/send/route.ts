@@ -1,146 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import * as postmark from "postmark";
 import { requireAdmin, getServiceClient } from "@/lib/admin";
-import { formatCAD, escapeHtml, LineItem } from "@/lib/format";
-
-const FROM_EMAIL = "info@coveblades.com";
-const FROM_NAME = "Cove Blades";
-
-function buildInvoiceHtml(invoice: {
-  invoice_number: string;
-  client_name: string;
-  line_items: LineItem[];
-  subtotal: number;
-  due_date: string | null;
-  notes: string | null;
-  status: string;
-  payment_method: string | null;
-  paid_at: string | null;
-  id: string;
-}, origin: string) {
-  const firstName = invoice.client_name.split(" ")[0];
-  const paidFormatted = invoice.paid_at
-    ? new Date(invoice.paid_at).toLocaleDateString("en-CA", {
-        weekday: "long", month: "long", day: "numeric", year: "numeric",
-        hour: "numeric", minute: "2-digit", timeZone: "America/Vancouver",
-      })
-    : null;
-  const paymentMethodLabel = invoice.payment_method === "stripe" ? "Credit Card" : invoice.payment_method === "etransfer" ? "Interac e-Transfer" : invoice.payment_method || null;
-  const dueFormatted = invoice.due_date
-    ? new Date(invoice.due_date + "T12:00:00").toLocaleDateString("en-CA", {
-        weekday: "long", month: "long", day: "numeric", year: "numeric",
-      })
-    : null;
-  const viewUrl = `${origin}/invoice/${invoice.id}`;
-
-  const itemRows = invoice.line_items.map((item: LineItem) => `
-    <tr>
-      <td style="padding:8px 0;color:#555;border-bottom:1px solid #eee;">${escapeHtml(item.description)}</td>
-      <td style="padding:8px 0;text-align:center;color:#555;border-bottom:1px solid #eee;">${escapeHtml(String(item.quantity))}</td>
-      <td style="padding:8px 0;text-align:right;color:#555;border-bottom:1px solid #eee;">${escapeHtml(formatCAD(item.unit_price))}</td>
-      <td style="padding:8px 0;text-align:right;color:#111;border-bottom:1px solid #eee;">${escapeHtml(formatCAD(item.quantity * item.unit_price))}</td>
-    </tr>
-  `).join("");
-
-  return `<!DOCTYPE html>
-<html>
-<body style="margin:0;padding:0;background:#f5f5f5;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;">
-  <div style="max-width:520px;margin:40px auto;background:#fff;border-radius:8px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.1);">
-    <div style="background:#0D1117;padding:24px 32px;">
-      <table cellpadding="0" cellspacing="0" border="0"><tr>
-        <td style="vertical-align:middle;padding-right:12px;">
-          <img src="https://coveblades.com/logo-icon-512.png" alt="Cove Blades" width="40" height="40" style="display:block;border-radius:6px;" />
-        </td>
-        <td style="vertical-align:middle;">
-          <p style="margin:0;color:#D4A017;font-size:20px;font-weight:700;letter-spacing:.5px;">COVE BLADES</p>
-          <p style="margin:2px 0 0;color:#6B7280;font-size:13px;">Invoice #${escapeHtml(invoice.invoice_number)}</p>
-        </td>
-      </tr></table>
-    </div>
-    <div style="padding:32px;">
-      <p style="margin:0 0 24px;font-size:15px;color:#111;">Hi ${escapeHtml(firstName)},<br>Here's your invoice from Cove Blades.</p>
-      ${dueFormatted ? `<div style="background:#f9f9f9;border-radius:6px;padding:16px 20px;margin-bottom:24px;">
-        <p style="margin:0 0 4px;font-size:13px;color:#888;">Due Date</p>
-        <p style="margin:0;font-size:15px;font-weight:600;color:#111;">${dueFormatted}</p>
-      </div>` : ""}
-      <table style="width:100%;border-collapse:collapse;font-size:14px;">
-        <tr style="border-bottom:2px solid #eee;">
-          <th style="padding:8px 0;text-align:left;color:#888;font-weight:500;">Item</th>
-          <th style="padding:8px 0;text-align:center;color:#888;font-weight:500;">Qty</th>
-          <th style="padding:8px 0;text-align:right;color:#888;font-weight:500;">Price</th>
-          <th style="padding:8px 0;text-align:right;color:#888;font-weight:500;">Total</th>
-        </tr>
-        ${itemRows}
-        <tr>
-          <td colspan="3" style="padding:12px 0 4px;font-weight:700;color:#111;">Total</td>
-          <td style="padding:12px 0 4px;text-align:right;font-weight:700;font-size:16px;color:#111;">${escapeHtml(formatCAD(invoice.subtotal))}</td>
-        </tr>
-      </table>
-      ${invoice.notes ? `<p style="margin:24px 0 0;font-size:13px;color:#555;padding:12px 16px;background:#f9f9f9;border-radius:6px;">${escapeHtml(invoice.notes)}</p>` : ""}
-      ${invoice.status === "paid" && paidFormatted ? `<div style="margin:24px 0 0;padding:16px 20px;background:#f0fdf4;border-radius:6px;border:1px solid #bbf7d0;">
-        <p style="margin:0 0 4px;font-size:13px;color:#15803d;font-weight:600;">Payment Received</p>
-        <p style="margin:0;font-size:13px;color:#166534;">${paidFormatted}${paymentMethodLabel ? ` via ${paymentMethodLabel}` : ""}</p>
-      </div>` : ""}
-      <div style="margin:32px 0 0;text-align:center;">
-        <a href="${viewUrl}" style="display:inline-block;padding:14px 32px;background:#D4A017;color:#0D1117;font-weight:700;font-size:14px;text-decoration:none;border-radius:8px;">${invoice.status === "paid" ? "View Invoice" : "View & Pay Invoice"}</a>
-      </div>
-      ${invoice.status !== "paid" ? `<p style="margin:24px 0 0;font-size:12px;color:#888;text-align:center;">
-        Or pay via e-Transfer to <strong>pay@coveblades.com</strong><br>
-        Include invoice #${escapeHtml(invoice.invoice_number)} in the message.
-      </p>` : `<p style="margin:24px 0 0;font-size:12px;color:#888;text-align:center;">
-        This invoice has been paid. Thank you!
-      </p>`}
-      <p style="margin:24px 0 0;font-size:13px;color:#888;text-align:center;">
-        <a href="https://coveblades.com" style="color:#D4A017;">coveblades.com</a> · +1 (604) 210-8180
-      </p>
-    </div>
-  </div>
-</body>
-</html>`;
-}
-
-function buildInvoiceText(invoice: {
-  invoice_number: string;
-  client_name: string;
-  line_items: LineItem[];
-  subtotal: number;
-  due_date: string | null;
-  notes: string | null;
-  status: string;
-  payment_method: string | null;
-  paid_at: string | null;
-  id: string;
-}, origin: string) {
-  const firstName = invoice.client_name.split(" ")[0];
-  const items = invoice.line_items.map((item: LineItem) =>
-    `  ${item.description} × ${item.quantity} — ${formatCAD(item.quantity * item.unit_price)}`
-  ).join("\n");
-
-  return [
-    `Hi ${firstName},`,
-    ``,
-    `Here's your invoice from Cove Blades.`,
-    ``,
-    `Invoice #${invoice.invoice_number}`,
-    invoice.due_date ? `Due: ${invoice.due_date}` : null,
-    ``,
-    items,
-    `──────────────────────`,
-    `Total: ${formatCAD(invoice.subtotal)}`,
-    ``,
-    `View online: ${origin}/invoice/${invoice.id}`,
-    ``,
-    invoice.status !== "paid"
-      ? `Or e-Transfer to pay@coveblades.com (include invoice #${invoice.invoice_number} in the message).`
-      : null,
-    invoice.status === "paid" && invoice.paid_at
-      ? `Payment received: ${new Date(invoice.paid_at).toLocaleDateString("en-CA", { weekday: "long", month: "long", day: "numeric", year: "numeric", hour: "numeric", minute: "2-digit", timeZone: "America/Vancouver" })}${invoice.payment_method === "stripe" ? " via Credit Card" : invoice.payment_method === "etransfer" ? " via Interac e-Transfer" : ""}. Thank you!`
-      : null,
-    ``,
-    invoice.notes ? `Note: ${invoice.notes}\n` : null,
-    `Cove Blades · coveblades.com · +1 (604) 210-8180`,
-  ].filter(l => l !== null).join("\n");
-}
+import { formatCAD } from "@/lib/format";
+import { buildInvoiceHtml, buildInvoiceText, FROM_EMAIL, FROM_NAME } from "@/lib/invoiceNotify";
 
 export async function POST(
   req: NextRequest,
@@ -236,6 +98,10 @@ export async function POST(
     const updates: Record<string, string> = {};
     if (invoice.status === "draft") updates.status = "sent";
     updates.sent_at = new Date().toISOString();
+    // Sending an already-paid invoice IS the paid receipt, so record it the same
+    // way the Stripe webhook does — the admin view reads this to show whether the
+    // customer was ever told their payment landed.
+    if (invoice.status === "paid") updates.paid_notified_at = new Date().toISOString();
     await supabase.from("invoices").update(updates).eq("id", id);
   }
 

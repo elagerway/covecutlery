@@ -20,6 +20,7 @@ interface Invoice {
   due_date: string | null;
   sent_at: string | null;
   paid_at: string | null;
+  paid_notified_at: string | null;
   created_at: string;
 }
 
@@ -346,6 +347,31 @@ export default function InvoiceDetailPage() {
             {invoice.status}
           </span>
         </div>
+
+        {/* Whether the customer was actually told their payment landed. A paid
+            invoice with no confirmation is how two customers ended up re-paying. */}
+        {invoice.status === "paid" && (
+          <div
+            className="px-6 py-2.5 text-xs flex items-center gap-2"
+            style={{
+              backgroundColor: invoice.paid_notified_at ? "rgba(34,197,94,0.08)" : "rgba(248,81,73,0.08)",
+              borderBottom: "1px solid #30363D",
+              color: invoice.paid_notified_at ? "#22C55E" : "#F85149",
+            }}
+          >
+            {invoice.paid_notified_at ? (
+              <>
+                Paid receipt sent to the customer on{" "}
+                {new Date(invoice.paid_notified_at).toLocaleString("en-CA", {
+                  month: "short", day: "numeric", year: "numeric",
+                  hour: "numeric", minute: "2-digit", timeZone: "America/Vancouver",
+                })}
+              </>
+            ) : (
+              <>No paid receipt has been sent — use Send Receipt above.</>
+            )}
+          </div>
+        )}
 
         <div className="px-6 py-5" style={{ backgroundColor: "#0D1117" }}>
           {/* Client */}

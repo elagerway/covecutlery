@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 import { createClient } from "@supabase/supabase-js";
 import { cancelCalBooking } from "@/lib/cal";
+import { notifyInvoicePaidById } from "@/lib/invoiceNotify";
 
 function getStripe() {
   return new Stripe(process.env.STRIPE_SECRET_KEY!);
@@ -37,7 +38,10 @@ export async function POST(req: NextRequest) {
 
     // Check if this is an invoice payment
     if (session.metadata?.invoice_id) {
-      await supabase
+      // Only flip an invoice that isn't already paid, and only notify on that
+      // transition — Stripe retries delivery, and a customer shouldn't get a
+      // second receipt because the first response was slow.
+      const { data: transitioned } = await supabase
         .from("invoices")
         .update({
           status: "paid",
@@ -45,7 +49,14 @@ export async function POST(req: NextRequest) {
           paid_at: new Date().toISOString(),
           stripe_payment_intent_id: session.payment_intent as string,
         })
-        .eq("id", session.metadata.invoice_id);
+        .eq("id", session.metadata.invoice_id)
+        .neq("status", "paid")
+        .select("id");
+
+      if (transitioned && transitioned.length > 0) {
+        // Paying used to update a row and tell the customer nothing at all.
+        await notifyInvoicePaidById(supabase, session.metadata.invoice_id);
+      }
     } else if (session.metadata?.course_enrollment_id) {
       const { data: enrollment } = await supabase
         .from("course_enrollments")
