@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Plus, FileText, Send, Eye, CreditCard, Clock } from "lucide-react";
+import { Plus, FileText, Send, Eye, CreditCard, Clock, MailCheck } from "lucide-react";
 import { formatCAD } from "@/lib/format";
 
 interface Invoice {
@@ -17,6 +17,7 @@ interface Invoice {
   created_at: string;
   sent_at: string | null;
   paid_at: string | null;
+  paid_notified_at: string | null;
 }
 
 const STATUS_COLORS: Record<string, { bg: string; text: string }> = {
@@ -24,6 +25,7 @@ const STATUS_COLORS: Record<string, { bg: string; text: string }> = {
   sent: { bg: "#1E90FF22", text: "#1E90FF" },
   viewed: { bg: "#D4A01722", text: "#D4A017" },
   paid: { bg: "#22C55E22", text: "#22C55E" },
+  "receipt sent": { bg: "#22C55E22", text: "#22C55E" },
   overdue: { bg: "#EF444422", text: "#EF4444" },
 };
 
@@ -32,6 +34,7 @@ const STATUS_ICONS: Record<string, React.ReactNode> = {
   sent: <Send className="w-3 h-3" />,
   viewed: <Eye className="w-3 h-3" />,
   paid: <CreditCard className="w-3 h-3" />,
+  "receipt sent": <MailCheck className="w-3 h-3" />,
   overdue: <Clock className="w-3 h-3" />,
 };
 
@@ -113,7 +116,12 @@ export default function InvoicesPage() {
               </tr>
             ) : (
               invoices.map((inv) => {
-                const colors = STATUS_COLORS[inv.status] ?? STATUS_COLORS.draft;
+                // A paid invoice whose receipt has actually reached the customer
+                // reads "receipt sent". Paid-but-unnotified stays "paid", so the
+                // list surfaces anyone who was charged and never told.
+                const label =
+                  inv.status === "paid" && inv.paid_notified_at ? "receipt sent" : inv.status;
+                const colors = STATUS_COLORS[label] ?? STATUS_COLORS.draft;
                 return (
                   <tr
                     key={inv.id}
@@ -138,8 +146,8 @@ export default function InvoicesPage() {
                         className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium capitalize"
                         style={{ backgroundColor: colors.bg, color: colors.text }}
                       >
-                        {STATUS_ICONS[inv.status]}
-                        {inv.status}
+                        {STATUS_ICONS[label]}
+                        {label}
                       </span>
                     </td>
                     <td className="px-4 py-3" style={{ color: "#6B7280" }}>
