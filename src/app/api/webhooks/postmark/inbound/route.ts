@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import * as postmark from "postmark";
 import { getServiceClient } from "@/lib/admin";
-import { isKnownMailbox, normaliseAddress, autoReplyFor, looksLikeSpam, type AutoReplyTemplate } from "@/lib/email";
+import { isKnownMailbox, normaliseAddress, autoReplyFor, looksLikeSpam, isAutoResponse, type AutoReplyTemplate } from "@/lib/email";
 
 // Postmark Inbound webhook. Postmark POSTs a parsed JSON payload here when
 // any mail forwarded to the configured inbound address arrives. We dedupe
@@ -155,12 +155,22 @@ export async function POST(req: NextRequest) {
   });
 
   if (tmpl) {
-    // Don't auto-reply to ourselves or other auto-responders — easy infinite-loop trap.
-    const fromAddrLower = fromEmail.toLowerCase();
-    const isFromOurself = fromAddrLower.endsWith("@coveblades.com");
-    const isAutoSender = /noreply|no-reply|mailer-daemon|postmaster|bounce/i.test(fromAddrLower);
+    // Don't auto-reply to ourselves or to anything machine-generated — an easy
+    // infinite-loop trap. Address matching alone wasn't enough: an out-of-office
+    // arrives from the person's real address, so it slipped through and we
+    // replied to a vacation responder.
+    const isFromOurself = fromEmail.toLowerCase().endsWith("@coveblades.com");
+    const isAuto = isAutoResponse({
+      from: fromEmail,
+      subject: body.Subject,
+      headers: body.Headers,
+    });
 
-    if (!isFromOurself && !isAutoSender) {
+    if (isAuto) {
+      console.info("[auto-reply] suppressed for machine-generated mail:", fromEmail, body.Subject);
+    }
+
+    if (!isFromOurself && !isAuto) {
       fireAutoReply({
         template: tmpl,
         to: fromEmail,
