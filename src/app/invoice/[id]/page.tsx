@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useParams, useSearchParams } from "next/navigation";
 import { Loader2, CheckCircle, CreditCard, ArrowRight, Download } from "lucide-react";
 import Link from "next/link";
-import { LineItem, formatCAD } from "@/lib/format";
+import { LineItem, PaymentOptions, formatCAD, acceptsCard, acceptsEtransfer } from "@/lib/format";
 
 interface Invoice {
   id: string;
@@ -18,6 +18,7 @@ interface Invoice {
   created_at: string;
   paid_at: string | null;
   payment_method: string | null;
+  payment_options: PaymentOptions | null;
 }
 
 function formatDate(d: string) {
@@ -89,6 +90,10 @@ export default function PublicInvoicePage() {
   }
 
   const isPaid = invoice!.status === "paid" || justPaid;
+  const offerCard = acceptsCard(invoice!.payment_options);
+  const offerEtransfer = acceptsEtransfer(invoice!.payment_options);
+  // With e-Transfer as the only option there's nothing to toggle — show the details outright
+  const etransferOpen = showEtransfer || !offerCard;
 
   return (
     <main className="min-h-screen py-8 px-4" style={{ backgroundColor: "#0D1117" }}>
@@ -179,6 +184,7 @@ export default function PublicInvoicePage() {
             {/* Payment options */}
             {!isPaid && (
               <div className="flex flex-col gap-3 no-print">
+                {offerCard && (
                 <button
                   onClick={handlePayCard}
                   disabled={paying}
@@ -188,7 +194,9 @@ export default function PublicInvoicePage() {
                   {paying ? <Loader2 className="w-4 h-4 animate-spin" /> : <CreditCard className="w-4 h-4" />}
                   {paying ? "Redirecting..." : `Pay ${formatCAD(invoice!.subtotal)} with Card`}
                 </button>
+                )}
 
+                {offerCard && offerEtransfer && (
                 <button
                   onClick={() => setShowEtransfer(!showEtransfer)}
                   className="w-full py-3 rounded-xl text-sm font-medium transition-colors hover:bg-white/5 flex items-center justify-center gap-2"
@@ -197,8 +205,9 @@ export default function PublicInvoicePage() {
                   <ArrowRight className={`w-4 h-4 transition-transform ${showEtransfer ? "rotate-90" : ""}`} />
                   Pay via Interac e-Transfer
                 </button>
+                )}
 
-                {showEtransfer && (
+                {offerEtransfer && etransferOpen && (
                   <div className="p-4 rounded-xl" style={{ backgroundColor: "#161B22", border: "1px solid #30363D" }}>
                     <p className="text-sm text-white mb-3">Send an Interac e-Transfer with these details:</p>
                     <div className="flex flex-col gap-2.5">

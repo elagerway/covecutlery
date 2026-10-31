@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { ArrowLeft, Send, CheckCircle, Loader2, FileText, Eye, CreditCard, Clock, Trash2, Pencil, Plus } from "lucide-react";
-import { LineItem, formatCAD, normalizePhone } from "@/lib/format";
+import { LineItem, PaymentOptions, PAYMENT_OPTION_CHOICES, formatCAD, normalizePhone } from "@/lib/format";
 
 interface Invoice {
   id: string;
@@ -17,6 +17,7 @@ interface Invoice {
   notes: string | null;
   status: string;
   payment_method: string | null;
+  payment_options: PaymentOptions | null;
   due_date: string | null;
   sent_at: string | null;
   paid_at: string | null;
@@ -57,6 +58,7 @@ export default function InvoiceDetailPage() {
   const [editing, setEditing] = useState(false);
   const [editForm, setEditForm] = useState({ client_name: "", client_email: "", client_phone: "", client_address: "", notes: "", due_date: "" });
   const [editItems, setEditItems] = useState<LineItem[]>([]);
+  const [editPaymentOptions, setEditPaymentOptions] = useState<PaymentOptions>("both");
   const [savingEdit, setSavingEdit] = useState(false);
 
   useEffect(() => {
@@ -115,6 +117,7 @@ export default function InvoiceDetailPage() {
       due_date: invoice.due_date || "",
     });
     setEditItems([...invoice.line_items]);
+    setEditPaymentOptions(invoice.payment_options ?? "both");
     setEditing(true);
   }
 
@@ -128,6 +131,7 @@ export default function InvoiceDetailPage() {
         client_address: editForm.client_address || null,
         due_date: editForm.due_date || null,
         line_items: editItems,
+        payment_options: editPaymentOptions,
       }),
     });
     const data = await res.json();
@@ -507,6 +511,33 @@ export default function InvoiceDetailPage() {
               <p className="text-sm text-white">{invoice.notes}</p>
             </div>
           ) : null}
+
+          {/* Payment options offered to the client */}
+          <div className="mb-5">
+            <p className="text-xs font-medium mb-1" style={{ color: "#6B7280" }}>Payment Options</p>
+            {editing ? (
+              <div className="flex gap-2">
+                {PAYMENT_OPTION_CHOICES.map((o) => (
+                  <button
+                    key={o.value}
+                    type="button"
+                    onClick={() => setEditPaymentOptions(o.value)}
+                    className="px-2.5 py-1.5 rounded-lg text-xs font-medium transition-colors hover:bg-white/10"
+                    style={editPaymentOptions === o.value
+                      ? { backgroundColor: "#D4A01722", color: "#D4A017", border: "1px solid #D4A017" }
+                      : { backgroundColor: "#161B22", color: "#FFFFFF", border: "1px solid #30363D" }
+                    }
+                  >
+                    {o.label}
+                  </button>
+                ))}
+              </div>
+            ) : (
+              <p className="text-sm text-white">
+                {PAYMENT_OPTION_CHOICES.find((o) => o.value === (invoice.payment_options ?? "both"))?.label}
+              </p>
+            )}
+          </div>
 
           {/* Payment info */}
           {invoice.paid_at && (

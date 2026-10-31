@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Plus, Trash2, Loader2, Eye, X, CreditCard, ArrowRight } from "lucide-react";
-import { LineItem, formatCAD } from "@/lib/format";
+import { LineItem, PaymentOptions, PAYMENT_OPTION_CHOICES, formatCAD, acceptsCard, acceptsEtransfer } from "@/lib/format";
 
 const PRICE_OPTIONS = [
   { label: "Knife Sharpening", price: 1200 },
@@ -104,6 +104,7 @@ export default function NewInvoicePage() {
   const [error, setError] = useState<string | null>(null);
   const [showPreview, setShowPreview] = useState(false);
   const [includeDueDate, setIncludeDueDate] = useState(false);
+  const [paymentOptions, setPaymentOptions] = useState<PaymentOptions>("both");
   const [customers, setCustomers] = useState<{ id: string; name: string; email: string | null; phone: string | null; address: string | null }[]>([]);
 
   useEffect(() => {
@@ -168,6 +169,7 @@ export default function NewInvoicePage() {
           due_date: includeDueDate ? form.due_date : null,
           client_address: form.client_address || null,
           line_items: items,
+          payment_options: paymentOptions,
           status: action === "send" ? "sent" : "draft",
         }),
       });
@@ -448,6 +450,27 @@ export default function NewInvoicePage() {
             style={inputStyle}
           />
         </div>
+        <div className="mt-3">
+          <label className="block text-xs font-medium mb-1.5" style={{ color: "#6B7280" }}>
+            Payment Options
+          </label>
+          <div className="flex gap-2">
+            {PAYMENT_OPTION_CHOICES.map((o) => (
+              <button
+                key={o.value}
+                type="button"
+                onClick={() => setPaymentOptions(o.value)}
+                className="px-3 py-2 rounded-lg text-xs font-medium transition-colors hover:bg-white/10"
+                style={paymentOptions === o.value
+                  ? { backgroundColor: "#D4A01722", color: "#D4A017", border: "1px solid #D4A017" }
+                  : { ...inputStyle, color: "#FFFFFF" }
+                }
+              >
+                {o.label}
+              </button>
+            ))}
+          </div>
+        </div>
       </div>
 
       {error && (
@@ -577,6 +600,7 @@ export default function NewInvoicePage() {
 
                   {/* Payment buttons (non-functional preview) */}
                   <div className="flex flex-col gap-3">
+                    {acceptsCard(paymentOptions) && (
                     <button
                       disabled
                       className="w-full py-3.5 rounded-xl font-semibold text-sm flex items-center justify-center gap-2 opacity-75"
@@ -585,6 +609,8 @@ export default function NewInvoicePage() {
                       <CreditCard className="w-4 h-4" />
                       Pay {formatCAD(subtotal)} with Card
                     </button>
+                    )}
+                    {acceptsEtransfer(paymentOptions) && (
                     <button
                       disabled
                       className="w-full py-3 rounded-xl text-sm font-medium flex items-center justify-center gap-2 opacity-75"
@@ -593,6 +619,7 @@ export default function NewInvoicePage() {
                       <ArrowRight className="w-4 h-4" />
                       Pay via Interac e-Transfer
                     </button>
+                    )}
                   </div>
                 </div>
               </div>

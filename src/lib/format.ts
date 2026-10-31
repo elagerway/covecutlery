@@ -4,6 +4,27 @@ export interface LineItem {
   unit_price: number;
 }
 
+/** Which payment methods an invoice offers. Null (pre-migration rows) means both. */
+export type PaymentOptions = "both" | "card" | "etransfer";
+
+export const PAYMENT_OPTION_CHOICES: { value: PaymentOptions; label: string }[] = [
+  { value: "both", label: "Card + e-Transfer" },
+  { value: "card", label: "Card only" },
+  { value: "etransfer", label: "e-Transfer only" },
+];
+
+export function isPaymentOptions(v: unknown): v is PaymentOptions {
+  return v === "both" || v === "card" || v === "etransfer";
+}
+
+export function acceptsCard(o: PaymentOptions | null | undefined) {
+  return o !== "etransfer";
+}
+
+export function acceptsEtransfer(o: PaymentOptions | null | undefined) {
+  return o !== "card";
+}
+
 export function formatCAD(cents: number) {
   return `$${(cents / 100).toFixed(2)}`;
 }

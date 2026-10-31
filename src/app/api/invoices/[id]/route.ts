@@ -16,7 +16,7 @@ export async function GET(
   const supabase = getServiceClient();
   const { data, error } = await supabase
     .from("invoices")
-    .select("id, invoice_number, client_name, line_items, subtotal, notes, status, due_date, created_at, paid_at, payment_method")
+    .select("id, invoice_number, client_name, line_items, subtotal, notes, status, due_date, created_at, paid_at, payment_method, payment_options")
     .eq("id", id)
     .single();
 

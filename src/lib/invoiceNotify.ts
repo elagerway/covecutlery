@@ -1,6 +1,6 @@
 import * as postmark from "postmark";
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { formatCAD, escapeHtml, LineItem } from "@/lib/format";
+import { formatCAD, escapeHtml, LineItem, PaymentOptions, acceptsCard, acceptsEtransfer } from "@/lib/format";
 
 /**
  * Invoice email/SMS rendering and the paid-confirmation send.
@@ -41,6 +41,7 @@ export function buildInvoiceHtml(invoice: {
   notes: string | null;
   status: string;
   payment_method: string | null;
+  payment_options?: PaymentOptions | null;
   paid_at: string | null;
   id: string;
 }, origin: string) {
@@ -110,10 +111,10 @@ export function buildInvoiceHtml(invoice: {
       <div style="margin:32px 0 0;text-align:center;">
         <a href="${viewUrl}" style="display:inline-block;padding:14px 32px;background:#D4A017;color:#0D1117;font-weight:700;font-size:14px;text-decoration:none;border-radius:8px;">${invoice.status === "paid" ? "View Invoice" : "View & Pay Invoice"}</a>
       </div>
-      ${invoice.status !== "paid" ? `<p style="margin:24px 0 0;font-size:12px;color:#888;text-align:center;">
-        Or pay via e-Transfer to <strong>pay@coveblades.com</strong><br>
+      ${invoice.status !== "paid" ? (acceptsEtransfer(invoice.payment_options) ? `<p style="margin:24px 0 0;font-size:12px;color:#888;text-align:center;">
+        ${acceptsCard(invoice.payment_options) ? "Or pay" : "Pay"} via Interac e-Transfer to <strong>pay@coveblades.com</strong><br>
         Include invoice #${escapeHtml(invoice.invoice_number)} in the message.
-      </p>` : `<p style="margin:24px 0 0;font-size:12px;color:#888;text-align:center;">
+      </p>` : "") : `<p style="margin:24px 0 0;font-size:12px;color:#888;text-align:center;">
         This invoice has been paid. Thank you!
       </p>`}
       <p style="margin:24px 0 0;font-size:13px;color:#888;text-align:center;">
@@ -134,6 +135,7 @@ export function buildInvoiceText(invoice: {
   notes: string | null;
   status: string;
   payment_method: string | null;
+  payment_options?: PaymentOptions | null;
   paid_at: string | null;
   id: string;
 }, origin: string) {
@@ -156,8 +158,8 @@ export function buildInvoiceText(invoice: {
     ``,
     `View online: ${origin}/invoice/${invoice.id}`,
     ``,
-    invoice.status !== "paid"
-      ? `Or e-Transfer to pay@coveblades.com (include invoice #${invoice.invoice_number} in the message).`
+    invoice.status !== "paid" && acceptsEtransfer(invoice.payment_options)
+      ? `${acceptsCard(invoice.payment_options) ? "Or e-Transfer" : "Pay by Interac e-Transfer"} to pay@coveblades.com (include invoice #${invoice.invoice_number} in the message).`
       : null,
     invoice.status === "paid" && invoice.paid_at
       ? `Payment received: ${new Date(invoice.paid_at).toLocaleDateString("en-CA", { weekday: "long", month: "long", day: "numeric", year: "numeric", hour: "numeric", minute: "2-digit", timeZone: "America/Vancouver" })}${invoice.payment_method === "stripe" ? " via Credit Card" : invoice.payment_method === "etransfer" ? " via Interac e-Transfer" : ""}. Thank you!`

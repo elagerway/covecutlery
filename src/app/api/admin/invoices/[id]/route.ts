@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAdmin, getServiceClient } from "@/lib/admin";
+import { isPaymentOptions } from "@/lib/format";
 
 // GET /api/admin/invoices/[id]
 export async function GET(
@@ -33,8 +34,12 @@ export async function PUT(
   const body = await req.json();
   const {
     client_name, client_email, client_phone, client_address,
-    line_items, notes, due_date,
+    line_items, notes, due_date, payment_options,
   } = body;
+
+  if (payment_options !== undefined && !isPaymentOptions(payment_options)) {
+    return NextResponse.json({ error: "Invalid payment options" }, { status: 400 });
+  }
 
   const subtotal = line_items?.reduce(
     (sum: number, item: { quantity: number; unit_price: number }) => sum + item.quantity * item.unit_price,
@@ -53,6 +58,7 @@ export async function PUT(
       subtotal,
       notes: notes || null,
       due_date,
+      ...(payment_options !== undefined && { payment_options }),
     })
     .eq("id", id)
     .select()

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAdmin, getServiceClient } from "@/lib/admin";
+import { isPaymentOptions } from "@/lib/format";
 
 /** Generate next invoice number: YYYYMMDD-NNN */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -50,7 +51,12 @@ export async function POST(req: NextRequest) {
   const {
     client_name, client_email, client_phone, client_address,
     line_items, notes, due_date, work_completed_date, status: invoiceStatus,
+    payment_options,
   } = body;
+
+  if (payment_options !== undefined && !isPaymentOptions(payment_options)) {
+    return NextResponse.json({ error: "Invalid payment options" }, { status: 400 });
+  }
 
   if (!client_name || !line_items?.length) {
     return NextResponse.json({ error: "Client name and at least one line item are required" }, { status: 400 });
@@ -91,6 +97,7 @@ export async function POST(req: NextRequest) {
       line_items,
       subtotal,
       notes: notes || null,
+      payment_options: payment_options ?? "both",
       status: invoiceStatus === "sent" ? "sent" : "draft",
       due_date: due_date || null,
       work_completed_date: work_completed_date || null,

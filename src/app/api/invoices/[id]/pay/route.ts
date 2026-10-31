@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
 import { getServiceClient } from "@/lib/admin";
+import { acceptsCard } from "@/lib/format";
 
 function getStripe() {
   return new Stripe(process.env.STRIPE_SECRET_KEY!);
@@ -21,11 +22,14 @@ export async function POST(
 
   const { data: invoice } = await supabase
     .from("invoices")
-    .select("id, invoice_number, client_name, client_email, line_items, subtotal, status")
+    .select("id, invoice_number, client_name, client_email, line_items, subtotal, status, payment_options")
     .eq("id", id)
     .single();
 
   if (!invoice) return NextResponse.json({ error: "Invoice not found" }, { status: 404 });
+  if (!acceptsCard(invoice.payment_options)) {
+    return NextResponse.json({ error: "This invoice does not accept card payment" }, { status: 400 });
+  }
   if (!["sent", "viewed"].includes(invoice.status)) {
     return NextResponse.json({ error: invoice.status === "paid" ? "Already paid" : "Invoice is not payable" }, { status: 400 });
   }
