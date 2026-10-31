@@ -25,6 +25,21 @@ export function acceptsEtransfer(o: PaymentOptions | null | undefined) {
   return o !== "card";
 }
 
+/** Methods an admin can record when marking an invoice paid by hand (Stripe records "stripe" itself). */
+export type ManualPaymentMethod = "etransfer" | "cash";
+
+export const MANUAL_PAYMENT_METHODS: { value: ManualPaymentMethod; label: string }[] = [
+  { value: "etransfer", label: "e-Transfer" },
+  { value: "cash", label: "Cash" },
+];
+
+export function paymentMethodLabel(m: string | null | undefined): string | null {
+  if (m === "stripe") return "Credit Card";
+  if (m === "etransfer") return "Interac e-Transfer";
+  if (m === "cash") return "Cash";
+  return m || null;
+}
+
 export function formatCAD(cents: number) {
   return `$${(cents / 100).toFixed(2)}`;
 }

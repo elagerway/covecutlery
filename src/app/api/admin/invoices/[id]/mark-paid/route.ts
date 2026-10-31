@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { requireAdmin, getServiceClient } from "@/lib/admin";
+import { MANUAL_PAYMENT_METHODS } from "@/lib/format";
 
 export async function POST(
   req: NextRequest,
@@ -9,7 +10,10 @@ export async function POST(
   if (!admin) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const { id } = await params;
-  const { payment_method } = await req.json();
+  const { payment_method = "etransfer" } = await req.json();
+  if (!MANUAL_PAYMENT_METHODS.some((m) => m.value === payment_method)) {
+    return NextResponse.json({ error: "Invalid payment method" }, { status: 400 });
+  }
 
   const supabase = getServiceClient();
 
@@ -17,7 +21,7 @@ export async function POST(
     .from("invoices")
     .update({
       status: "paid",
-      payment_method: payment_method || "etransfer",
+      payment_method,
       paid_at: new Date().toISOString(),
     })
     .eq("id", id)

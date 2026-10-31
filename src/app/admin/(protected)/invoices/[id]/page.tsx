@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { ArrowLeft, Send, CheckCircle, Loader2, FileText, Eye, CreditCard, Clock, Trash2, Pencil, Plus } from "lucide-react";
-import { LineItem, PaymentOptions, PAYMENT_OPTION_CHOICES, formatCAD, normalizePhone } from "@/lib/format";
+import { LineItem, PaymentOptions, PAYMENT_OPTION_CHOICES, formatCAD, normalizePhone, MANUAL_PAYMENT_METHODS, ManualPaymentMethod, paymentMethodLabel } from "@/lib/format";
 
 interface Invoice {
   id: string;
@@ -53,6 +53,7 @@ export default function InvoiceDetailPage() {
   const [sendToEmail, setSendToEmail] = useState("");
   const [sendToPhone, setSendToPhone] = useState("");
   const [markingPaid, setMarkingPaid] = useState(false);
+  const [showMarkPaid, setShowMarkPaid] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [msg, setMsg] = useState<string | null>(null);
   const [editing, setEditing] = useState(false);
@@ -145,13 +146,13 @@ export default function InvoiceDetailPage() {
     }
   }
 
-  async function handleMarkPaid() {
-    if (!confirm("Mark this invoice as paid via e-Transfer?")) return;
+  async function handleMarkPaid(method: ManualPaymentMethod) {
+    setShowMarkPaid(false);
     setMarkingPaid(true);
     const res = await fetch(`/api/admin/invoices/${id}/mark-paid`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ payment_method: "etransfer" }),
+      body: JSON.stringify({ payment_method: method }),
     });
     const data = await res.json();
     setMarkingPaid(false);
@@ -299,15 +300,34 @@ export default function InvoiceDetailPage() {
             )}
           </div>
           {invoice.status !== "paid" && (
-            <button
-              onClick={handleMarkPaid}
-              disabled={markingPaid}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors hover:brightness-110"
-              style={{ backgroundColor: "#22C55E22", color: "#22C55E", border: "1px solid #22C55E44" }}
-            >
-              {markingPaid ? <Loader2 className="w-3 h-3 animate-spin" /> : <CheckCircle className="w-3 h-3" />}
-              Mark Paid
-            </button>
+            <div className="relative">
+              <button
+                onClick={() => setShowMarkPaid(!showMarkPaid)}
+                disabled={markingPaid}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors hover:brightness-110"
+                style={{ backgroundColor: "#22C55E22", color: "#22C55E", border: "1px solid #22C55E44" }}
+              >
+                {markingPaid ? <Loader2 className="w-3 h-3 animate-spin" /> : <CheckCircle className="w-3 h-3" />}
+                Mark Paid
+              </button>
+              {showMarkPaid && (
+                <div
+                  className="absolute right-0 top-full mt-2 w-44 rounded-xl p-2 shadow-xl z-50"
+                  style={{ backgroundColor: "#1C2128", border: "1px solid #30363D" }}
+                >
+                  <p className="text-xs font-semibold text-white px-3 py-1.5">Paid via</p>
+                  {MANUAL_PAYMENT_METHODS.map((m) => (
+                    <button
+                      key={m.value}
+                      onClick={() => handleMarkPaid(m.value)}
+                      className="w-full text-left px-3 py-2 rounded-lg text-xs text-white transition-colors hover:bg-white/10"
+                    >
+                      {m.label}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
           )}
           {invoice.status === "draft" && (
             <button
@@ -543,7 +563,7 @@ export default function InvoiceDetailPage() {
           {invoice.paid_at && (
             <div className="p-3 rounded-lg" style={{ backgroundColor: "#22C55E11", border: "1px solid #22C55E33" }}>
               <p className="text-sm" style={{ color: "#22C55E" }}>
-                Paid on {new Date(invoice.paid_at).toLocaleDateString("en-CA")} via {invoice.payment_method === "stripe" ? "card" : "e-Transfer"}
+                Paid on {new Date(invoice.paid_at).toLocaleDateString("en-CA")} via {paymentMethodLabel(invoice.payment_method)}
               </p>
             </div>
           )}

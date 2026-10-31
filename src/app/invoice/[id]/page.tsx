@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useParams, useSearchParams } from "next/navigation";
 import { Loader2, CheckCircle, CreditCard, ArrowRight, Download } from "lucide-react";
 import Link from "next/link";
-import { LineItem, PaymentOptions, formatCAD, acceptsCard, acceptsEtransfer } from "@/lib/format";
+import { LineItem, PaymentOptions, formatCAD, acceptsCard, acceptsEtransfer, paymentMethodLabel } from "@/lib/format";
 
 interface Invoice {
   id: string;
@@ -119,7 +119,7 @@ export default function PublicInvoicePage() {
                   weekday: "long", month: "long", day: "numeric", year: "numeric",
                   hour: "numeric", minute: "2-digit", timeZone: "America/Vancouver",
                 })}
-                {invoice!.payment_method && ` via ${invoice!.payment_method === "stripe" ? "Credit Card" : invoice!.payment_method === "etransfer" ? "Interac e-Transfer" : invoice!.payment_method}`}
+                {invoice!.payment_method && ` via ${paymentMethodLabel(invoice!.payment_method)}`}
               </p>
             </div>
           </div>
@@ -273,7 +273,7 @@ export default function PublicInvoicePage() {
                   weekday: "long", month: "long", day: "numeric", year: "numeric",
                   hour: "numeric", minute: "2-digit", timeZone: "America/Vancouver",
                 })}
-                {invoice!.payment_method && ` via ${invoice!.payment_method === "stripe" ? "Credit Card" : invoice!.payment_method === "etransfer" ? "Interac e-Transfer" : invoice!.payment_method}`}
+                {invoice!.payment_method && ` via ${paymentMethodLabel(invoice!.payment_method)}`}
               </p>
             </div>
           )}
