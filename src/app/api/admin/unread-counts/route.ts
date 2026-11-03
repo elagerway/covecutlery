@@ -3,7 +3,7 @@ import { requireAdmin, getServiceClient } from "@/lib/admin";
 import { listAllServiceMessages, isServiceNumber } from "@/lib/magpipe";
 
 // GET /api/admin/unread-counts
-// → { sms: <count>, email: <count> }
+// → { sms: <count>, email: <count>, inquiries: <count> }
 // Used by the admin sidebar to render badge counts next to channel links.
 
 export async function GET() {
@@ -17,6 +17,12 @@ export async function GET() {
     .from("emails")
     .select("id", { count: "exact", head: true })
     .eq("direction", "inbound")
+    .eq("status", "new");
+
+  // Inquiries = website form submissions not yet marked handled
+  const { count: inquiryCount } = await supabase
+    .from("contact_submissions")
+    .select("id", { count: "exact", head: true })
     .eq("status", "new");
 
   // SMS unread = inbound messages (any service number) whose ID is NOT in sms_message_reads
@@ -57,5 +63,5 @@ export async function GET() {
     console.error("[unread-counts] sms count failed:", e);
   }
 
-  return NextResponse.json({ sms: smsCount, email: emailCount ?? 0 });
+  return NextResponse.json({ sms: smsCount, email: emailCount ?? 0, inquiries: inquiryCount ?? 0 });
 }

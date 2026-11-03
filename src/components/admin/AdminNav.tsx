@@ -15,7 +15,7 @@ export default function AdminNav({ email }: AdminNavProps) {
   const pathname = usePathname();
   const router = useRouter();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [unread, setUnread] = useState<{ sms: number; email: number }>({ sms: 0, email: 0 });
+  const [unread, setUnread] = useState<{ sms: number; email: number; inquiries: number }>({ sms: 0, email: 0, inquiries: 0 });
 
   useEffect(() => {
     async function fetchUnread() {
@@ -23,7 +23,7 @@ export default function AdminNav({ email }: AdminNavProps) {
         const res = await fetch("/api/admin/unread-counts", { cache: "no-store" });
         if (!res.ok) return;
         const data = await res.json();
-        setUnread({ sms: Number(data.sms) || 0, email: Number(data.email) || 0 });
+        setUnread({ sms: Number(data.sms) || 0, email: Number(data.email) || 0, inquiries: Number(data.inquiries) || 0 });
       } catch {
         // silent — sidebar badge is non-critical
       }
@@ -36,6 +36,7 @@ export default function AdminNav({ email }: AdminNavProps) {
   function badgeFor(href: string): number | null {
     if (href === "/admin/messages") return unread.sms > 0 ? unread.sms : null;
     if (href === "/admin/email") return unread.email > 0 ? unread.email : null;
+    if (href === "/admin/inquiries") return unread.inquiries > 0 ? unread.inquiries : null;
     return null;
   }
 
@@ -107,6 +108,12 @@ export default function AdminNav({ email }: AdminNavProps) {
       <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
         <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
         <polyline points="22,6 12,13 2,6" />
+      </svg>
+    )},
+    { label: "Inquiries", href: "/admin/inquiries", icon: (
+      <svg width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
+        <polyline points="22 12 16 12 14 15 10 15 8 12 2 12" />
+        <path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z" />
       </svg>
     )},
     { label: "Analytics", href: "/admin/analytics", icon: (
