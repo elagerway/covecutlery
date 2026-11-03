@@ -6,6 +6,7 @@ import { upsertCustomerFromBooking } from "@/lib/customers";
 import { notifyNewBooking } from "@/lib/bookingNotify";
 import { requiredMinimumForAddress } from "@/data/mobileMinimums";
 import { cities } from "@/data/cities";
+import { getBookingsEnabled, BOOKINGS_PAUSED_MESSAGE } from "@/lib/siteSettings";
 
 const KNOWN_CITIES = cities.map((c) => c.name);
 
@@ -22,6 +23,12 @@ function toE164CA(phone: string | undefined): string | undefined {
 }
 
 export async function POST(req: NextRequest) {
+  // Admin can pause new bookings (Settings); the site hides its booking buttons
+  // too, but this is what actually stops one.
+  if (!(await getBookingsEnabled())) {
+    return NextResponse.json({ error: BOOKINGS_PAUSED_MESSAGE }, { status: 503 });
+  }
+
   const body = await req.json();
   const { start, name, email, phone, address, notes, pieces } = body;
 

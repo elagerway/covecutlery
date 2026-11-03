@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, X, ChevronDown } from "lucide-react";
 import Image from "next/image";
-import { useBooking } from "@/components/BookingProvider";
+import { useBooking, BookingOnly } from "@/components/BookingProvider";
 import { createClient as createBrowserClient } from "@/utils/supabase/client";
 import ForSaleBanner, { useForSaleBanner, FOR_SALE_BANNER_HEIGHT } from "@/components/ForSaleBanner";
 
@@ -205,12 +205,14 @@ export default function Navbar() {
                 Sign in
               </Link>
             )}
-            <button
-              onClick={handleBookNow}
-              className="inline-flex items-center gap-2 px-5 py-2 rounded-md bg-[#D4A017] hover:bg-[#e8b82a] text-[#0D1117] font-semibold text-sm tracking-wide transition-all duration-200 hover:shadow-[0_0_16px_rgba(212,160,23,0.4)] active:scale-95"
-            >
-              Book Now
-            </button>
+            <BookingOnly>
+              <button
+                onClick={handleBookNow}
+                className="inline-flex items-center gap-2 px-5 py-2 rounded-md bg-[#D4A017] hover:bg-[#e8b82a] text-[#0D1117] font-semibold text-sm tracking-wide transition-all duration-200 hover:shadow-[0_0_16px_rgba(212,160,23,0.4)] active:scale-95"
+              >
+                Book Now
+              </button>
+            </BookingOnly>
           </div>
 
           {/* Mobile Hamburger */}
@@ -284,14 +286,16 @@ export default function Navbar() {
               Admin
             </Link>
           )}
-          <div className="pt-3 pb-1">
-            <button
-              onClick={handleBookNow}
-              className="flex items-center justify-center w-full py-3 rounded-md bg-[#D4A017] hover:bg-[#e8b82a] text-[#0D1117] font-semibold text-sm tracking-wide transition-all duration-200 active:scale-95"
-            >
-              Book Now
-            </button>
-          </div>
+          <BookingOnly>
+            <div className="pt-3 pb-1">
+              <button
+                onClick={handleBookNow}
+                className="flex items-center justify-center w-full py-3 rounded-md bg-[#D4A017] hover:bg-[#e8b82a] text-[#0D1117] font-semibold text-sm tracking-wide transition-all duration-200 active:scale-95"
+              >
+                Book Now
+              </button>
+            </div>
+          </BookingOnly>
         </div>
       </div>
     </header>

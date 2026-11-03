@@ -7,14 +7,14 @@ import type { DaySchedule } from "@/lib/calSchedule";
 const HOME_CITY = "North Vancouver";
 
 export default function ScheduleDayCard({ day }: { day: DaySchedule }) {
-  const { openWithDate } = useBooking();
+  const { openWithDate, bookingsEnabled } = useBooking();
   const hasBookings = day.cities.length > 0;
   const isHome = !hasBookings;
 
   return (
     <div className="flex-shrink-0 flex flex-col min-w-[110px] w-full">
-      {/* Book Mobile tab */}
-      <div className="flex justify-center mb-1">
+      {/* Book Mobile tab — kept as a same-height spacer when bookings are paused so the row doesn't jump */}
+      <div className="flex justify-center mb-1" style={{ visibility: bookingsEnabled ? "visible" : "hidden" }}>
         <span
           className="text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-sm"
           style={{ backgroundColor: "#D4A017", color: "#0D1117" }}
@@ -25,7 +25,8 @@ export default function ScheduleDayCard({ day }: { day: DaySchedule }) {
 
     <button
       onClick={() => openWithDate(day.date)}
-      className="flex flex-col items-center gap-2 rounded-xl px-4 py-5 border w-full text-left transition-all duration-200 hover:brightness-110 active:scale-95 cursor-pointer"
+      disabled={!bookingsEnabled}
+      className={`flex flex-col items-center gap-2 rounded-xl px-4 py-5 border w-full text-left transition-all duration-200 ${bookingsEnabled ? "hover:brightness-110 active:scale-95 cursor-pointer" : "cursor-default"}`}
       style={{
         backgroundColor: day.isToday ? "rgba(212,160,23,0.08)" : "#161B22",
         borderColor: day.isToday ? "#D4A017" : "#30363D",

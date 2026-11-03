@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Truck, MapPin, Clock, CheckCircle, ChevronRight, Phone } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
+import { BookingOnly } from "@/components/BookingProvider";
 
 export const metadata: Metadata = {
   title: "Mobile Cutlery Sharpening Vancouver | Cove Blades",
@@ -158,14 +159,16 @@ export default function MobileServicePage() {
               We drive to your home, restaurant, or business and sharpen your knives on-site using professional wet-wheel equipment. No dropping off. No waiting. Just sharp knives.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link
-                href="/contact"
-                className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-lg font-semibold text-base transition-all duration-200 hover:brightness-110 active:scale-95"
-                style={{ backgroundColor: "#D4A017", color: "#0D1117" }}
-              >
-                Book Mobile Service
-                <ChevronRight size={18} />
-              </Link>
+              <BookingOnly>
+                <Link
+                  href="/contact"
+                  className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-lg font-semibold text-base transition-all duration-200 hover:brightness-110 active:scale-95"
+                  style={{ backgroundColor: "#D4A017", color: "#0D1117" }}
+                >
+                  Book Mobile Service
+                  <ChevronRight size={18} />
+                </Link>
+              </BookingOnly>
               <a
                 href="tel:6042108180"
                 className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-lg font-semibold text-base border-2 transition-all duration-200 hover:bg-yellow-900/20 active:scale-95"
@@ -353,14 +356,16 @@ export default function MobileServicePage() {
               Fill out our quick contact form and we'll get back to you within a few hours to confirm your appointment.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link
-                href="/contact"
-                className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-lg font-semibold text-base transition-all duration-200 hover:brightness-110 active:scale-95"
-                style={{ backgroundColor: "#D4A017", color: "#0D1117" }}
-              >
-                Book Now
-                <ChevronRight size={18} />
-              </Link>
+              <BookingOnly>
+                <Link
+                  href="/contact"
+                  className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-lg font-semibold text-base transition-all duration-200 hover:brightness-110 active:scale-95"
+                  style={{ backgroundColor: "#D4A017", color: "#0D1117" }}
+                >
+                  Book Now
+                  <ChevronRight size={18} />
+                </Link>
+              </BookingOnly>
               <a
                 href="tel:6042108180"
                 className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-lg font-semibold text-base border-2 transition-all duration-200 hover:bg-yellow-900/20 active:scale-95"

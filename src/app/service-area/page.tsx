@@ -5,6 +5,7 @@ import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 import { cities } from '@/data/cities'
 import { safeJsonLd, breadcrumbSchema, faqPageSchema } from '@/lib/schema'
+import { BookingOnly } from '@/components/BookingProvider'
 
 export const metadata: Metadata = {
   title: 'Knife Sharpening Service Areas | Metro Vancouver | Cove Blades',
@@ -157,14 +158,16 @@ export default function ServiceAreaPage() {
               Book a mobile visit or drop off your knives at our 24/7 secure box in North Vancouver.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link
-                href="/contact"
-                className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-lg font-semibold text-base transition-all duration-200 hover:brightness-110 active:scale-95"
-                style={{ backgroundColor: '#D4A017', color: '#0D1117' }}
-              >
-                Book Now
-                <ChevronRight size={18} />
-              </Link>
+              <BookingOnly>
+                <Link
+                  href="/contact"
+                  className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-lg font-semibold text-base transition-all duration-200 hover:brightness-110 active:scale-95"
+                  style={{ backgroundColor: '#D4A017', color: '#0D1117' }}
+                >
+                  Book Now
+                  <ChevronRight size={18} />
+                </Link>
+              </BookingOnly>
               <a
                 href="tel:+16042108180"
                 className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-lg font-semibold text-base border-2 transition-all duration-200 hover:bg-yellow-900/20 active:scale-95"

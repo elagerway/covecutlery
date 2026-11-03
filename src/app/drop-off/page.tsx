@@ -4,6 +4,7 @@ import { Lock, Clock, MapPin, Phone, CheckCircle, ChevronRight } from "lucide-re
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import DropBoxCodeButton from "@/components/DropBoxCodeButton";
+import { BookingOnly } from "@/components/BookingProvider";
 
 export const metadata: Metadata = {
   title: "24/7 Drop-Off Cutlery Sharpening Vancouver | Cove Blades",
@@ -82,14 +83,16 @@ export default function DropOffPage() {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <DropBoxCodeButton />
-              <Link
-                href="/contact"
-                className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-lg font-semibold text-base border-2 transition-all duration-200 hover:bg-yellow-900/20 active:scale-95"
-                style={{ borderColor: "#D4A017", color: "#D4A017" }}
-              >
-                Book Mobile Instead
-                <ChevronRight size={18} />
-              </Link>
+              <BookingOnly>
+                <Link
+                  href="/contact"
+                  className="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-lg font-semibold text-base border-2 transition-all duration-200 hover:bg-yellow-900/20 active:scale-95"
+                  style={{ borderColor: "#D4A017", color: "#D4A017" }}
+                >
+                  Book Mobile Instead
+                  <ChevronRight size={18} />
+                </Link>
+              </BookingOnly>
             </div>
           </div>
         </section>

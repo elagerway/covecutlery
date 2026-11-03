@@ -2,7 +2,7 @@
 
 import { MapPin } from "lucide-react";
 import Link from "next/link";
-import { useBooking } from "@/components/BookingProvider";
+import { useBooking, BookingOnly } from "@/components/BookingProvider";
 
 function CityLink({ slug, children }: { slug: string; children: React.ReactNode }) {
   return (
@@ -132,13 +132,15 @@ export default function MobileServiceSection() {
 
         {/* CTAs */}
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-8">
-          <button
-            onClick={openBooking}
-            className="px-8 py-4 rounded-lg font-semibold text-base transition-all duration-200 hover:brightness-110 active:scale-95"
-            style={{ backgroundColor: "#D4A017", color: "#0D1117" }}
-          >
-            Book Mobile Service
-          </button>
+          <BookingOnly>
+            <button
+              onClick={openBooking}
+              className="px-8 py-4 rounded-lg font-semibold text-base transition-all duration-200 hover:brightness-110 active:scale-95"
+              style={{ backgroundColor: "#D4A017", color: "#0D1117" }}
+            >
+              Book Mobile Service
+            </button>
+          </BookingOnly>
 
           <a
             href="https://www.instagram.com/coveblades/"

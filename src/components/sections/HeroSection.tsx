@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { ChevronDown, CalendarDays } from "lucide-react";
-import { useBooking } from "@/components/BookingProvider";
+import { useBooking, BookingOnly } from "@/components/BookingProvider";
 import DropBoxCodeButton from "@/components/DropBoxCodeButton";
 import { track } from "@/lib/analytics-client";
 
@@ -72,13 +72,15 @@ export default function HeroSection() {
 
         {/* CTA Buttons */}
         <div className="flex flex-col sm:flex-row gap-4 mb-12 w-full sm:w-auto">
-          <button
-            onClick={() => { track("book_clicked", { source: "hero" }); openBooking(); }}
-            className="flex items-center justify-center gap-2 px-8 py-4 rounded-lg font-semibold text-base transition-all duration-200 hover:brightness-110 active:scale-95"
-            style={{ backgroundColor: "#D4A017", color: "#0D1117" }}
-          >
-            Book Mobile Service
-          </button>
+          <BookingOnly>
+            <button
+              onClick={() => { track("book_clicked", { source: "hero" }); openBooking(); }}
+              className="flex items-center justify-center gap-2 px-8 py-4 rounded-lg font-semibold text-base transition-all duration-200 hover:brightness-110 active:scale-95"
+              style={{ backgroundColor: "#D4A017", color: "#0D1117" }}
+            >
+              Book Mobile Service
+            </button>
+          </BookingOnly>
 
           <button
             onClick={() => { track("schedule_clicked", { source: "hero" }); scrollToSchedule(); }}
