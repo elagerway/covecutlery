@@ -210,6 +210,7 @@ export default function BusinessForSalePage() {
                 buttonLabel="Request details"
                 successMessage="Thanks, we'll be in touch soon."
                 messagePlaceholder="Tell us a bit about yourself and what you have in mind for the business..."
+                captchaAppearance="always"
               />
             </div>
           </div>

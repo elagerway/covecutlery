@@ -15,6 +15,8 @@ type Props = {
   showAddress?: boolean;
   /** Label for the address field — appears as a UPPERCASE form label. */
   addressLabel?: string;
+  /** "always" shows the Turnstile checkbox; the default only shows it when Cloudflare wants a challenge. */
+  captchaAppearance?: "always" | "interaction-only";
 };
 
 type State = "idle" | "loading" | "success" | "error";
@@ -37,6 +39,7 @@ export default function InquiryForm({
   messagePlaceholder = "Tell us a bit about what you need...",
   showAddress = false,
   addressLabel = "Address",
+  captchaAppearance = "interaction-only",
 }: Props) {
   const [form, setForm] = useState({
     name: "",
@@ -201,7 +204,7 @@ export default function InquiryForm({
         siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY!}
         onSuccess={setCaptchaToken}
         onExpire={() => setCaptchaToken(null)}
-        options={{ theme: "dark", appearance: "interaction-only" }}
+        options={{ theme: "dark", appearance: captchaAppearance }}
       />
 
       <button

@@ -1,7 +1,9 @@
-import { NextRequest, NextResponse } from "next/server";
+import { NextRequest, NextResponse, after } from "next/server";
 import { createClient } from "@supabase/supabase-js";
 import { ADMIN_EMAILS } from "@/lib/admin";
 import { sendEmail } from "@/lib/notify";
+import { sendSms } from "@/lib/magpipe";
+import { ADMIN_PHONE } from "@/lib/bookingNotify";
 
 export async function POST(request: NextRequest) {
   try {
@@ -82,26 +84,37 @@ export async function POST(request: NextRequest) {
     }
 
     // Submissions used to land only in contact_submissions, which nothing reads —
-    // email them so they're actually seen (best-effort; sendEmail never throws).
+    // email and text them so they're actually seen. Both are best-effort and run
+    // after the response: the submission is already saved, and Magpipe can take
+    // ~10s, which the visitor shouldn't sit through.
     const isBusinessSale = service_type === "business-sale";
-    await sendEmail({
-      to: ADMIN_EMAILS[0],
-      replyTo: email.trim(),
-      subject: isBusinessSale
-        ? `Business-for-sale inquiry — ${name.trim()}`
-        : `Website inquiry${service_type ? ` (${service_type})` : ""} — ${name.trim()}`,
-      text: [
-        `Name: ${name.trim()}`,
-        `Email: ${email.trim()}`,
-        `Phone: ${phone?.trim() || "(none)"}`,
-        service_type ? `Type: ${service_type}` : null,
-        item_count ? `Knives: ${item_count}` : null,
-        address ? `Address: ${address.trim()}` : null,
-        ``,
-        message?.trim() || "(no message)",
-        ``,
-        `Reply to this email to answer them directly.`,
-      ].filter((l) => l !== null).join("\n"),
+    const label = isBusinessSale ? "business-for-sale inquiry" : `website inquiry${service_type ? ` (${service_type})` : ""}`;
+    const snippet = message?.trim() ? ` "${message.trim().slice(0, 140)}${message.trim().length > 140 ? "…" : ""}"` : "";
+    after(async () => {
+      const emailTask = sendEmail({
+        to: ADMIN_EMAILS[0],
+        replyTo: email.trim(),
+        subject: isBusinessSale
+          ? `Business-for-sale inquiry — ${name.trim()}`
+          : `Website inquiry${service_type ? ` (${service_type})` : ""} — ${name.trim()}`,
+        text: [
+          `Name: ${name.trim()}`,
+          `Email: ${email.trim()}`,
+          `Phone: ${phone?.trim() || "(none)"}`,
+          service_type ? `Type: ${service_type}` : null,
+          item_count ? `Knives: ${item_count}` : null,
+          address ? `Address: ${address.trim()}` : null,
+          ``,
+          message?.trim() || "(no message)",
+          ``,
+          `Reply to this email to answer them directly.`,
+        ].filter((l) => l !== null).join("\n"),
+      });
+      const smsTask = sendSms({
+        to: ADMIN_PHONE,
+        message: `New ${label}: ${name.trim()} (${email.trim()}${phone?.trim() ? `, ${phone.trim()}` : ""}).${snippet} Full details in your email.`,
+      }).catch((e) => console.error("[contact] SMS notify failed:", e));
+      await Promise.all([emailTask, smsTask]);
     });
 
     return NextResponse.json({ success: true }, { status: 200 });
