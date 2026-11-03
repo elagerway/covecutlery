@@ -7,6 +7,7 @@ import { Menu, X, ChevronDown } from "lucide-react";
 import Image from "next/image";
 import { useBooking } from "@/components/BookingProvider";
 import { createClient as createBrowserClient } from "@/utils/supabase/client";
+import ForSaleBanner, { useForSaleBanner, FOR_SALE_BANNER_HEIGHT } from "@/components/ForSaleBanner";
 
 const servicesLinks = [
   { label: "How We Sharpen", href: "/how-we-sharpen-your-knives" },
@@ -94,6 +95,7 @@ export default function Navbar() {
   };
 
   const { open: openBooking } = useBooking();
+  const forSale = useForSaleBanner();
 
   const handleBookNow = () => {
     setMobileOpen(false);
@@ -102,6 +104,7 @@ export default function Navbar() {
   };
 
   return (
+    <>
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         scrolled || mobileOpen
@@ -109,6 +112,7 @@ export default function Navbar() {
           : "bg-[#0D1117]/80 backdrop-blur-sm"
       } border-b border-[#30363D]`}
     >
+      {forSale.visible && <ForSaleBanner onDismiss={forSale.dismiss} />}
       <nav className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
@@ -291,5 +295,8 @@ export default function Navbar() {
         </div>
       </div>
     </header>
+    {/* The header is fixed; pages pad for the nav only, so push content down by the banner too */}
+    {forSale.visible && <div aria-hidden style={{ height: FOR_SALE_BANNER_HEIGHT }} />}
+    </>
   );
 }
